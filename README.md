@@ -49,7 +49,9 @@ Un estado mal escrito (por ejemplo `publicado`) detiene la construcción con un 
 
 ## Añadir contenido
 
-El orden de cada sección lo da el nombre del archivo: `01-…`, `02-…`, etc.
+El orden de cada sección lo da el número con que empieza el nombre del archivo: `01-…`, `02-…`, … `10-…`.
+
+Al construir, el generador comprueba cada obra: si falta un campo o tiene un valor que no sirve (una duración como `3.42`, un tipo de imagen que no existe, un enlace que no es `https://` ni `mailto:`), se detiene y dice en qué archivo y qué campo.
 
 **Música** · `site/content/musica/02-titulo.json`
 
@@ -105,6 +107,8 @@ export default {
     code: { espiral },       // lo que muestra la ventana «Ver código», tal como se ejecuta
 };
 ```
+
+Cada algoritmo se ejecuta en su propio ámbito: sus funciones pueden llamarse igual que las de otro algoritmo. Desde él se pueden usar las ayudas de la página, como `PALETTES` y `rng`.
 
 Los tres modos:
 

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { build } from '../build.mjs';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(SITE, '..');
 const CONTENT = path.join(SITE, 'content');
 const SECTIONS = ['musica', 'escritura', 'imagenes', 'efectos', 'algoritmos', 'sobre', 'contacto'];
 
@@ -144,4 +145,77 @@ test('each own file is linked with the hash of its content', () => {
         const actual = crypto.createHash('sha256').update(fs.readFileSync(path.join(out, file))).digest('hex').slice(0, 10);
         assert.equal(hash, actual, file);
     }
+});
+
+test('the output folder is never the project or a folder inside site/', () => {
+    for (const outDir of [ROOT, path.dirname(ROOT), SITE, path.join(SITE, 'content'), path.parse(ROOT).root]) {
+        assert.throws(() => build({ mode: 'prod', outDir }), /la carpeta de salida .* no vale/, outDir);
+    }
+    assert.ok(fs.existsSync(path.join(SITE, 'content', 'site.json')), 'the content is still there');
+});
+
+test('a work with a missing or wrong field stops the build, naming the file and the field', () => {
+    const cases = [
+        [d => editJson(path.join(d, 'musica', '01-marea-baja.json'), t => { delete t.notes; }), /01-marea-baja\.json: "notes" falta; tiene que ser una lista de frecuencias/],
+        [d => editJson(path.join(d, 'musica', '01-marea-baja.json'), t => { t.dur = '3.42'; }), /"dur" vale "3\.42"; tiene que ser una duración como 3:42/],
+        [d => editJson(path.join(d, 'imagenes', '01-repeticion-01.json'), p => { p.kind = 'Espirales'; }), /01-repeticion-01\.json: "kind" vale "Espirales"; tiene que ser uno de: Círculos/],
+        [d => editJson(path.join(d, 'site.json'), s => { s.email.address = 'correo'; }), /site\.json: email\."address" vale "correo"/],
+        [d => editJson(path.join(d, 'efectos.json'), e => { e.effects[2].variant = 'blur'; }), /efectos\.json: effects\[2\]\."variant" vale "blur"/],
+        [d => {
+            const file = path.join(d, 'escritura', '01-ciudades-que-se-repiten.md');
+            fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(/^summary: .*\n/m, ''));
+        }, /01-ciudades-que-se-repiten\.md: "summary" falta/],
+    ];
+    for (const [change, message] of cases) {
+        assert.throws(() => build({ mode: 'dev', contentDir: contentCopy(change), outDir: tmp('bad') }), message);
+    }
+});
+
+test('a link must be https:// or mailto:', () => {
+    const dir = contentCopy(d => editJson(path.join(d, 'site.json'), s => { s.links[0].url = 'javascript:alert(1)'; }));
+    assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /links\[0\]\."url" vale "javascript:alert\(1\)"; tiene que ser una dirección https:\/\/ o mailto:/);
+});
+
+test('a header value that looks like JSON but is not names the file', () => {
+    const dir = contentCopy(d => {
+        const file = path.join(d, 'escritura', '01-ciudades-que-se-repiten.md');
+        fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('kind: Ensayo', 'kind: [Ensayo'));
+    });
+    assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /01-ciudades-que-se-repiten\.md: el valor de "kind" empieza como una lista o un objeto/);
+});
+
+test('works are ordered by the number in their name: 2 before 10', () => {
+    const dir = contentCopy(d => {
+        const one = JSON.parse(fs.readFileSync(path.join(d, 'musica', '01-marea-baja.json'), 'utf8'));
+        fs.writeFileSync(path.join(d, 'musica', '10-diez.json'), JSON.stringify({ ...one, title: 'Diez' }));
+        fs.writeFileSync(path.join(d, 'musica', '2-dos.json'), JSON.stringify({ ...one, title: 'Dos' }));
+    });
+    const { js } = run('dev', dir);
+    const titles = [...js.matchAll(/"title": "(Marea baja|Dos|Diez)"/g)].map(m => m[1]);
+    assert.deepEqual(titles, ['Marea baja', 'Dos', 'Diez']);
+});
+
+test('each algorithm has its own scope: two can use the same names', () => {
+    const dir = contentCopy(d => {
+        for (const [folder, title] of [['02-uno', 'Uno'], ['03-dos', 'Dos']]) {
+            fs.mkdirSync(path.join(d, 'algoritmos', folder));
+            fs.writeFileSync(path.join(d, 'algoritmos', folder, 'meta.json'), '{ "status": "draft" }');
+            fs.writeFileSync(path.join(d, 'algoritmos', folder, 'algorithm.js'), [
+                'const SIZE = 3;',
+                'function draw(ctx) { ctx.fillRect(0, 0, SIZE, SIZE); }',
+                `export default { title: '${title}', year: 2026, mode: 'animation', summary: 'x', alt: () => 'x', draw, code: { draw } };`,
+            ].join('\n'));
+        }
+    });
+    const { js } = run('dev', dir);
+    assert.doesNotThrow(() => new vm.Script(js));
+    assert.equal((js.match(/const SIZE = 3;/g) || []).length, 2);
+});
+
+test('an algorithm without title, mode or draw stops the build', () => {
+    const dir = contentCopy(d => {
+        const file = path.join(d, 'algoritmos', '01-repeticion', 'algorithm.js');
+        fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace("mode: 'seed',", ''));
+    });
+    assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /01-repeticion\/algorithm\.js: a la ficha le falta "mode"/);
 });
