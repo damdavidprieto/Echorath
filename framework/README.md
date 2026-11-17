@@ -59,15 +59,16 @@ panel.after(EchorathUI.fxPicker(panel, { name: 'el panel' }));
 ## Desarrollo
 
 ```bash
-npm install      # esbuild y playwright-core, versiones fijas
+npm ci           # esbuild y playwright-core, versiones fijas
+npx playwright-core install chromium   # una vez: el navegador de las pruebas
 npm run build    # genera dist/ con source maps
 npm run watch    # recompila al guardar cualquier archivo de src/
 npm test         # build + pruebas en Chromium
 ```
 
-Las pruebas usan el Chromium de `CHROMIUM_PATH` (por defecto `/opt/pw-browsers/chromium`).
+Las pruebas usan el Chromium de `CHROMIUM_PATH` si está definido; si no, el que instala `playwright-core` (ver `tests/helpers/browser.mjs`).
 
-Se trabaja en `src/`; `dist/` se genera y no se edita a mano.
+Se trabaja en `src/`; `dist/` se genera y no se edita a mano, pero se guarda en el repositorio porque la web lo copia tal cual. Después de cambiar `src/`, ejecuta `npm run build` y sube también `dist/`: las pruebas de GitHub fallan si no coincide.
 
 ## Documentación
 
