@@ -1,0 +1,19 @@
+/*
+ * Layout · Flow helpers
+ * .e-stack  vertical flow with a fixed gap
+ * .e-row    horizontal flow that wraps
+ */
+@layer e.layout {
+    .e-stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--e-space-3);
+    }
+
+    .e-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--e-space-3);
+    }
+}

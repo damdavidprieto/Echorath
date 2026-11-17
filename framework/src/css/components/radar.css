@@ -1,0 +1,33 @@
+/*
+ * Component · Radar (map or geo placeholder)
+ * Block:  .e-radar   surface with a rotating sweep
+ * States: data-state="offline" stops the sweep
+ * Tone:   data-tone colors the sweep
+ */
+@layer e.components {
+    .e-radar {
+        position: relative;
+        min-height: 200px;
+        overflow: hidden;
+        background: var(--e-color-bg);
+        border: var(--e-border-width) solid var(--e-color-line);
+    }
+
+    .e-radar::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 140%;
+        aspect-ratio: 1;
+        translate: -50% -50%;
+        border-radius: 50%;
+        background: conic-gradient(transparent 0deg, transparent 270deg, var(--e-tone, var(--e-color-green)) 360deg);
+        opacity: 0.12;
+        animation: e-anim-sweep 4s linear infinite;
+    }
+
+    .e-radar[data-state="offline"]::before {
+        display: none;
+    }
+}

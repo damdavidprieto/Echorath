@@ -1,0 +1,87 @@
+/*
+ * Component · Prose
+ * Block:    .e-prose          long text set for reading: essays, stories, notes
+ * Elements: .e-prose__meta    one line of details above the text (kind, year, reading time)
+ * Content:  p, h2, h3, ul, ol, blockquote and a inside are styled; the
+ *           interface around the text keeps the Echorath look
+ * Variables: --e-prose-size     text size (default 1.2rem: 18px with the default text size)
+ *            --e-prose-measure  line length (default 58ch: about 66 characters)
+ * Tone:     data-tone colors links and the quote rule
+ * Breakpoint: 640px. Below it the text is a little smaller.
+ *
+ * Markup:
+ *   <article class="e-prose">
+ *     <p class="e-prose__meta">Ensayo · 2025 · 4 min de lectura</p>
+ *     <p>…</p>
+ *   </article>
+ */
+@layer e.components {
+    .e-prose {
+        --e-prose-size: 1.2rem;
+        --e-prose-measure: 58ch;
+        max-width: var(--e-prose-measure);
+        margin-inline: auto;
+        font-family: var(--e-font-text);
+        font-optical-sizing: auto;
+        font-size: var(--e-prose-size);
+        line-height: 1.7;
+        color: var(--e-color-text);
+        text-wrap: pretty;
+    }
+
+    .e-prose p,
+    .e-prose ul,
+    .e-prose ol {
+        margin: 0 0 1em;
+    }
+
+    .e-prose ul,
+    .e-prose ol {
+        padding-left: 1.4em;
+    }
+
+    .e-prose h2,
+    .e-prose h3 {
+        margin: 1.6em 0 0.6em;
+        font-family: var(--e-font-text);
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: 0;
+        text-transform: none;
+        color: var(--e-color-text);
+    }
+
+    .e-prose h2 { font-size: 1.35em; }
+    .e-prose h3 { font-size: 1.15em; }
+
+    .e-prose blockquote {
+        margin: 1.2em 0;
+        padding-left: 1em;
+        border-left: var(--e-border-width) solid var(--e-tone, var(--e-color-blue));
+        font-style: italic;
+        color: var(--e-color-text-dim);
+    }
+
+    .e-prose a {
+        color: var(--e-tone, var(--e-color-blue));
+        text-underline-offset: 0.15em;
+    }
+
+    .e-prose > :last-child {
+        margin-bottom: 0;
+    }
+
+    .e-prose .e-prose__meta {
+        margin: 0 0 1.4em;
+        font: var(--e-font-size-xs) / 1.4 var(--e-font-mono);
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        color: var(--e-color-text-dim);
+    }
+
+    @media (max-width: 640px) {
+        .e-prose {
+            --e-prose-size: 1.15rem;
+        }
+    }
+}

@@ -1,0 +1,53 @@
+/*
+ * Base · Typography helpers
+ * .e-display  display face, uppercase
+ * .e-h1       brand-level heading (neon glow)
+ * .e-h2       section heading
+ * .e-label    small uppercase caption
+ * .e-muted    faint text
+ *
+ * A word too long for its line (an address, a long name) breaks instead of
+ * running off the edge; ordinary text wraps between words as always.
+ */
+@layer e.base {
+    body {
+        overflow-wrap: break-word;
+    }
+
+    .e-display {
+        font-family: var(--e-font-display);
+        font-weight: 900;
+        letter-spacing: var(--e-tracking-wide);
+        text-transform: uppercase;
+    }
+
+    .e-h1 {
+        margin: 0;
+        font-family: var(--e-font-display);
+        font-weight: 900;
+        font-size: var(--e-font-size-xl);
+        letter-spacing: var(--e-tracking-wide);
+        color: var(--e-color-green);
+        text-shadow: 0 0 10px var(--e-color-green);
+    }
+
+    .e-h2 {
+        margin: 0;
+        font-family: var(--e-font-display);
+        font-size: var(--e-font-size-lg);
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        color: var(--e-tone, var(--e-color-blue));
+    }
+
+    .e-label {
+        font-size: var(--e-font-size-xs);
+        letter-spacing: var(--e-tracking-wide);
+        text-transform: uppercase;
+        color: var(--e-color-text-dim);
+    }
+
+    .e-muted {
+        color: var(--e-color-text-faint);
+    }
+}

@@ -1,0 +1,16 @@
+/*
+ * Themes · Tone presets
+ * data-tone="ok|info|warn|danger|sys|off" sets --e-tone on any element.
+ * Components read var(--e-tone, <their default>).
+ *
+ * This layer is last in the cascade, so a data-tone always wins over a
+ * component's default tone (for example .e-btn or .e-btn--danger).
+ */
+@layer e.tones {
+    [data-tone="ok"]     { --e-tone: var(--e-color-green); }
+    [data-tone="info"]   { --e-tone: var(--e-color-blue); }
+    [data-tone="warn"]   { --e-tone: var(--e-color-amber); }
+    [data-tone="danger"] { --e-tone: var(--e-color-red); }
+    [data-tone="sys"]    { --e-tone: var(--e-color-cyan); }
+    [data-tone="off"]    { --e-tone: var(--e-color-text-faint); }
+}

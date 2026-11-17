@@ -1,0 +1,42 @@
+{
+  "name": "echorath-ui",
+  "version": "2.0.0",
+  "description": "Framework HTML/CSS/JS de Echorath: neón sobre negro y distorsiones de carga.",
+  "private": true,
+  "type": "module",
+  "main": "dist/echorath-ui.js",
+  "module": "dist/echorath-ui.esm.js",
+  "style": "dist/echorath-ui.css",
+  "types": "types/echorath-ui.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/echorath-ui.d.ts",
+      "import": "./dist/echorath-ui.esm.js",
+      "default": "./dist/echorath-ui.js"
+    },
+    "./css": "./dist/echorath-ui.css",
+    "./css/min": "./dist/echorath-ui.min.css"
+  },
+  "files": [
+    "dist",
+    "types",
+    "src"
+  ],
+  "sideEffects": [
+    "./dist/echorath-ui.js",
+    "./dist/echorath-ui.esm.js",
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "test": "node build.mjs && node --test \"tests/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.64.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

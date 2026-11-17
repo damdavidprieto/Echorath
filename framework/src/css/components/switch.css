@@ -1,0 +1,82 @@
+/*
+ * Component · Switch
+ * Markup:   <span class="e-switch"><input type="checkbox"><span class="e-switch__track"></span></span>
+ * Elements: .e-switch__track   visual track; the knob is its ::before
+ * States:   input:checked, input:focus-visible
+ */
+@layer e.components {
+    .e-switch {
+        position: relative;
+        display: inline-block;
+        flex: none;
+        width: 36px;
+        height: 18px;
+    }
+
+    .e-switch input {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .e-switch__track {
+        position: absolute;
+        inset: 0;
+        background: #222;
+        border: var(--e-border-width) solid var(--e-color-line-strong);
+        border-radius: 18px;
+        transition:
+            border-color 0.4s,
+            box-shadow 0.4s,
+            background-color 0.4s;
+    }
+
+    .e-switch__track::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #888;
+        transition:
+            transform 0.4s var(--e-ease-spring),
+            background-color 0.4s;
+    }
+
+    .e-switch input:checked + .e-switch__track {
+        border-color: var(--e-color-amber);
+        box-shadow: 0 0 10px -2px var(--e-color-amber);
+    }
+
+    .e-switch input:checked + .e-switch__track::before {
+        transform: translateX(18px);
+        background: var(--e-color-amber);
+    }
+
+    /* 2px: a button shows focus with a fill and a glow besides its outline;
+       the switch has only the ring, so the ring is thicker (WCAG 2.4.13) */
+    .e-switch input:focus-visible + .e-switch__track {
+        outline: calc(2 * var(--e-border-width)) solid var(--e-color-amber);
+        outline-offset: 3px;
+    }
+
+    /* Contrast themes (forced colors) drop background colors, and the knob
+       with them: on and off looked the same. System colors bring it back. */
+    @media (forced-colors: active) {
+        .e-switch__track::before {
+            forced-color-adjust: none;
+            background: CanvasText;
+        }
+
+        .e-switch input:checked + .e-switch__track::before {
+            background: Highlight;
+        }
+    }
+}

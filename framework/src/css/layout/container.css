@@ -1,0 +1,15 @@
+/*
+ * Layout · Container
+ * <div class="e-container"> centers content at --e-container-max with a
+ * --e-gutter side padding that also clears the phone's safe areas.
+ * .e-header aligns its content to the same edges.
+ */
+@layer e.layout {
+    .e-container {
+        width: 100%;
+        max-width: var(--e-container-max);
+        margin-inline: auto;
+        padding-left: max(var(--e-gutter), env(safe-area-inset-left, 0px));
+        padding-right: max(var(--e-gutter), env(safe-area-inset-right, 0px));
+    }
+}

@@ -1,0 +1,59 @@
+{
+  "status": "review",
+  "effects": [
+    {
+      "variant": "standard",
+      "feel": "La imagen se desdobla en rojo y cian, como una señal mal sintonizada.",
+      "what": "Desdoblamiento rojo/cian con temblor leve",
+      "how": "Dos sombras del texto, roja y cian, cambian de lado cada 0,1 s mientras el bloque tiembla 1 px; ciclo de 0,4 s. Es la carga por defecto."
+    },
+    {
+      "variant": "flicker",
+      "feel": "Parpadea y se apaga un instante, como una lámpara que falla.",
+      "what": "Parpadeo y pulso del tono",
+      "how": "La opacidad baja al 55 % y vuelve, y un halo del tono aparece y se apaga; ciclo de 1,6 s."
+    },
+    {
+      "variant": "glitch",
+      "feel": "Se rompe a tirones: salta, se desdobla y pierde franjas.",
+      "what": "Separación fuerte, temblor y cortes",
+      "how": "El desdoblamiento llega a triplicarse, el bloque salta 4 px y se recorta en franjas (clip-path); ciclo de 0,5 s."
+    },
+    {
+      "variant": "scan",
+      "feel": "Franjas sueltas se deslizan a los lados, como una cinta gastada.",
+      "what": "Franjas horizontales desplazadas",
+      "how": "Recortes horizontales (clip-path: inset) que se desplazan hasta 7 px a un lado y al otro; ciclo de 0,9 s."
+    },
+    {
+      "variant": "wave",
+      "feel": "Se mece de un lado a otro, como un reflejo en el agua.",
+      "what": "Inclinación oscilante",
+      "how": "El bloque se inclina ±3° (skewX) con aceleración suave, como una señal que oscila; ciclo de 1,2 s."
+    },
+    {
+      "variant": "shatter",
+      "feel": "Se parte en trozos que vuelven a encajar.",
+      "what": "Recorte poligonal que se rompe",
+      "how": "Un polígono de recorte parte el bloque y lo recompone, con saltos de hasta 4 px; ciclo de 0,7 s."
+    },
+    {
+      "variant": "warp",
+      "feel": "Se derrite y ondula, como si la vieras a través del agua.",
+      "what": "Desplazamiento líquido",
+      "how": "Filtro SVG: un ruido fractal mueve cada píxel; la semilla y la intensidad cambian cada 80 ms."
+    },
+    {
+      "variant": "static",
+      "feel": "Se llena de grano, como una tele sin señal.",
+      "what": "Grano de alta frecuencia",
+      "how": "Filtro SVG: una turbulencia muy fina desplaza los píxeles 6 px; la semilla cambia cada 80 ms."
+    },
+    {
+      "variant": "decode",
+      "feel": "Las letras se cifran en símbolos y luego aparecen una a una.",
+      "what": "El texto se cifra y se revela",
+      "how": "Cambia las letras por símbolos al azar cada 60 ms y al terminar revela el texto de izquierda a derecha, una letra cada 28 ms. Solo actúa sobre texto."
+    }
+  ]
+}

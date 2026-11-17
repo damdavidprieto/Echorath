@@ -1,0 +1,90 @@
+/*
+ * Component · Panel
+ * Block:    .e-panel           framed surface with corner brackets
+ * Elements: .e-panel__head     title row with bottom rule
+ *           .e-panel__title    display-face title
+ * States:   :hover, keyboard focus inside  corners grow and take the highlight colour, tone glow
+ * Tone:     data-tone colors border, corners and title
+ */
+@layer e.components {
+    .e-panel {
+        position: relative;
+        padding: var(--e-space-5);
+        background: var(--e-color-surface);
+        border: var(--e-border-width) solid var(--e-tone, var(--e-color-line));
+        transition:
+            box-shadow var(--e-duration-base) var(--e-ease),
+            border-color var(--e-duration-base) var(--e-ease);
+    }
+
+    .e-panel::before,
+    .e-panel::after {
+        content: "";
+        position: absolute;
+        width: var(--e-corner-size);
+        height: var(--e-corner-size);
+        border: 0 solid var(--e-tone, var(--e-color-green));
+        pointer-events: none;
+        transition:
+            width var(--e-duration-base) var(--e-ease),
+            height var(--e-duration-base) var(--e-ease),
+            border-color var(--e-duration-base) var(--e-ease);
+    }
+
+    .e-panel::before {
+        top: -1px;
+        left: -1px;
+        border-top-width: 2px;
+        border-left-width: 2px;
+    }
+
+    .e-panel::after {
+        right: -1px;
+        bottom: -1px;
+        border-right-width: 2px;
+        border-bottom-width: 2px;
+    }
+
+    /* Under the pointer, or with the keyboard's focus inside, the corners grow
+       and take the highlight colour. Only a focus that shows counts: a click
+       or a tap also leaves focus inside (on a button, or where a dialog hands
+       it back), and the corners stayed lit with nothing to switch them off */
+    .e-panel:has(:focus-visible)::before,
+    .e-panel:has(:focus-visible)::after {
+        width: var(--e-corner-size-active);
+        height: var(--e-corner-size-active);
+        border-color: var(--e-color-highlight);
+    }
+
+    @media (hover: hover) {
+        .e-panel:hover::before,
+        .e-panel:hover::after {
+            width: var(--e-corner-size-active);
+            height: var(--e-corner-size-active);
+            border-color: var(--e-color-highlight);
+        }
+    }
+
+    .e-panel:has(:focus-visible) {
+        box-shadow: 0 0 var(--e-glow-lg) -4px var(--e-tone, var(--e-color-green));
+    }
+
+    .e-panel__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--e-space-3);
+        margin: 0 0 var(--e-space-4);
+        padding-bottom: var(--e-space-3);
+        border-bottom: var(--e-border-width) solid var(--e-color-line);
+    }
+
+    .e-panel__title {
+        margin: 0;
+        font-family: var(--e-font-display);
+        font-size: var(--e-font-size-base);
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        color: var(--e-tone, var(--e-color-blue));
+    }
+}

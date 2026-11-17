@@ -1,0 +1,29 @@
+/*
+ * Component · Badge and dot
+ * Block: .e-badge   outlined status label
+ *        .e-dot     glowing status dot (inherits text color)
+ * Tone:  data-tone on .e-badge
+ */
+@layer e.components {
+    .e-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: var(--e-space-1) var(--e-space-3);
+        border: var(--e-border-width) solid var(--e-tone, var(--e-color-green));
+        color: var(--e-tone, var(--e-color-green));
+        font-size: 0.75rem;
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        box-shadow: 0 0 var(--e-glow-sm) -1px var(--e-tone, var(--e-color-green));
+    }
+
+    .e-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 var(--e-glow-sm) currentColor;
+    }
+}

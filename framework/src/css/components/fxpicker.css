@@ -1,0 +1,57 @@
+/*
+ * Component · Effect picker
+ * Block:    .e-fx             created by EchorathUI.fxPicker()
+ * Elements: .e-fx__toggle     shows or hides the options (a .e-btn)
+ *           .e-fx__list       one button per distortion
+ *           .e-fx__option     plays its distortion on the target (a .e-btn)
+ * States:   .e-fx__toggle[aria-expanded="true"]   options shown
+ *           .e-fx__option[aria-pressed="true"]    playing; the bar under it
+ *                                                 shows the time left
+ * Placement: next to its target, not inside it. Clip-based effects (glitch,
+ *            scan, shatter) would clip the picker while they play.
+ */
+@layer e.components {
+    .e-fx {
+        --e-fx-duration: 1600ms;   /* the runtime sets the picker's own duration inline */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--e-space-2);
+    }
+
+    .e-fx__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--e-space-1);
+    }
+
+    .e-fx__list[hidden] {
+        display: none;
+    }
+
+    .e-fx__toggle[aria-expanded="true"] {
+        background: color-mix(in srgb, var(--e-tone) 15%, transparent);
+    }
+
+    .e-fx__option[aria-pressed="true"] {
+        color: var(--e-color-on-signal);
+        box-shadow: 0 0 15px var(--e-tone);
+    }
+
+    .e-fx__option[aria-pressed="true"]::before {
+        transform: scaleX(1);
+    }
+
+    /* Countdown bar: shrinks over the effect's duration */
+    .e-fx__option[aria-pressed="true"]::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--e-color-on-signal);
+        transform-origin: left;
+        animation: e-anim-countdown var(--e-fx-duration) linear forwards;
+    }
+}

@@ -1,0 +1,89 @@
+/*
+ * Base · Print
+ *
+ * Printing, or saving as PDF, gives black text on white paper: no glows,
+ * no distortions, no sticky bar. While a modal is open only its content
+ * prints, in full and without its frame, so a text open in a reader prints
+ * as that text. Buttons inside it are left out: they do nothing on paper.
+ * The declarations are !important so they also win over page styles
+ * written outside the layers.
+ */
+@layer e.base {
+    @media print {
+        :root {
+            color-scheme: light;
+        }
+
+        *,
+        *::before,
+        *::after {
+            color: #000 !important;
+            background: transparent !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+            filter: none !important;
+            backdrop-filter: none !important;
+            animation: none !important;
+            transition: none !important;
+        }
+
+        html,
+        body {
+            height: auto !important;
+            overflow: visible !important;
+            background: #fff !important;
+        }
+
+        h1, h2, h3, h4 {
+            break-after: avoid;
+        }
+
+        p {
+            orphans: 3;
+            widows: 3;
+        }
+
+        .e-header {
+            position: static !important;
+        }
+
+        .e-header__toggle,
+        .e-toasts {
+            display: none !important;
+        }
+
+        /* A modal is open: print what it shows and nothing behind it */
+        body:has(> .e-modal-overlay.is-open) > :not(.e-modal-overlay.is-open) {
+            display: none !important;
+        }
+
+        .e-modal-overlay.is-open {
+            position: static !important;
+            display: block !important;
+            padding: 0 !important;
+        }
+
+        .e-modal-overlay.is-open .e-modal {
+            width: auto !important;
+            max-height: none !important;
+            border: 0 !important;
+            transform: none !important;
+        }
+
+        .e-modal-overlay.is-open .e-modal__head {
+            padding: 0 0 12pt !important;
+            border: 0 !important;
+            font-size: 16pt;
+        }
+
+        .e-modal-overlay.is-open .e-modal__body {
+            overflow: visible !important;
+            padding: 0 !important;
+        }
+
+        .e-modal-overlay.is-open :is(button, .e-btn),
+        .e-modal-overlay.is-open .e-modal__foot {
+            display: none !important;
+        }
+    }
+}

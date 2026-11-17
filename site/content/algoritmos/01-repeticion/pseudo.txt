@@ -1,0 +1,18 @@
+// Repetición: una imagen a partir de un número, la semilla
+
+aleatorio ← generador de números con la semilla: con la misma semilla, siempre la misma serie
+paleta ← PALETTES[semilla mod 6], un fondo y tres colores
+celda ← lado del lienzo / 8
+
+pintar el lienzo con el fondo
+
+para cada columna i de 0 a 7:
+  para cada fila j de 0 a 7:
+    color ← uno de los tres colores, al azar
+    según el tipo de figura:
+      Círculos: un círculo centrado en la celda, de radio al azar
+      Arcos:    un cuarto de circunferencia desde la esquina, de radio al azar
+      Retícula: un cuadrado centrado, solo en la mitad de las celdas (al azar)
+      Líneas:   un segmento de lado a lado, entre dos alturas al azar
+      Bloques:  un rectángulo desde la esquina, de ancho y alto al azar
+      Ondas:    una onda que cruza la celda; cada punto tiembla un poco al azar

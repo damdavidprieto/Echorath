@@ -1,0 +1,2110 @@
+<!doctype html>
+<html lang="es">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Echorath: músico, escritor, artista visual y programador. Música, escritura, imagen y código.">
+<!--# The development site stays out of search engines; production is indexable. -->
+<!--@if dev--><meta name="robots" content="noindex"><!--@end-->
+<meta name="theme-color" content="#050505">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!--# The site's address comes from site/content/site.json (urls.dev / urls.prod) -->
+<link rel="canonical" href="{{SITE_URL}}">
+<meta property="og:url" content="{{SITE_URL}}">
+<meta property="og:image" content="{{SITE_URL}}og.png">
+<meta name="twitter:image" content="{{SITE_URL}}og.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Echorath">
+<meta property="og:title" content="Echorath">
+<meta property="og:description" content="Echorath: músico, escritor, artista visual y programador. Música, escritura, imagen y código.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Echorath, en letras verdes, junto a una retícula de círculos de colores.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- end of the document head; the page follows -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Echorath</title>
+<link rel="stylesheet" href="echorath-ui.css">
+<script src="echorath-ui.js" defer></script>
+<script>
+// Before anything paints: the page is in Spanish, and it runs JavaScript
+// (controls that only work with it are hidden otherwise, see .needs-js)
+document.documentElement.classList.add('js');
+if (!document.documentElement.lang) document.documentElement.lang = 'es';
+</script>
+<style>
+/* Page layer on top of Echorath UI 1.6: the portfolio's own layout.
+   Components, the full-width sticky bar that folds into a menu when it does
+   not fit (.e-header--sticky), the aligned content width (.e-container),
+   anchor offsets, the reading style (.e-prose) and the modal handle used by
+   the viewer all come from the framework. */
+
+.page {
+    padding-block: 32px 40px;
+}
+
+.section {
+    padding-block: 40px;
+}
+
+.section__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 24px;
+    margin-bottom: 20px;
+}
+
+.section__head .e-h2 { font-size: 1.6rem; }
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+}
+
+.hero__name {
+    font-family: var(--e-font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 7vw, 4.6rem);
+    line-height: 1;
+    margin: 0 0 18px;
+    color: var(--e-color-green);
+    text-shadow: 0 0 14px var(--e-color-green);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+}
+
+.hero__lede { color: var(--e-color-text-dim); max-width: 52ch; margin: 0 0 24px; }
+
+.track-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) minmax(0, 170px) 58px auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+}
+
+/* Each component sits in a cell with its effect picker below it, outside the
+   component, so no effect can clip or distort the controls that drive it. */
+.fx-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.fx-cell > .e-panel { flex: 1; }
+
+.e-panel + .e-fx,
+.e-table + .e-fx { margin-top: 10px; }
+
+.track-row__dur { font-size: 0.8rem; color: var(--e-color-text-faint); }
+
+/* R4.3: every release has a cover (drawn by the series' algorithm until the real ones arrive) */
+.track-row__cover { display: block; width: 44px; height: 44px; border: 1px solid var(--e-color-line); }
+
+.track-row__title { min-width: 0; overflow-wrap: anywhere; }
+
+.track-row__title small {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--e-color-text-faint);
+}
+
+.track-row svg { width: 100%; height: 28px; color: var(--e-color-blue); }
+
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+.card-foot {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    font-size: 0.75rem;
+    color: var(--e-color-text-faint);
+}
+
+.card-foot .e-btn { padding: 6px 14px; }
+
+/* Compact card buttons for mouse users; touch keeps the framework's 44px */
+@media (pointer: fine) {
+    .card-foot .e-btn { min-height: 34px; }
+}
+
+.hero .e-fx { margin-top: 20px; }
+
+/* Writing cards are distorted on purpose, not loading: keep them at full opacity */
+@media (prefers-reduced-motion: reduce) {
+    #texts [data-loading] {
+        opacity: 1;
+    }
+}
+
+.card-text { font-size: 0.95rem; color: var(--e-color-text-dim); margin: 0; }
+
+.plate canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    border: 1px solid var(--e-color-line);
+}
+
+.about__lead {
+    font-family: var(--e-font-display);
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    line-height: 1.3;
+    margin: 0 0 16px;
+    color: var(--e-color-text);
+    text-wrap: pretty;
+}
+
+.about__p { color: var(--e-color-text-dim); max-width: 60ch; margin: 0 0 1em; }
+
+/* R4.6: writing takes one press: the address opens mail, with a reason ready */
+.contact__lead { margin: 0 0 14px; color: var(--e-color-text); }
+.contact-intents { margin-top: 16px; }
+a.contact-addr { text-decoration: none; user-select: auto; }
+a.contact-addr:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.contact-addr {
+    font-family: var(--e-font-display);
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    color: var(--e-color-blue);
+    overflow-wrap: break-word;
+    min-width: 0;
+    user-select: all;
+}
+
+/* R4.7: the end of the page offers somewhere to go */
+footer.page-foot {
+    padding-block: 32px 40px;
+    border-top: 1px solid var(--e-color-line);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px 24px;
+    font-size: 0.75rem;
+    color: var(--e-color-text-faint);
+}
+.foot__name { margin: 0 0 4px; font-family: var(--e-font-display); font-size: 1.1rem; color: var(--e-color-green); }
+.foot__tag { margin: 0; color: var(--e-color-text-dim); }
+.foot__links { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
+.foot__legal { grid-column: 1 / -1; margin: 0; }
+@media (max-width: 560px) { footer.page-foot { grid-template-columns: minmax(0, 1fr); } }
+
+@media (max-width: 900px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .about-grid .e-span-4 { grid-column: span 12; }
+}
+
+@media (max-width: 560px) {
+    .track-row {
+        grid-template-columns: 40px minmax(0, 1fr) auto;
+        row-gap: 10px;
+    }
+    .track-row__cover { grid-column: 1; grid-row: 1 / 3; width: 40px; height: 40px; align-self: start; }
+    /* N2: the title gets the full width; the button shares the duration row */
+    .track-row__title { grid-column: 2 / 4; grid-row: 1; }
+    .track-row svg { grid-column: 2 / 4; grid-row: 2; }
+    .track-row__dur { grid-column: 2; grid-row: 3; align-self: center; }
+    .track-row .e-btn { grid-column: 3; grid-row: 3; }
+}
+/* ===== UX round 2 ===== */
+
+/* ===== UX round 6 ===== */
+
+/* R6.2: ready for the real catalogue: long lists open on demand, card feet
+   line up and long titles stop at three lines (the reader shows them whole) */
+.more-btn { margin-top: 16px; }
+#texts article { display: flex; flex-direction: column; }
+.card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+#texts article .e-h2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+
+/* R6.3: long texts show how much is left */
+.read-progress {
+    position: sticky; top: calc(-1 * var(--e-space-5)); z-index: 1;
+    height: 3px; margin: calc(-1 * var(--e-space-5)) calc(-1 * var(--e-space-5)) var(--e-space-5);
+    background: var(--e-color-line);
+}
+.read-progress span { display: block; height: 100%; background: var(--e-color-blue); transform: scaleX(var(--read, 0)); transform-origin: left; }
+
+/* ===== UX round 5 ===== */
+
+/* R5.1: the piece's square is reserved before it is drawn, so nothing jumps on load */
+.hero__regen { aspect-ratio: 1; }
+.start__ph .start__card { visibility: hidden; }
+
+/* R5.3: one press stops the writing cards' permanent effect (remembered) */
+.section__tools { gap: 8px 16px; }
+#texts.is-still [data-loading] { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { #still-toggle { display: none; } }
+
+/* R5.4: the brand in the bar leads home; the page has one main heading */
+.e-header a.brand { text-decoration: none; }
+@media (pointer: coarse) { .e-header a.brand { display: inline-flex; align-items: center; min-height: 44px; } }
+.e-header a.brand:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 4px; }
+
+/* R5.6: without JavaScript, controls that need it are hidden and a note explains why */
+html:not(.js) .needs-js { display: none !important; }
+.noscript-note { margin: 16px 0 0; padding: 10px 14px; border-left: 3px solid var(--e-color-amber); color: var(--e-color-text); max-width: 52ch; }
+
+/* R4.1: the first screen shows a work, live: each press draws another one */
+.hero__lede a { color: var(--e-color-blue); white-space: nowrap; }
+.hero__art { margin: 0; justify-self: end; width: min(100%, 440px); display: flex; flex-direction: column; gap: 10px; }
+.hero__regen {
+    position: relative; display: block; width: 100%; padding: 0;
+    border: 1px solid var(--e-color-line); background: var(--e-color-bg);
+    cursor: pointer;
+    transition: border-color var(--e-duration-fast) var(--e-ease), box-shadow var(--e-duration-fast) var(--e-ease);
+}
+.hero__regen canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+@media (hover: hover) { .hero__regen:hover { border-color: var(--e-color-green); box-shadow: 0 0 18px -6px var(--e-color-green); } }
+.hero__regen:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 3px; }
+.hero__hint {
+    position: absolute; right: 8px; bottom: 8px;
+    padding: 4px 8px;
+    font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--e-color-green); background: var(--e-color-glass); border: 1px solid var(--e-color-green);
+}
+.hero__cap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; font-size: 0.75rem; color: var(--e-color-text-dim); }
+.hero__cap a { display: inline-flex; align-items: center; min-height: 24px; color: var(--e-color-blue); }
+@media (pointer: coarse) {
+    .hero__cap a { min-height: 44px; }
+    .hero__lede a { display: inline-block; padding-block: 12px; margin-block: -12px; }
+    a.contact-addr { display: inline-flex; align-items: center; min-height: 44px; }
+}
+@media (max-width: 900px) { .hero__art { justify-self: start; } }
+
+/* N4: status line instead of button-like badges */
+.hero__status {
+    display: flex; align-items: center; gap: 8px; margin: 0;
+    font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--e-color-text-dim);
+}
+.hero__status .e-dot { color: var(--e-color-green); }
+
+/* N3: sample progress; stops on its own */
+.track-row__progress {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: var(--e-color-green);
+    transform: scaleX(0); transform-origin: left;
+    pointer-events: none;
+}
+.track-row.is-playing .track-row__progress { animation: track-progress var(--track-ms, 12s) linear forwards; }
+@keyframes track-progress { to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { .track-row.is-playing .track-row__progress { animation: none; transform: scaleX(1); opacity: 0.5; } }
+
+/* N5: skip link, visible on keyboard focus */
+.skip-link {
+    position: fixed;
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: max(16px, env(safe-area-inset-left, 0px));
+    z-index: 2000;
+    padding: 10px 16px;
+    background: var(--e-color-green);
+    color: var(--e-color-on-signal);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transform: translateY(-200%);
+}
+
+/* The effects-mode label is the switch's real target: 44px on touch */
+@media (pointer: coarse) { .fx-mode { min-height: 44px; } }
+.skip-link:focus { transform: none; outline: 2px solid var(--e-color-text); outline-offset: 2px; }
+#main:focus { outline: none; }
+
+/* N8: visually hidden helper text */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Arriving at a section distorts it, but it keeps taking clicks */
+.section[data-loading] { pointer-events: auto; cursor: auto; }
+
+/* ===== UX prototype ===== */
+
+/* 1. Effects mode: the pickers are a tool for the artist, hidden for visitors */
+html:not(.fx-on) .e-fx { display: none; }
+.fx-mode { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+
+/* 2. Hero calls to action */
+.hero__cta { margin-bottom: 20px; }
+
+/* 3. Writing: the distortion stays on the frame and title, the summary stays sharp */
+#texts article { --e-distort-split: 1px; }
+#texts article .card-text,
+#texts article .card-foot { text-shadow: none; }
+
+/* 4. Current section in the bar */
+.e-header__nav .e-btn[aria-current="true"] { color: var(--e-color-on-signal); box-shadow: 0 0 15px var(--e-tone); }
+.e-header__nav .e-btn[aria-current="true"]::before { transform: scaleX(1); }
+
+/* 5. Now playing */
+.track-row__live { margin-top: 6px; }
+.track-row.is-playing svg rect {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: eq 0.6s ease-in-out infinite alternate;
+}
+.track-row.is-playing svg rect:nth-child(3n) { animation-delay: -0.2s; }
+.track-row.is-playing svg rect:nth-child(3n + 1) { animation-delay: -0.4s; }
+@keyframes eq { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .track-row.is-playing svg rect { animation: none; } }
+
+/* 6. Gallery: the image itself opens the enlarged view */
+.plate__zoom { position: relative; display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.plate__zoom::after {
+    content: "Ampliar";
+    position: absolute; right: 8px; bottom: 8px;
+    padding: 4px 8px;
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--e-color-green);
+    background: var(--e-color-glass);
+    border: 1px solid var(--e-color-green);
+    opacity: 0; transition: opacity 0.2s;
+}
+.plate__zoom:focus-visible::after { opacity: 1; }
+@media (hover: hover) { .plate__zoom:hover::after { opacity: 1; } }
+.plate__zoom:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 3px; }
+@media (hover: none) { .plate__zoom::after { opacity: 1; } }
+
+/* 7. Contact links */
+.contact-links { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--e-color-line); }
+
+/* ===== UX round 3: a showcase for five kinds of work ===== */
+
+/* Components set their own display; [hidden] must still hide them */
+[hidden] { display: none !important; }
+
+/* Seven sections fit the bar at 1280px with a slightly tighter button */
+.e-header__nav .e-btn { padding-inline: 14px; }
+
+/* R4.2: where to start: one door per kind of work, each with a picture */
+.start { grid-column: 1 / -1; margin-top: 4px; }
+.start__title { display: block; margin: 0 0 12px; }
+.start__list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.start__list li { min-width: 0; }
+.start__card {
+    display: flex; flex-direction: column; height: 100%;
+    border: 1px solid var(--e-color-line); background: var(--e-color-surface);
+    color: inherit; text-decoration: none;
+    transition: border-color var(--e-duration-fast) var(--e-ease), box-shadow var(--e-duration-fast) var(--e-ease);
+}
+@media (hover: hover) { .start__card:hover { border-color: var(--e-color-green); box-shadow: 0 0 16px -6px var(--e-color-green); } }
+.start__card:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 2px; }
+.start__thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--e-color-bg); border-bottom: 1px solid var(--e-color-line); }
+.start__thumb canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+.start__body { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px 14px; }
+.start__kicker { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--e-color-green); }
+.start__name { font-family: var(--e-font-display); font-size: 0.95rem; line-height: 1.25; color: var(--e-color-text); overflow-wrap: anywhere; }
+.start__meta { font-size: 0.75rem; color: var(--e-color-text-faint); }
+/* Thumbnails that are not images: a page of text, an effect, a line of code */
+.start__page {
+    margin: 0; padding: 14px 16px; height: 100%;
+    font-family: var(--e-font-text); font-size: 0.95rem; line-height: 1.5; color: var(--e-color-text);
+    -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent);
+}
+.start__fx {
+    display: flex; align-items: center; justify-content: center; height: 100%;
+    font-family: var(--e-font-display); font-weight: 900; font-size: 1.5rem; color: var(--e-color-green);
+    text-shadow: 3px 0 var(--e-distort-a), -3px 0 var(--e-distort-b);
+}
+.start__mosaic { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.start__cover { position: relative; }
+.start__label {
+    position: absolute; left: 10px; top: 10px;
+    padding: 4px 8px;
+    font-family: var(--e-font-display); font-weight: 900; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--e-color-text); background: var(--e-color-glass); border-left: 3px solid var(--e-color-green);
+}
+.start__code { display: block; padding: 14px 16px; font: 0.72rem/1.6 var(--e-font-mono); color: var(--e-color-cyan); white-space: pre; }
+@media (max-width: 900px) { .start__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+    .start__list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .start__list li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .start__list li:last-child:nth-child(odd) .start__thumb { aspect-ratio: 3 / 1; }
+    .start__body { padding: 10px 12px 12px; }
+}
+
+.section__intro { color: var(--e-color-text-dim); max-width: 70ch; margin: -4px 0 20px; }
+
+/* R2: the effects room, nine tiles on the same specimen */
+.fx-lead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; margin: -4px 0 20px; }
+.fx-lead .section__intro { margin: 0; }
+.fx-rm-note { display: none; margin: 0 0 16px; color: var(--e-color-amber); }
+@media (prefers-reduced-motion: reduce) { .fx-rm-note { display: block; } }
+.fx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--e-space-4);
+}
+.fx-tile {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "specimen specimen" "name play" "what what" "how how";
+    align-content: start;
+    gap: 8px 12px;
+}
+.fx-tile .fx-specimen { grid-area: specimen; }
+.fx-specimen {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--e-color-line);
+    background: var(--e-color-bg);
+}
+.fx-specimen canvas { flex: none; width: 64px; height: 64px; }
+.fx-specimen__word { font-family: var(--e-font-display); font-weight: 900; font-size: 1.3rem; color: var(--e-color-green); }
+.fx-tile__name { grid-area: name; align-self: center; margin: 4px 0 0; font-family: var(--e-font-display); font-size: 1.1rem; color: var(--e-color-text); }
+.fx-tile__what { grid-area: what; margin: 0; color: var(--e-color-text-dim); font-size: 0.85rem; }
+.fx-tile__how { grid-area: how; margin: 0; color: var(--e-color-text-faint); font-size: 0.75rem; }
+/* R4.8: on phones and tablets the gallery and the effects room use two columns */
+@media (max-width: 900px) {
+    #gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #gallery > .e-span-4 { grid-column: auto; }
+}
+@media (max-width: 560px) {
+    #gallery { gap: 10px; }
+    #gallery .plate { padding: 8px; }
+    #gallery .card-foot { flex-direction: column; align-items: flex-start; gap: 2px; padding-top: 8px; }
+    .plate__zoom::after { right: 4px; bottom: 4px; padding: 2px 6px; font-size: 0.6rem; letter-spacing: 1px; }
+    .fx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .fx-tile { grid-template-columns: minmax(0, 1fr); grid-template-areas: "specimen" "name" "what" "play" "how"; padding: 10px; gap: 6px; }
+    .fx-tile .fx-specimen { padding: 6px 8px; gap: 8px; }
+    .fx-tile .fx-specimen canvas { width: 30px; height: 30px; }
+    .fx-tile .fx-specimen__word { font-size: 0.85rem; }
+    .fx-tile__name { font-size: 0.95rem; margin: 2px 0 0; }
+    .fx-tile__what { font-size: 0.78rem; }
+    .fx-tile__play { justify-self: start; margin-top: 0; }
+}
+
+/* R4.5: the technique waits behind "Cómo está hecho" */
+.fx-tile__how summary { display: inline-flex; align-items: center; min-height: 32px; cursor: pointer; color: var(--e-color-blue); }
+.fx-tile__how summary:focus-visible { outline: 2px solid var(--e-color-blue); outline-offset: 2px; }
+.fx-tile__how p { margin: 2px 0 0; }
+@media (pointer: coarse) { .fx-tile__how summary { min-height: 44px; } }
+/* Links inside sentences: a taller touch area that doesn't move the lines */
+@media (pointer: coarse) {
+    .fx-tile__how a, .section .e-label a { display: inline-block; padding-block: 15px; margin-block: -15px; }
+}
+.fx-tile__play { grid-area: play; align-self: center; margin-top: 4px; position: relative; overflow: hidden; }
+@media (max-width: 560px) {
+    .fx-specimen { padding: 8px 10px; }
+    .fx-specimen canvas { width: 44px; height: 44px; }
+    .fx-specimen__word { font-size: 1.1rem; }
+}
+.fx-tile__timer {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: currentColor; transform: scaleX(0); transform-origin: left;
+}
+.fx-tile__play[aria-pressed="true"] .fx-tile__timer { animation: fx-count var(--fx-ms, 2400ms) linear forwards; }
+@keyframes fx-count { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* R1: algorithm labs: what it does, parameters, live result and the code that runs */
+.lab {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 20px 32px;
+    align-items: start;
+}
+.lab__title { margin: 6px 0 10px; }
+.lab__out { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lab__out canvas { display: block; width: 100%; max-width: 420px; aspect-ratio: 1; height: auto; border: 1px solid var(--e-color-line); }
+/* R4.4: a lab opens with one sentence, the result and one action; the rest waits */
+.lab__hook { margin: 0 0 16px; max-width: 52ch; color: var(--e-color-text); }
+.lab__primary { margin-bottom: 14px; }
+.code__bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 6px 6px 14px; border: 1px solid var(--e-color-line); border-bottom: 0; font-size: 0.72rem; color: var(--e-color-text-faint); }
+.code pre {
+    margin: 0; padding: 14px 16px;
+    max-height: 440px; overflow: auto;
+    background: var(--e-color-sunken);
+    border: 1px solid var(--e-color-line);
+    font: 0.8rem/1.6 var(--e-font-mono);
+    tab-size: 4;
+}
+.code pre:focus-visible { outline: 2px solid var(--e-color-blue); outline-offset: -2px; }
+.tok-k { color: var(--e-color-cyan); }
+.tok-s { color: var(--e-color-green); }
+.tok-n { color: var(--e-color-amber); }
+.tok-c { color: var(--e-color-text-faint); font-style: italic; }
+@media (max-width: 900px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+
+/* R6: previous / next inside the reader and the viewer */
+.work__nav {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 20px; padding-top: 14px;
+    border-top: 1px solid var(--e-color-line);
+}
+.work__pos { font-variant-numeric: tabular-nums; min-width: 5ch; text-align: center; }
+.viewer { margin: 0; }
+.dlg-canvas {
+    display: block;
+    width: min(100%, max(260px, calc(100dvh - 360px)));
+    height: auto; aspect-ratio: 1;
+    margin-inline: auto;
+}
+.viewer__cap { max-width: 64ch; margin: 14px auto 0; }
+/* Wide screens: the image keeps its size and the details sit beside it */
+.e-modal.is-viewer { width: min(1100px, 100%); }
+@media (min-width: 900px) {
+    .viewer { display: grid; grid-template-columns: auto minmax(260px, 320px); gap: 28px; align-items: start; justify-content: center; }
+    .viewer .dlg-canvas { width: min(640px, calc(100dvh - 250px)); margin: 0; }
+    .viewer .viewer__cap { margin: 0; }
+    .viewer .work__nav { flex-direction: column; align-items: stretch; }
+    .viewer .work__nav .e-row { justify-content: space-between; }
+}
+.viewer__meta { margin: 0 0 6px; font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; color: var(--e-color-text-dim); }
+.viewer__desc { margin: 0 0 12px; color: var(--e-color-text); }
+
+/* R8: a shared address points at its track for a moment */
+.track-row.is-linked { box-shadow: 0 0 0 2px var(--e-color-highlight), 0 0 18px -4px var(--e-color-highlight); }
+
+/* R9: what is playing stays in view while browsing */
+.now-bar {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: var(--e-z-header);
+    display: flex; align-items: center; gap: 10px 16px;
+    padding: 10px max(var(--e-gutter), env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(var(--e-gutter), env(safe-area-inset-left, 0px));
+    background: var(--e-color-glass);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid var(--e-color-green);
+}
+.now-bar__progress {
+    position: absolute; left: 0; right: 0; top: -2px; height: 2px;
+    background: var(--e-color-blue); transform: scaleX(0); transform-origin: left;
+}
+.now-bar.is-timed .now-bar__progress { animation: track-progress var(--now-ms, 12s) linear forwards; }
+.now-bar__info { flex: 1; min-width: 0; }
+.now-bar__title { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--e-color-text); }
+.now-bar__sub { display: block; font-size: 0.72rem; color: var(--e-color-text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now-bar__time { font-size: 0.8rem; color: var(--e-color-text-dim); font-variant-numeric: tabular-nums; }
+html.has-now-bar body { padding-bottom: var(--now-h, 64px); }
+html.has-now-bar { scroll-padding-bottom: var(--now-h, 64px); }
+html.has-now-bar .e-toasts { bottom: calc(var(--now-h, 64px) + var(--e-space-4)); }
+@media (max-width: 560px) {
+    .now-bar__time, .now-bar > .e-badge, .now-bar .is-long { display: none; }
+}
+@media (min-width: 561px) { .now-bar .is-short { display: none; } }
+@media (prefers-reduced-motion: reduce) { .now-bar.is-timed .now-bar__progress { animation: none; transform: scaleX(1); opacity: 0.5; } }
+
+/* ===== UX round 7 ===== */
+
+/* R7.3: short screens (a phone on its side): slimmer bars, and a work fits
+   without scrolling: the image beside its details, the text with more lines */
+@media (max-height: 500px) and (min-width: 560px) {
+    .e-header { padding-block: 4px; }
+    .e-header .e-header__sub { display: none; }
+    .now-bar { padding-top: 6px; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)); }
+    .now-bar__sub { display: none; }
+    .e-modal-overlay { padding: 8px; }
+    .e-modal .e-modal__head { padding-block: 2px; }
+    .e-modal .e-modal__foot { display: none; }   /* the × in the title bar closes, and Escape */
+    .e-modal .e-modal__body { padding: 12px 20px; }
+    .viewer { display: grid; grid-template-columns: auto minmax(220px, 1fr); gap: 20px; align-items: start; }
+    .viewer .dlg-canvas { width: calc(100dvh - 96px); margin: 0; }
+    .viewer .viewer__cap { margin: 0; }
+    .viewer .work__nav { margin-top: 12px; }
+}
+
+/* R7.4: printing a work prints the work (Echorath UI prints only the open
+   dialog); the page's own fixed and on-screen-only parts stay out */
+.work__source { display: none; }
+@media print {
+    .now-bar, .skip-link, .section__tools, .read-progress, .work__nav { display: none !important; }
+    html.has-now-bar body { padding-bottom: 0 !important; }
+    .work__source { display: block; margin-top: 18pt; font-size: 9pt; word-break: break-all; }
+}
+
+/* R7.5: contrast themes drop background colors; the progress bars use a
+   system color instead of disappearing */
+@media (forced-colors: active) {
+    .track-row__progress, .now-bar__progress, .read-progress span, .fx-tile__timer { forced-color-adjust: none; background: Highlight; }
+}
+
+/* ===== UX round 8 ===== */
+
+/* R9.3 (round 9): the titles are flex items, so a long word has to be allowed
+   to break anywhere to fit; Echorath UI 1.7 breaks long words in running text */
+#texts article .e-h2 { overflow-wrap: anywhere; }
+
+/* R9.3: a track's duration stays in one piece. On narrow screens it sits
+   under the cover, and the button takes the rest of the row (at 320px the
+   duration used to run 20px under the button) */
+.track-row__dur { white-space: nowrap; }
+@media (max-width: 560px) {
+    .track-row { grid-template-columns: minmax(40px, auto) minmax(0, 1fr) auto; }
+    .track-row__dur { grid-column: 1; }
+    .track-row .e-btn { grid-column: 2 / 4; justify-self: end; }
+}
+
+/* R8.2: images as large as the screen allows, and full screen on demand */
+.e-modal.is-viewer { width: min(1400px, 100%); }
+@media (min-width: 900px) {
+    .viewer .dlg-canvas { width: min(1000px, calc(100dvh - 250px)); }
+}
+.viewer__full { margin-top: 8px; }
+.e-modal.is-viewer:fullscreen { border: 0; }
+.e-modal.is-viewer:fullscreen .e-modal__foot { display: none; }   /* the × and Escape close it */
+.e-modal.is-viewer:fullscreen .e-modal__body { flex: 1; display: grid; align-content: center; }
+.e-modal.is-viewer:fullscreen .dlg-canvas { width: min(calc(100vw - 420px), calc(100dvh - 120px)); }
+@media (max-width: 899px) {
+    .e-modal.is-viewer:fullscreen .dlg-canvas { width: min(100%, calc(100dvh - 120px)); }
+}
+
+/* ===== UX round 10 ===== */
+
+/* R10.2 (labs, gone in v33): the seed said which values it took, and said so in words when one
+   does not fit (the red border alone was the only sign) */
+
+/* R10.3: works folded away under "Ver las…" stay findable. hidden="until-found"
+   keeps them out of sight and out of the layout, but the browser's find
+   (Ctrl+F) and links to a passage, like those from search results, can reach
+   them; the list then opens. The page's own [hidden] rule would hide them
+   completely, so this one comes after it */
+[hidden="until-found"] { display: revert !important; position: absolute !important; }
+
+/* ===== UX round 11 ===== */
+
+/* R11.1: no text under 11.25px, the smallest label size on iOS and Android
+   (Echorath UI 1.8 raises its own labels to it), and 12px for text that carries
+   information: what a release is, a reading time, a note, a caption */
+.hero__hint, .plate__zoom::after, .start__kicker, .viewer__meta { font-size: 0.75rem; }
+.start__code { font-size: 0.75rem; }
+.track-row__title small, .card-foot, footer.page-foot, .hero__status, .hero__cap, .start__meta,
+.fx-tile__how, .now-bar__sub, .lab__cap { font-size: 0.8rem; }
+@media (max-width: 560px) {
+    .plate__zoom::after { font-size: 0.75rem; }
+    .fx-tile__what { font-size: 0.8rem; }
+}
+
+/* ===== Colour ===== */
+
+/* The phosphor green of a terminal, instead of the framework's mint,
+   and a neon red instead of its raspberry */
+:root { --e-color-green: #00ff41; --e-color-red: #ff0033; }
+.section__head .e-h2 { --e-tone: var(--e-color-green); }
+
+/* ===== v33: the site in development, and the artist's own algorithms ===== */
+
+/* What is not finished says so in amber: the status line, a note under each
+   section's title and a «Muestra» badge on every sample */
+.hero__status.is-dev .e-dot { color: var(--e-color-amber); }
+.dev-note { margin: -4px 0 20px; max-width: 70ch; font-size: 0.85rem; color: var(--e-color-text-dim); }
+.dev-note b { font-weight: normal; color: var(--e-color-amber); }
+.section__intro + .dev-note { margin-top: -8px; }
+.track-row__title .sample-badge { margin-top: 6px; }
+.card-foot__name { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.e-table .sample-badge { margin-left: 6px; vertical-align: 1px; }
+
+/* An algorithm: its live picture, one sentence and its actions */
+.lab__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.lab__cap { margin: 0; max-width: 420px; color: var(--e-color-text-faint); text-align: center; }
+.lab__out canvas[tabindex] { cursor: crosshair; touch-action: pan-y; }
+.lab__out canvas[tabindex]:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 3px; }
+
+/* Its window: the pseudocode beside the code that runs; tabs on narrow screens */
+.e-modal.is-code { width: min(1240px, 100%); }
+.code-view__meta { margin: 0 0 14px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--e-color-text-dim); }
+.code-view__tabs { margin-bottom: 14px; }
+.code-view__panes { display: grid; gap: 16px; }
+.code-view.is-wide .code-view__panes { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; }
+.code-view__head { margin: 0 0 8px; font-family: var(--e-font-display); font-size: 0.95rem; color: var(--e-color-green); }
+.code-view:not(.is-wide) .code-view__head { display: none; }
+.code-view .code pre { max-height: none; }
+.code-view .is-pseudo pre { white-space: pre-wrap; color: var(--e-color-text); }
+.pseudo-line { display: block; }
+@media (max-height: 500px) and (min-width: 560px) { .code-view.is-wide .code-view__panes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
+/* Effects: at 320px (a phone at 400% zoom) the specimen's word touched its border;
+   with less motion the countdown under «Ver efecto» stays still, like the tracks' */
+@media (max-width: 340px) { .fx-tile .fx-specimen { gap: 6px; padding-inline: 6px; } }
+@media (prefers-reduced-motion: reduce) { .fx-tile__play[aria-pressed="true"] .fx-tile__timer { animation: none; transform: scaleX(1); opacity: 0.5; } }
+
+/* ===== R17.1: the home page on paper ===== */
+@media print {
+    .e-header__nav, .hero__cta, .hero__hint, #hero-lab, .start, #efectos, #algoritmos, .more-btn, .e-fx,
+    .track-row .e-btn, .card-foot .e-btn, .plate__zoom::after, #copy, .contact-intents, .page-foot > .e-btn { display: none !important; }
+    #musica .section__head .e-label { display: none !important; }
+    .contact-links a[href^="http"]::after, .foot__links a[href^="http"]::after { content: " " attr(href); text-transform: none; letter-spacing: 0; }
+    /* A work is not split between two pages */
+    .track-row, #texts .e-panel, #gallery > * { break-inside: avoid; }
+}
+
+</style>
+
+<a class="skip-link" href="#main" lang="es">Saltar al contenido</a>
+<p class="sr-only" role="status" id="now-said" lang="es"></p>
+<header class="e-header e-header--sticky" lang="es">
+    <div>
+        <a class="e-h1 brand" href="#inicio">Echorath</a>
+        <div class="e-header__sub">MÚSICA · ESCRITURA · IMAGEN · CÓDIGO</div>
+    </div>
+    <!--@if menu--><button class="e-btn e-btn--sm e-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menú</button>
+    <nav class="e-header__nav" id="site-nav" aria-label="Secciones">
+        <!--@if section:musica--><a class="e-btn" href="#musica" data-focus="glitch" data-section="musica">Música</a><!--@end-->
+        <!--@if section:escritura--><a class="e-btn" href="#escritura" data-focus="glitch" data-section="escritura">Escritura</a><!--@end-->
+        <!--@if section:imagenes--><a class="e-btn" href="#imagenes" data-focus="glitch" data-section="imagenes">Imágenes</a><!--@end-->
+        <!--@if section:efectos--><a class="e-btn" href="#efectos" data-focus="glitch" data-section="efectos">Efectos</a><!--@end-->
+        <!--@if section:algoritmos--><a class="e-btn" href="#algoritmos" data-focus="glitch" data-section="algoritmos">Algoritmos</a><!--@end-->
+        <!--@if section:sobre--><a class="e-btn" href="#sobre" data-focus="glitch" data-section="sobre">Sobre</a><!--@end-->
+        <!--@if section:contacto--><a class="e-btn" href="#contacto" data-focus="glitch" data-section="contacto">Contacto</a><!--@end-->
+    </nav><!--@end-->
+</header>
+
+<main class="page e-container" id="main" tabindex="-1" lang="es">
+
+    <section class="section hero" id="inicio" data-distort="glitch">
+        <div>
+            <p class="e-label" style="margin:0 0 14px">Músico · escritor · artista visual · programador</p>
+            <h1 class="hero__name">Echorath</h1>
+            <p class="hero__lede">Me interesa lo que ocurre cuando un patrón se repite con pequeños cambios hasta volverse otra cosa. Lo busco en el sonido, en la palabra, en la imagen y en el código.<!--@if section:sobre--> <a href="#sobre">Más sobre mí</a><!--@end--></p>
+            <!--@if section:musica|section:contacto--><div class="e-row hero__cta">
+                <!--@if section:musica--><button class="e-btn e-btn--solid needs-js" type="button" id="feature-play">{{FEATURE_LABEL}}</button><!--@end-->
+                <!--@if section:contacto--><a class="e-btn" href="#contacto">Contactar</a><!--@end-->
+            </div><!--@end-->
+            <!--@if dev--><p class="hero__status is-dev"><span class="e-dot"></span>En desarrollo: lo que ves son muestras</p><!--@end-->
+            <!--@if start--><noscript><p class="noscript-note">La música, los textos y las imágenes de esta página se muestran con JavaScript. Actívalo para verla completa; el contacto funciona sin él.</p></noscript><!--@end-->
+        </div>
+        <figure class="hero__art needs-js">
+            <button class="hero__regen" type="button" id="hero-regen" aria-label="Ver otra imagen de la serie">
+                <span class="hero__hint" aria-hidden="true">Pulsa para ver otra</span>
+            </button>
+            <figcaption class="hero__cap">
+                <span id="hero-cap" aria-live="polite"></span>
+                <!--@if section:algoritmos--><a href="#algoritmos" id="hero-lab">Así se hace</a><!--@end-->
+            </figcaption>
+        </figure>
+        <!--@if start--><nav class="start needs-js" aria-labelledby="start-title">
+            <span class="e-label start__title" id="start-title">Por dónde empezar</span>
+            <ul class="start__list" id="start-list">
+                <li class="start__ph" aria-hidden="true"><div class="start__card"><div class="start__thumb"></div><div class="start__body"><span class="start__kicker">&nbsp;</span><span class="start__name">&nbsp;<br>&nbsp;</span><span class="start__meta">&nbsp;</span></div></div></li>
+                <li class="start__ph" aria-hidden="true"><div class="start__card"><div class="start__thumb"></div><div class="start__body"><span class="start__kicker">&nbsp;</span><span class="start__name">&nbsp;<br>&nbsp;</span><span class="start__meta">&nbsp;</span></div></div></li>
+                <li class="start__ph" aria-hidden="true"><div class="start__card"><div class="start__thumb"></div><div class="start__body"><span class="start__kicker">&nbsp;</span><span class="start__name">&nbsp;<br>&nbsp;</span><span class="start__meta">&nbsp;</span></div></div></li>
+                <li class="start__ph" aria-hidden="true"><div class="start__card"><div class="start__thumb"></div><div class="start__body"><span class="start__kicker">&nbsp;</span><span class="start__name">&nbsp;<br>&nbsp;</span><span class="start__meta">&nbsp;</span></div></div></li>
+                <li class="start__ph" aria-hidden="true"><div class="start__card"><div class="start__thumb"></div><div class="start__body"><span class="start__kicker">&nbsp;</span><span class="start__name">&nbsp;<br>&nbsp;</span><span class="start__meta">&nbsp;</span></div></div></li>
+            </ul>
+        </nav><!--@end-->
+    </section>
+
+    <!--@if section:musica--><section class="section" id="musica" data-distort="scan">
+        <div class="section__head">
+            <h2 class="e-h2">Música</h2>
+            <span class="e-label">Pulsa para escuchar una muestra</span>
+        </div>
+        <!--@if dev--><p class="dev-note"><b>En desarrollo.</b> Esta pista es una muestra de cómo se verá la música: suenan unos 12 segundos de tonos generados en el navegador, no una grabación.</p><!--@end-->
+        <ol class="e-stack" id="tracks" style="list-style:none;padding:0;margin:0"></ol>
+    </section><!--@end-->
+
+    <!--@if section:escritura--><section class="section" id="escritura" data-distort="glitch">
+        <div class="section__head">
+            <h2 class="e-h2">Escritura</h2>
+            <div class="e-row section__tools">
+                <span class="e-label">Ensayos, cuentos y notas</span>
+                <button class="e-btn e-btn--sm needs-js" type="button" id="still-toggle">Pausar el efecto</button>
+            </div>
+        </div>
+        <!--@if dev--><p class="dev-note"><b>En desarrollo.</b> Este texto es una muestra de cómo se leerán los textos.</p><!--@end-->
+        <div class="e-grid" id="texts"></div>
+    </section><!--@end-->
+
+    <!--@if section:imagenes--><section class="section" id="imagenes" data-distort="static">
+        <div class="section__head">
+            <h2 class="e-h2">Imágenes</h2>
+            <span class="e-label">Serie generativa «Repetición» · 2024</span>
+        </div>
+        <!--@if dev--><p class="dev-note"><b>En desarrollo.</b> Esta imagen es una muestra de cómo se verá la galería.</p><!--@end-->
+        <div class="e-grid" id="gallery"></div>
+    </section><!--@end-->
+
+    <!--@if section:efectos--><section class="section" id="efectos" data-distort="flicker">
+        <div class="section__head">
+            <h2 class="e-h2">Efectos</h2>
+            <span class="e-label">Nueve distorsiones hechas con Echorath&nbsp;UI</span>
+        </div>
+        <div class="fx-lead">
+            <p class="section__intro">Nueve maneras de distorsionar una imagen, todas sobre la misma muestra. Pulsa «Ver efecto» para verla unos segundos, o míralas todas a la vez. Con «Modo efectos», cada parte de la página tiene su propio botón de efectos.</p>
+            <div class="e-row needs-js">
+                <button class="e-btn" type="button" id="fx-all" aria-pressed="false">Ver los nueve a la vez</button>
+                <label class="fx-mode" for="fx-mode" title="Muestra un botón de efectos junto a cada componente de la página">
+                    <span class="e-switch"><input type="checkbox" id="fx-mode"><span class="e-switch__track"></span></span>
+                    <span class="e-label">Modo efectos</span>
+                </label>
+            </div>
+        </div>
+        <p class="e-label fx-rm-note">Tu sistema pide reducir el movimiento: los efectos se muestran sin animar.</p>
+        <div class="fx-grid" id="effects"></div>
+    </section><!--@end-->
+
+    <!--@if section:algoritmos--><section class="section" id="algoritmos" data-distort="warp">
+        <div class="section__head">
+            <h2 class="e-h2">Algoritmos</h2>
+            <span class="e-label">El código detrás de la obra</span>
+        </div>
+        <p class="section__intro">Algoritmos escritos por mí. Cada uno se dibuja aquí, en directo, y «Ver código» abre su pseudocódigo junto al código JavaScript que lo dibuja: el mismo que funciona en esta página.</p>
+        <!--@if dev--><p class="dev-note"><b>En desarrollo.</b> «Repetición» es una muestra de cómo se verán los algoritmos.</p><!--@end-->
+        <div class="stack needs-js" id="algos"></div>
+    </section><!--@end-->
+
+    <!--@if section:sobre--><section class="section about-grid" id="sobre" data-distort="wave">
+        <div class="section__head">
+            <h2 class="e-h2">Sobre</h2>
+        </div>
+        <div class="e-grid">
+            <div class="e-span-6">
+<!--@sobre:text-->
+            </div>
+            <!--@if trayectoria--><div class="e-span-6">
+                <table class="e-table">
+                    <thead><tr><th>Año</th><th>Trayectoria</th></tr></thead>
+                    <tbody>
+<!--@sobre:rows-->
+                    </tbody>
+                </table>
+            </div><!--@end-->
+        </div>
+    </section><!--@end-->
+
+    <!--@if section:contacto--><section class="section" id="contacto" data-distort="shatter">
+        <div class="section__head">
+            <h2 class="e-h2">Contacto</h2>
+            <span class="e-label">Prensa, colaboraciones o hablar de la obra</span>
+        </div>
+        <!--@if dev--><p class="dev-note"><b>En desarrollo.</b> El correo y los enlaces de esta sección son provisionales.</p><!--@end-->
+        <div class="e-panel" data-tone="info">
+            <p class="contact__lead">¿Quieres comentar algo de la obra o proponer una colaboración? Escríbeme.</p>
+            <div class="e-row" style="justify-content:space-between">
+                <a class="contact-addr" id="addr" data-mail="" href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+                <button class="e-btn needs-js" type="button" id="copy" data-focus="sweep">Copiar correo</button>
+            </div>
+            <div class="e-row contact-intents">
+                <span class="e-label">Escríbeme para</span>
+                <a class="e-btn e-btn--sm" data-mail="Prensa" href="mailto:{{EMAIL}}?subject=Prensa">Prensa</a>
+                <a class="e-btn e-btn--sm" data-mail="Colaboración" href="mailto:{{EMAIL}}?subject=Colaboraci%C3%B3n">Colaborar</a>
+                <a class="e-btn e-btn--sm" data-mail="Sobre la obra" href="mailto:{{EMAIL}}?subject=Sobre%20la%20obra">Hablar de la obra</a>
+            </div>
+            <!--@if links--><div class="e-row contact-links">
+                <span class="e-label">También en</span>
+<!--@links:contact-->
+            </div><!--@end-->
+        </div>
+    </section><!--@end-->
+</main>
+
+<footer class="page-foot e-container" lang="es">
+    <div>
+        <p class="foot__name">Echorath</p>
+        <p class="foot__tag">Música, escritura, imagen y código.</p>
+    </div>
+    <a class="e-btn e-btn--sm" href="#inicio">Volver arriba <span aria-hidden="true">↑</span></a>
+    <!--@if section:contacto|links--><nav class="foot__links" aria-label="Pie de página">
+        <!--@if section:contacto--><a class="e-btn e-btn--sm" data-mail="" href="mailto:{{EMAIL}}">Escríbeme</a><!--@end-->
+<!--@links:footer-->
+    </nav><!--@end-->
+    <p class="foot__legal">© 2026 Echorath · Construido con Echorath&nbsp;UI</p>
+</footer>
+
+<div class="now-bar" id="now-bar" role="region" aria-label="Reproductor" lang="es" hidden>
+    <span class="now-bar__progress"></span>
+    <span class="e-badge" data-tone="ok">Sonando</span>
+    <span class="now-bar__info"><span class="now-bar__title"></span><span class="now-bar__sub"></span></span>
+    <span class="now-bar__time" aria-hidden="true"></span>
+    <button class="e-btn e-btn--sm" type="button" id="now-link" aria-label="Copiar enlace"><span class="is-long">Copiar enlace</span><span class="is-short">Enlace</span></button>
+    <button class="e-btn e-btn--sm e-btn--solid" type="button" id="now-stop">Detener</button>
+</div>
+
+<script>
+// echorath-ui.js loads with defer; it is ready by DOMContentLoaded.
+document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
+
+    // The series' palettes: part of the algorithm that draws the pieces, so it stays with the page
+    const PALETTES = [
+        ['#0a0a0a', '#00ff41', '#00b8ff', '#ff0033'],
+        ['#050505', '#00b8ff', '#e0e0e0', '#ffaa00'],
+        ['#0a0a0a', '#ff0033', '#00ffff', '#00ff41'],
+        ['#050505', '#ffaa00', '#00b8ff', '#e0e0e0'],
+        ['#0a0a0a', '#00ffff', '#00ff41', '#ff0033'],
+        ['#050505', '#e0e0e0', '#00ff41', '#00b8ff'],
+    ];
+
+    // ---- Content: written by site/build.mjs from site/content (TRACKS, TEXTS,
+    // PIECES, ALGORITHMS and EFFECTS), only what the site being built shows ----
+    /*@content*/
+
+    // Seeded randomness (mulberry32): each piece renders the same every time
+    function rng(seed) {
+        let a = seed >>> 0;
+        return function () {
+            a |= 0; a = (a + 0x6D2B79F5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    function repeticion(ctx, width, height, { seed, kind }) {
+        const size = Math.min(width, height);
+        const rand = rng(seed);
+        const pal = PALETTES[seed % PALETTES.length];
+        const cell = size / 8;
+
+        ctx.fillStyle = pal[0];
+        ctx.fillRect(0, 0, size, size);
+
+        const color = () => pal[1 + Math.floor(rand() * 3)];
+
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                const x = i * cell;
+                const y = j * cell;
+                const c = color();
+                ctx.strokeStyle = c;
+                ctx.fillStyle = c;
+                ctx.lineWidth = Math.max(2, size / 220);
+
+                switch (kind) {
+                    case 'Círculos': {
+                        ctx.beginPath();
+                        ctx.arc(x + cell / 2, y + cell / 2, cell * (0.1 + rand() * 0.4), 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    }
+                    case 'Arcos': {
+                        ctx.beginPath();
+                        ctx.arc(x, y, cell * (0.3 + rand() * 0.5), 0, Math.PI / 2);
+                        ctx.stroke();
+                        break;
+                    }
+                    case 'Retícula': {
+                        if (rand() > 0.5) ctx.fillRect(x + cell * 0.2, y + cell * 0.2, cell * 0.6, cell * 0.6);
+                        break;
+                    }
+                    case 'Líneas': {
+                        ctx.beginPath();
+                        ctx.moveTo(x, y + cell * rand());
+                        ctx.lineTo(x + cell, y + cell * rand());
+                        ctx.stroke();
+                        break;
+                    }
+                    case 'Bloques': {
+                        ctx.fillRect(x, y, cell * (0.3 + rand() * 0.7), cell * (0.3 + rand() * 0.7));
+                        break;
+                    }
+                    default: { // Ondas
+                        ctx.beginPath();
+                        for (let k = 0; k <= 20; k++) {
+                            const px = x + (k / 20) * cell;
+                            const py = y + cell / 2 + Math.sin((k / 20) * Math.PI * 2 + rand() * 2) * cell * 0.3;
+                            if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                        }
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+    }
+
+    const KINDS = ['Círculos', 'Arcos', 'Retícula', 'Líneas', 'Bloques', 'Ondas'];
+    const KIND_TEXT = {
+        'Círculos': 'círculos de tamaños distintos, uno por celda',
+        'Arcos': 'cuartos de circunferencia que nacen en la esquina de cada celda',
+        'Retícula': 'cuadrados que aparecen en unas celdas y faltan en otras',
+        'Líneas': 'segmentos que cruzan cada celda a alturas distintas',
+        'Bloques': 'rectángulos de tamaños distintos anclados a la esquina de cada celda',
+        'Ondas': 'ondas cortas que atraviesan cada celda',
+    };
+    const COLOR_NAMES = { '#00ff41': 'verde', '#00b8ff': 'azul', '#ff0033': 'rojo', '#e0e0e0': 'gris claro', '#ffaa00': 'ámbar', '#00ffff': 'cian' };
+
+    // Release covers, drawn by the series' algorithm from the release name until the real ones arrive
+    const nameSeed = text => [...text].reduce((h, c) => (Math.imul(h, 31) + c.codePointAt(0)) >>> 0, 7);
+    const coverOf = release => { const h = nameSeed(release); return { title: release, seed: 1 + (h % 997), kind: KINDS[h % KINDS.length] }; };
+
+    // Text alternative written from what the algorithm actually draws
+    function describe(piece) {
+        const [, a, b, c] = PALETTES[piece.seed % PALETTES.length].map(hex => COLOR_NAMES[hex]);
+        return `Retícula de 8 × 8 con ${KIND_TEXT[piece.kind]}, en ${a}, ${b} y ${c} sobre negro.`;
+    }
+
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+    }
+
+    function button(label, className = 'e-btn e-btn--sm') {
+        const node = el('button', className, label);
+        node.type = 'button';
+        return node;
+    }
+
+    const slug = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    [...TRACKS, ...TEXTS, ...PIECES, ...ALGORITHMS].forEach(work => {
+        work.slug = slug(work.title);
+        // Old titles a work had, so links shared before a rename still reach it
+        work.aka = (work.aka || []).map(slug);
+    });
+    const isWork = id => work => work.slug === id || work.aka.includes(id);
+
+    const readingTime = item => {
+        const minutes = item.body.join(' ').split(/\s+/).length / 200;   // ~200 words per minute
+        return minutes < 1 ? 'Menos de 1 min de lectura' : `${Math.round(minutes)} min de lectura`;
+    };
+
+    // Inside a frame (the artifact viewer, for one) the address belongs to the
+    // frame and nobody else could open it, so links are only offered at the top
+    const shareable = window.self === window.top;
+
+    // On phones the system share sheet is the expected way to pass a link on
+    const canShare = typeof navigator.share === 'function';
+    function shareLink(url, title) {
+        if (canShare) navigator.share({ title, url }).catch(() => { /* closed by the visitor */ });
+        else copyText(url, 'Enlace copiado');
+    }
+    const SHARE_LABEL = canShare ? 'Compartir' : 'Copiar enlace';
+    const BASE_TITLE = document.title;
+
+    async function copyText(text, title) {
+        try {
+            await navigator.clipboard.writeText(text);
+            EchorathUI.toast(title, text.length > 80 ? '' : text, 'ok');
+        } catch (e) {
+            EchorathUI.toast('No se pudo copiar', 'Tu navegador no permite copiar desde aquí', 'warn');
+        }
+    }
+
+    // ---- Canvases drawn at the screen's real pixel density, redrawn when their size changes ----
+    const painters = new WeakMap();
+    const sharp = new ResizeObserver(entries => entries.forEach(entry => {
+        const canvas = entry.target;
+        // The device-pixel box is exact where it is reported correctly; the CSS width
+        // times devicePixelRatio covers browsers that leave it out or get it wrong
+        const box = entry.devicePixelContentBoxSize && entry.devicePixelContentBoxSize[0];
+        const px = Math.min(2400, Math.round(Math.max(box ? box.inlineSize : 0, entry.contentRect.width * (window.devicePixelRatio || 1))));
+        if (px > 0 && px !== canvas.width) {
+            canvas.width = canvas.height = px;
+            painters.get(canvas)(canvas);
+        }
+    }));
+    function sharpCanvas(paint) {
+        const canvas = document.createElement('canvas');
+        painters.set(canvas, paint);
+        try { sharp.observe(canvas, { box: 'device-pixel-content-box' }); } catch (e) { sharp.observe(canvas); }
+        return canvas;
+    }
+    const repaint = canvas => painters.get(canvas)(canvas);
+    const paintPiece = piece => canvas => repeticion(canvas.getContext('2d'), canvas.width, canvas.height, piece);
+    // A work not yet published says so (only the development site has them)
+    const STATUS_LABEL = { sample: 'Muestra', draft: 'Borrador', review: 'En revisión' };
+    const unpublished = work => Object.hasOwn(STATUS_LABEL, work.status);
+    const statusNote = work => unpublished(work) ? ` · ${STATUS_LABEL[work.status]}` : '';
+    const statusBadge = work => {
+        const badge = el('span', 'e-badge sample-badge', STATUS_LABEL[work.status]);
+        badge.dataset.tone = 'warn';
+        return badge;
+    };
+    const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+    // ---- Sound: the samples and the synth lab share one engine ----
+    let audioCtx = null;
+    function audio() {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+    }
+
+    const LEVEL = { sine: 0.22, triangle: 0.18, square: 0.07, sawtooth: 0.08 };
+
+    // One note: an oscillator through a short envelope (20 ms up, 0.5 s down)
+    function playNote(ctx, frequency, wave) {
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = wave;
+        osc.frequency.value = frequency;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(LEVEL[wave], t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.52);
+    }
+
+    // Loops the pattern one note per step. The pattern is read on every step,
+    // so its notes, wave and speed can change while it plays.
+    function sequence(pattern, onStep) {
+        const ctx = audio();
+        let step = 0;
+        let timer = 0;
+        const stop = () => clearInterval(timer);
+        const tick = () => {
+            if (step >= pattern.steps) {
+                stop();
+                pattern.onEnd();
+                return;
+            }
+            const i = step % pattern.notes.length;
+            playNote(ctx, pattern.notes[i], pattern.wave);
+            onStep(i, step);
+            step++;
+        };
+        const retime = () => {
+            clearInterval(timer);
+            timer = setInterval(tick, pattern.stepMs);
+        };
+        tick();
+        retime();
+        return { stop, retime };
+    }
+
+    // ---- Now playing: one sound at a time, and a bar that follows the visitor ----
+    const nowBar = document.getElementById('now-bar');
+    const nowTitle = nowBar.querySelector('.now-bar__title');
+    const nowSub = nowBar.querySelector('.now-bar__sub');
+    const nowTime = nowBar.querySelector('.now-bar__time');
+    const nowLink = document.getElementById('now-link');
+    let nowPlaying = null;   // { title, sub, totalMs?, link?, stop }
+
+    const clock = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+    function setNowTime(ms) {
+        if (!nowPlaying) return;
+        nowTime.textContent = nowPlaying.totalMs ? `${clock(ms)} / ${clock(nowPlaying.totalMs)}` : clock(ms);
+    }
+    const nowSaid = document.getElementById('now-said');
+    function showNow(info) {
+        nowPlaying = info;
+        nowSaid.textContent = info ? `Sonando: ${info.title}${info.sub ? `, ${info.sub}` : ''}.` : '';
+        nowBar.hidden = !info;
+        document.documentElement.classList.toggle('has-now-bar', !!info);
+        nowBar.classList.remove('is-timed');
+        if (!info) return;
+        nowTitle.textContent = info.title;
+        nowSub.textContent = info.sub;
+        nowLink.hidden = !info.link || !shareable;
+        setNowTime(0);
+        if (info.totalMs) {
+            nowBar.style.setProperty('--now-ms', `${info.totalMs}ms`);
+            void nowBar.offsetWidth;   // restart the progress animation
+            nowBar.classList.add('is-timed');
+        }
+        document.documentElement.style.setProperty('--now-h', `${nowBar.offsetHeight}px`);
+    }
+    const stopSound = () => { if (nowPlaying) nowPlaying.stop(); };
+    document.getElementById('now-stop').addEventListener('click', stopSound);
+    nowLink.addEventListener('click', () => shareLink(new URL(nowPlaying.link, location.href).href, `${nowPlaying.title} · ${BASE_TITLE}`));
+    if (canShare) {
+        nowLink.setAttribute('aria-label', 'Compartir');
+        nowLink.querySelectorAll('span').forEach(label => { label.textContent = 'Compartir'; });
+    }
+    // Leaving the tab stops the sound
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopSound(); });
+
+    // ---- Music: tracks with synthesized previews ----
+    const list = document.getElementById('tracks');
+    const trackButtons = [];
+    let trackPlaying = null; // { index, seq, row, button }
+
+    // A sample plays four rounds of its pattern (about 12 s), then stops on its own
+    const SAMPLE_ROUNDS = 4;
+    const STEP_MS = 380;
+    const featurePlay = document.getElementById('feature-play');
+    function syncFeature() {
+        if (!featurePlay) return;
+        const on = trackPlaying && trackPlaying.index === 0;
+        featurePlay.textContent = on ? 'Detener' : `Escuchar «${TRACKS[0].title}»`;
+    }
+
+    function stopPreview() {
+        if (!trackPlaying) return;
+        trackPlaying.seq.stop();
+        trackPlaying.button.textContent = 'Escuchar muestra';
+        trackPlaying.button.setAttribute('aria-label', 'Escuchar muestra de ' + TRACKS[trackPlaying.index].title);
+        trackPlaying.row.removeAttribute('data-tone');
+        trackPlaying.row.classList.remove('is-playing');
+        trackPlaying.row.querySelector('.track-row__live').hidden = true;
+        trackPlaying = null;
+        showNow(null);
+        syncFeature();
+    }
+
+    function startPreview(index, row, btn) {
+        stopSound();
+        const track = TRACKS[index];
+        const steps = track.notes.length * SAMPLE_ROUNDS;
+        const totalMs = steps * STEP_MS;
+        showNow({ title: track.title, sub: track.album, totalMs, link: '#musica/' + track.slug, stop: stopPreview });
+        const seq = sequence({ notes: track.notes, wave: 'triangle', stepMs: STEP_MS, steps, onEnd: stopPreview }, (i, step) => setNowTime(step * STEP_MS));
+        trackPlaying = { index, seq, row, button: btn };
+        row.style.setProperty('--track-ms', `${totalMs}ms`);
+        btn.textContent = 'Detener';
+        btn.setAttribute('aria-label', 'Detener ' + track.title);
+        row.setAttribute('data-tone', 'ok');
+        row.classList.add('is-playing');
+        row.querySelector('.track-row__live').hidden = false;
+        syncFeature();
+        EchorathUI.loadFor(row, 700, { variant: 'glitch', reveal: true });
+    }
+
+    if (featurePlay) featurePlay.addEventListener('click', () => trackButtons[0].click());
+
+    TRACKS.forEach((track, i) => {
+        const item = el('li', 'fx-cell');
+        const row = el('div', 'e-panel track-row');
+
+        const cover = sharpCanvas(paintPiece(coverOf(track.release)));
+        cover.className = 'track-row__cover';
+        cover.setAttribute('aria-hidden', 'true');
+
+        const title = el('div', 'track-row__title', track.title);
+        title.appendChild(el('small', '', track.album));
+        if (unpublished(track)) title.appendChild(statusBadge(track));
+        const live = el('span', 'e-badge track-row__live', 'Sonando');
+        live.setAttribute('data-tone', 'ok');
+        live.hidden = true;
+        title.appendChild(live);
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 200 28');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.setAttribute('aria-hidden', 'true');
+        const rand = rng(100 + i);
+        for (let x = 0; x < 200; x += 3) {
+            const h = 4 + rand() * 22;
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x);
+            rect.setAttribute('y', (28 - h) / 2);
+            rect.setAttribute('width', 2);
+            rect.setAttribute('height', h);
+            rect.setAttribute('fill', 'currentColor');
+            svg.appendChild(rect);
+        }
+
+        const dur = el('span', 'track-row__dur', track.dur);
+
+        const btn = el('button', 'e-btn', 'Escuchar muestra');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Escuchar muestra de ' + track.title);
+        btn.setAttribute('data-focus', 'glitch');
+        btn.setAttribute('data-e-interactive', ''); // stays clickable while the row distorts
+        btn.addEventListener('click', () => {
+            if (trackPlaying && trackPlaying.index === i) stopPreview();
+            else startPreview(i, row, btn);
+        });
+        trackButtons.push(btn);
+
+        row.append(cover, title, svg, dur, btn, el('span', 'track-row__progress'));
+        item.append(row, EchorathUI.fxPicker(row, { name: track.title }));
+        list.appendChild(item);
+    });
+
+    // ---- Works viewer: texts and images open with previous/next and their own address ----
+    // how: 'push' when the visitor opens it here, 'hash' when a link already added the
+    // history entry, 'load' when the page was opened at the work's address.
+    // In the first two cases Back closes the work instead of leaving the page.
+    // Where the visitor left each text during this visit; a text read to the end starts again from the top
+    const readPlace = (() => {
+        let at = {};
+        try { at = JSON.parse(sessionStorage.getItem('echorath-read') || '{}'); } catch (e) { /* storage unavailable */ }
+        const keep = () => { try { sessionStorage.setItem('echorath-read', JSON.stringify(at)); } catch (e) { /* storage unavailable */ } };
+        document.addEventListener('visibilitychange', () => { if (document.hidden) keep(); });
+        return {
+            get: slug => at[slug] || 0,
+            set: (slug, part) => { if (part < 0.02 || part > 0.98) delete at[slug]; else at[slug] = +part.toFixed(3); },
+            keep,
+        };
+    })();
+
+    function openWork(set, start, how = 'push') {
+        const n = set.items.length;
+        let index = start;
+        const nav = el('div', 'work__nav');
+        const steps = el('div', 'e-row');
+        const prev = button('← Anterior');
+        const next = button('Siguiente →');
+        const pos = el('span', 'e-label work__pos');
+        const share = button(SHARE_LABEL);
+        share.hidden = !shareable;
+        steps.append(prev, pos, next);
+        steps.hidden = n < 2;
+        nav.append(steps, share);
+        nav.hidden = n < 2 && !shareable;
+        // On paper, a work ends with its address (only where the address can be shared)
+        const source = el('p', 'work__source');
+        // Says which work is on screen; it lives in the dialog, outside the body that changes
+        const live = el('span', 'sr-only');
+        live.setAttribute('aria-live', 'polite');
+
+        if (how === 'push') history.pushState(null, '', `#${set.section}/${set.items[start].slug}`);
+        let closedByBack = false;
+        let handedOff = false;
+        const work = EchorathUI.modal({ title: set.items[start].title, body: '', tone: set.tone, size: 'lg', actions: [{ label: 'Cerrar', value: true, variant: 'solid' }] });
+        const onBack = () => { closedByBack = true; work.close(); };
+        addEventListener('popstate', onBack);
+        // A work can pass the visitor on (the viewer's "Abrir en el laboratorio")
+        const leave = () => { handedOff = true; work.close(); };
+        if (set.wide) work.element.classList.add('is-viewer');
+        if (set.className) work.element.classList.add(set.className);
+        work.element.appendChild(live);
+
+        // Texts long enough to scroll show a reading bar under the title
+        const readBar = el('div', 'read-progress');
+        readBar.setAttribute('aria-hidden', 'true');
+        readBar.appendChild(el('span'));
+        const scroller = work.element.querySelector('.e-modal__body');
+        const updateRead = () => {
+            const room = scroller.scrollHeight - scroller.clientHeight;
+            readBar.hidden = room < 40;
+            readBar.style.setProperty('--read', room > 0 ? Math.min(1, scroller.scrollTop / room).toFixed(3) : '0');
+        };
+        if (set.progress) scroller.addEventListener('scroll', () => {
+            updateRead();
+            const room = scroller.scrollHeight - scroller.clientHeight;
+            if (room > 0) readPlace.set(set.items[index].slug, scroller.scrollTop / room);
+        }, { passive: true });
+
+        const show = (i, announce) => {
+            index = (i + n) % n;
+            const item = set.items[index];
+            const focused = nav.contains(document.activeElement) ? document.activeElement : null;
+            const view = el('div', 'work');
+            view.appendChild(set.render(item, leave));
+            (view.querySelector('[data-slot="nav"]') || view).appendChild(nav);
+            if (set.progress) view.prepend(readBar);
+            work.setTitle(item.title);
+            work.setBody(view);
+            if (set.progress) scroller.scrollTop = readPlace.get(item.slug) * (scroller.scrollHeight - scroller.clientHeight);
+            updateRead();
+            // Moving the buttons into the new view drops their focus; give it back
+            if (focused) focused.focus();
+            pos.textContent = `${index + 1} / ${n}`;
+            if (announce && n > 1) live.textContent = `${item.title}, ${index + 1} de ${n}`;
+            history.replaceState(null, '', `#${set.section}/${item.slug}`);
+            document.title = `${item.title} · ${BASE_TITLE}`;
+            source.textContent = shareable ? `${item.title} · Echorath · ${location.href}` : '';
+            if (shareable) view.appendChild(source);
+        };
+        prev.addEventListener('click', () => show(index - 1, true));
+        next.addEventListener('click', () => show(index + 1, true));
+        share.addEventListener('click', () => shareLink(location.href, document.title));
+        const onKey = e => {
+            if (e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented || n < 2) return;
+            if (e.target.closest && e.target.closest('pre, input, select, textarea, [role="tablist"], canvas[tabindex]')) return;
+            if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1, true); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1, true); }
+        };
+        document.addEventListener('keydown', onKey);
+        // A sideways swipe moves to the next or previous image; vertical
+        // scrolling and pinch zoom stay with the browser
+        if (set.swipe) {
+            let from = null;
+            scroller.addEventListener('touchstart', e => {
+                from = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+            }, { passive: true });
+            scroller.addEventListener('touchend', e => {
+                if (!from || e.touches.length) return;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - from.x, dy = t.clientY - from.y;
+                from = null;
+                if (Math.abs(dx) > 50 && Math.abs(dx) > 2 * Math.abs(dy)) show(index + (dx < 0 ? 1 : -1), true);
+            }, { passive: true });
+        }
+        work.then(() => {
+            document.removeEventListener('keydown', onKey);
+            if (set.progress) readPlace.keep();
+            if (set.openers[index].closest('[hidden]') && set.reveal) set.reveal();
+            removeEventListener('popstate', onBack);
+            document.title = BASE_TITLE;
+            if (handedOff) history.replaceState(null, '', '#algoritmos');
+            else if (how === 'load') history.replaceState(null, '', `#${set.section}`);
+            else if (!closedByBack) {
+                // Drop the entry the work added. Going back moves focus to the page,
+                // so hand it back to the work once the browser has done so.
+                addEventListener('popstate', () => setTimeout(() => set.openers[index].focus(), 0), { once: true });
+                history.back();
+            }
+            // Back on the page, focus the work the visitor ended on
+            set.openers[index].focus();
+        });
+        show(start, false);
+    }
+
+    // ---- Writing: cards open in the reader ----
+    const texts = document.getElementById('texts');
+    const TEXT_SET = {
+        section: 'escritura', tone: 'info', items: TEXTS, openers: [], progress: true,
+        render(item) {
+            const article = el('article', 'e-prose');
+            article.appendChild(el('p', 'e-prose__meta', `${item.kind} · ${item.year} · ${readingTime(item)}${statusNote(item)}`));
+            item.body.forEach(par => article.appendChild(el('p', '', par)));
+            return article;
+        },
+    };
+    TEXTS.forEach((item, i) => {
+        const cell = el('div', 'e-span-4 fx-cell');
+        const card = el('article', 'e-panel');
+        card.setAttribute('data-tone', 'info');
+        // Always distorted; the distortion stops while the reader is on the card
+        card.setAttribute('data-loading', '');
+        card.setAttribute('data-distort', 'standard');
+        card.setAttribute('data-e-pause-on-hover', '');
+        const badges = el('div', 'card-badges');
+        badges.appendChild(el('span', 'e-badge', item.kind));
+        if (unpublished(item)) badges.appendChild(statusBadge(item));
+        card.appendChild(badges);
+        card.appendChild(el('h3', 'e-h2', item.title));
+        card.lastChild.style.margin = '12px 0 8px';
+        card.appendChild(el('p', 'card-text', item.summary));
+
+        const foot = el('div', 'card-foot');
+        foot.appendChild(el('span', '', `${item.year} · ${readingTime(item)}`));
+        const open = el('button', 'e-btn', 'Leer');
+        open.type = 'button';
+        open.setAttribute('aria-label', `Leer «${item.title}»`);
+        open.setAttribute('data-focus', 'sweep');
+        open.setAttribute('data-e-interactive', ''); // usable while an effect plays on the card
+        open.addEventListener('click', () => openWork(TEXT_SET, i));
+        TEXT_SET.openers.push(open);
+        foot.appendChild(open);
+        card.appendChild(foot);
+        // The picker brings the card's permanent distortion back after each effect
+        cell.append(card, EchorathUI.fxPicker(card, { name: `«${item.title}»` }));
+        texts.appendChild(cell);
+    });
+
+    // The cards move on purpose; one press stops them, and the choice is remembered
+    const stillToggle = document.getElementById('still-toggle');
+    if (stillToggle) {
+        const setStill = still => {
+            texts.classList.toggle('is-still', still);
+            stillToggle.textContent = still ? 'Reanudar el efecto' : 'Pausar el efecto';
+        };
+        try { setStill(localStorage.getItem('echorath-still') === '1'); } catch (e) { setStill(false); }
+        stillToggle.addEventListener('click', () => {
+            const still = !texts.classList.contains('is-still');
+            setStill(still);
+            try { localStorage.setItem('echorath-still', still ? '1' : '0'); } catch (e) { /* storage unavailable */ }
+        });
+
+        // The framework sets aria-busy on loading elements; these cards are decorative and always visible, so drop it.
+        window.addEventListener('load', () => {
+            texts.querySelectorAll('[aria-busy]').forEach(card => card.removeAttribute('aria-busy'));
+        });
+    }
+
+    // ---- Images: canvas plates, enlarged in the viewer ----
+    const gallery = document.getElementById('gallery');
+    const IMAGE_SET = {
+        section: 'imagenes', tone: 'sys', items: PIECES, openers: [], wide: true, swipe: true,
+        render(piece, leave) {
+            const figure = el('figure', 'viewer');
+            const big = sharpCanvas(paintPiece(piece));
+            big.className = 'dlg-canvas';
+            big.setAttribute('role', 'img');
+            big.setAttribute('aria-label', `${piece.title}. ${describe(piece)}`);
+            const cap = el('figcaption', 'viewer__cap');
+            cap.dataset.slot = 'nav';   // previous / next sit with the details
+            cap.append(
+                el('p', 'viewer__meta', `${piece.year} · Generativa · ${piece.kind} · semilla ${piece.seed}${statusNote(piece)}`),
+                el('p', 'viewer__desc', describe(piece)),
+            );
+            if (seriesCard) {
+                const toLab = button('Ver cómo está hecha');
+                toLab.addEventListener('click', () => {
+                    leave();
+                    requestAnimationFrame(() => openInLab(piece));   // after the viewer hands focus back
+                });
+                cap.appendChild(toLab);
+            }
+            if (document.fullscreenEnabled) {
+                const full = button(document.fullscreenElement ? 'Salir de pantalla completa' : 'Pantalla completa', 'e-btn e-btn--sm viewer__full');
+                full.addEventListener('click', () => {
+                    if (document.fullscreenElement) document.exitFullscreen();
+                    else full.closest('.e-modal').requestFullscreen().catch(() => {});
+                });
+                cap.appendChild(full);
+            }
+            figure.append(big, cap);
+            return figure;
+        },
+    };
+    document.addEventListener('fullscreenchange', () => {
+        document.querySelectorAll('.viewer__full').forEach(b => { b.textContent = document.fullscreenElement ? 'Salir de pantalla completa' : 'Pantalla completa'; });
+    });
+    PIECES.forEach((piece, i) => {
+        const cell = el('div', 'e-span-4 fx-cell');
+        const card = el('article', 'e-panel plate');
+        const canvas = sharpCanvas(paintPiece(piece));
+        canvas.setAttribute('role', 'img');
+        canvas.setAttribute('aria-label', `${piece.title}. ${describe(piece)}`);
+        const zoom = el('button', 'plate__zoom');
+        zoom.type = 'button';
+        zoom.setAttribute('aria-label', 'Ampliar ' + piece.title);
+        zoom.appendChild(canvas);
+        card.appendChild(zoom);
+
+        const foot = el('div', 'card-foot');
+        const name = el('span', 'card-foot__name', piece.title);
+        if (unpublished(piece)) name.appendChild(statusBadge(piece));
+        foot.append(name, el('span', '', `${piece.year} · ${piece.kind}`));
+        card.appendChild(foot);
+
+        zoom.addEventListener('click', () => openWork(IMAGE_SET, i));
+        IMAGE_SET.openers.push(zoom);
+        cell.append(card, EchorathUI.fxPicker(card, { name: piece.title }));
+        gallery.appendChild(cell);
+    });
+
+    // ---- Effects: the nine distortions on the same specimen ----
+    const FX_MS = 2400;
+    const SPECIMEN = { seed: 11, kind: 'Círculos' };
+    const fxGrid = document.getElementById('effects');
+    const fxTiles = EFFECTS.map(fx => {
+        const tile = el('article', 'e-panel fx-tile');
+        const specimen = el('div', 'fx-specimen');
+        const thumb = sharpCanvas(paintPiece(SPECIMEN));
+        thumb.setAttribute('aria-hidden', 'true');
+        const word = el('span', 'fx-specimen__word', 'Echorath');
+        specimen.append(thumb, word);
+        specimen.setAttribute('aria-hidden', 'true');
+        const target = fx.variant === 'decode' ? word : specimen;   // decode works on text only
+
+        const how = el('details', 'fx-tile__how');
+        const summary = el('summary', '', 'Cómo está hecho');
+        summary.appendChild(el('span', 'sr-only', ` ${fx.variant}`));
+        const technique = el('p', '', `${fx.what}. ${fx.how}`);
+        how.append(summary, technique);
+        const play = button('', 'e-btn e-btn--sm fx-tile__play');
+        const label = el('span', '', 'Ver efecto');
+        play.append(label, el('span', 'fx-tile__timer'));
+        play.setAttribute('aria-pressed', 'false');
+        play.setAttribute('aria-label', `Ver efecto ${fx.variant}`);
+        play.style.setProperty('--fx-ms', `${FX_MS}ms`);
+
+        let timer = 0;
+        const stop = () => {
+            if (!timer) return;
+            clearTimeout(timer);
+            timer = 0;
+            EchorathUI.ready(target);
+            play.setAttribute('aria-pressed', 'false');
+        };
+        const start = () => {
+            stop();
+            EchorathUI.load(target, { variant: fx.variant });
+            play.setAttribute('aria-pressed', 'true');
+            timer = setTimeout(() => { stop(); syncAll(); }, FX_MS);
+        };
+        play.addEventListener('click', () => { if (timer) stop(); else start(); syncAll(); });
+
+        tile.append(specimen, el('h3', 'fx-tile__name', fx.variant), el('p', 'fx-tile__what', fx.feel), play, how);
+        fxGrid.appendChild(tile);
+        return { start, stop, playing: () => timer !== 0 };
+    });
+    const fxAll = document.getElementById('fx-all');
+    function syncAll() {
+        if (fxAll) fxAll.setAttribute('aria-pressed', String(fxTiles.some(t => t.playing())));
+    }
+    if (fxAll) fxAll.addEventListener('click', () => {
+        if (fxTiles.some(t => t.playing())) fxTiles.forEach(t => t.stop());
+        else fxTiles.forEach(t => t.start());
+        syncAll();
+    });
+
+    // ---- Algorithms: drawn live; «Ver código» opens the pseudocode beside the code ----
+    const JS_TOKENS = /(\/\/[^\n]*)|('(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|\b(0x[0-9a-fA-F]+|\d+(?:\.\d+)?)\b|\b(const|let|function|return|if|else|for|while|switch|case|break|default|new|of)\b/g;
+    function highlight(code, pattern, classes) {
+        const out = document.createDocumentFragment();
+        let last = 0;
+        for (const m of code.matchAll(pattern)) {
+            if (m.index > last) out.append(code.slice(last, m.index));
+            const group = m.slice(1).findIndex(g => g !== undefined);
+            out.append(el('span', classes[group], m[0]));
+            last = m.index + m[0].length;
+        }
+        out.append(code.slice(last));
+        return out;
+    }
+    // Function.prototype.toString keeps the indentation of this script; drop it
+    function source(fn) {
+        const lines = fn.toString().split('\n');
+        const cut = Math.min(...lines.slice(1).filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+        return [lines[0], ...lines.slice(1).map(l => l.slice(Math.min(cut, l.match(/^ */)[0].length)))].join('\n');
+    }
+    // The code an algorithm shows: its functions as they run, its data as literals
+    const literal = value => typeof value === 'string' ? `'${value.replace(/['\\]/g, '\\$&')}'`
+        : Array.isArray(value) ? `[${value.map(literal).join(', ')}]` : JSON.stringify(value);
+    function codeOf(algo) {
+        return Object.entries(algo.code).map(([name, value]) => {
+            if (typeof value === 'function') return source(value);
+            const body = Array.isArray(value) ? `[\n${value.map(v => `    ${literal(v)},`).join('\n')}\n]` : JSON.stringify(value, null, 4);
+            return `const ${name} = ${body};`;
+        }).join('\n\n');
+    }
+
+    const MODE_LABEL = { seed: 'semilla', animation: 'animación', interactive: 'interactivo' };
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const algos = document.getElementById('algos');
+    const ALGO_SET = { section: 'algoritmos', tone: 'ok', items: ALGORITHMS, openers: [], className: 'is-code', render: renderCode };
+    const algoCards = ALGORITHMS.map((algo, i) => {
+        const card = el('article', 'e-panel lab');
+        card.id = `algo-${algo.slug}`;
+        card.dataset.tone = ['ok', 'info', 'warn'][i % 3];
+        const text = el('div');
+        const kicker = el('div', 'lab__kicker');
+        kicker.appendChild(el('span', 'e-label', `Algoritmo ${String(i + 1).padStart(2, '0')} · ${MODE_LABEL[algo.mode]}${algo.year ? ` · ${algo.year}` : ''}`));
+        if (unpublished(algo)) kicker.appendChild(statusBadge(algo));
+        const title = el('h3', 'e-h2 lab__title', algo.title);
+        title.id = `algo-${algo.slug}-title`;
+        card.setAttribute('aria-labelledby', title.id);
+        const actions = el('div', 'e-row lab__primary');
+        text.append(kicker, title, el('p', 'lab__hook', algo.summary), actions);
+
+        const input = { ...algo.input, time: 0, pointer: { x: 0.5, y: 0.5 } };
+        const canvas = sharpCanvas(c => algo.draw(c.getContext('2d'), c.width, c.height, input));
+        const cap = el('p', 'lab__cap');
+        cap.id = `algo-${algo.slug}-cap`;
+        const out = el('div', 'lab__out');
+        out.append(canvas, cap);
+        const describeIt = () => {
+            canvas.setAttribute('aria-label', algo.alt ? algo.alt(input) : algo.title);
+            if (algo.caption) cap.textContent = algo.caption(input);
+        };
+        canvas.setAttribute('role', 'img');
+        let primary = null;
+
+        if (algo.mode === 'seed') {
+            primary = button('Otra variación', 'e-btn e-btn--solid');
+            primary.addEventListener('click', () => {
+                Object.assign(input, algo.vary ? algo.vary() : { seed: 1 + Math.floor(Math.random() * 9999) });
+                describeIt();
+                repaint(canvas);
+                EchorathUI.loadFor(out, 350, { variant: 'static', reveal: true });
+            });
+        } else if (algo.mode === 'animation') {
+            // Runs while on screen and not paused; starts paused when the system asks for less motion
+            primary = button('', 'e-btn e-btn--solid');
+            let paused = reducedMotion.matches, visible = false, frame = 0, last = 0;
+            const tick = now => {
+                input.time += Math.min(100, now - last);
+                last = now;
+                repaint(canvas);
+                frame = requestAnimationFrame(tick);
+            };
+            const sync = () => {
+                cancelAnimationFrame(frame);
+                frame = 0;
+                if (!paused && visible) frame = requestAnimationFrame(now => { last = now; tick(now); });
+                primary.textContent = paused ? 'Reproducir' : 'Pausar';
+                primary.setAttribute('aria-label', `${paused ? 'Reproducir' : 'Pausar'} ${algo.title}`);
+                if (!algo.caption) cap.textContent = paused && reducedMotion.matches && input.time === 0 ? 'En pausa: tu sistema pide reducir el movimiento.' : '';
+            };
+            primary.addEventListener('click', () => { paused = !paused; sync(); });
+            new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }).observe(canvas);
+            sync();
+        } else if (algo.mode === 'interactive') {
+            // The pointer, or the arrow keys once the picture has focus
+            canvas.tabIndex = 0;
+            const hint = el('p', 'lab__cap', 'Mueve el ratón o el dedo sobre la imagen. Con el teclado, selecciónala y usa las flechas.');
+            hint.id = `algo-${algo.slug}-hint`;
+            canvas.setAttribute('aria-describedby', hint.id);
+            out.appendChild(hint);
+            const point = e => {
+                const r = canvas.getBoundingClientRect();
+                input.pointer = { x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) };
+                repaint(canvas);
+            };
+            canvas.addEventListener('pointermove', point);
+            canvas.addEventListener('pointerdown', point);
+            const KEYS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+            canvas.addEventListener('keydown', e => {
+                const move = KEYS[e.key];
+                if (!move) return;
+                e.preventDefault();
+                const step = e.shiftKey ? 0.2 : 0.05;
+                input.pointer = { x: Math.min(1, Math.max(0, input.pointer.x + move[0] * step)), y: Math.min(1, Math.max(0, input.pointer.y + move[1] * step)) };
+                repaint(canvas);
+            });
+        }
+        const showCode = button('Ver código', 'e-btn');
+        showCode.setAttribute('aria-label', `Ver código de ${algo.title}`);
+        showCode.addEventListener('click', () => openWork(ALGO_SET, i));
+        ALGO_SET.openers.push(showCode);
+        if (primary) actions.appendChild(primary);
+        actions.appendChild(showCode);
+        describeIt();
+        card.append(text, out);
+        algos.appendChild(card);
+        return {
+            card, primary: primary || showCode,
+            show(values) { Object.assign(input, values); describeIt(); repaint(canvas); },
+        };
+    });
+
+    // The window: pseudocode and code side by side when there is room, as tabs when not
+    const wideCode = matchMedia('(min-width: 900px)');
+    function layoutCode(view) {
+        const wide = wideCode.matches;
+        view.classList.toggle('is-wide', wide);
+        view.querySelector('.code-view__tabs').hidden = wide;
+        view.querySelectorAll('.code-view__pane').forEach((pane, k) => {
+            const tab = view.querySelectorAll('[role="tab"]')[k];
+            pane.hidden = !wide && tab.getAttribute('aria-selected') !== 'true';
+            if (wide) { pane.removeAttribute('role'); pane.removeAttribute('aria-labelledby'); }
+            else { pane.setAttribute('role', 'tabpanel'); pane.setAttribute('aria-labelledby', tab.id); }
+        });
+    }
+    wideCode.addEventListener('change', () => document.querySelectorAll('.code-view').forEach(layoutCode));
+    function renderCode(algo) {
+        const view = el('div', 'code-view');
+        view.appendChild(el('p', 'code-view__meta', `Algoritmo · ${MODE_LABEL[algo.mode]}${algo.year ? ` · ${algo.year}` : ''}${statusNote(algo)}`));
+        const tabs = el('div', 'e-tabs code-view__tabs');
+        tabs.setAttribute('role', 'tablist');
+        tabs.setAttribute('aria-label', `Código de ${algo.title}`);
+        const panes = el('div', 'code-view__panes');
+        const parts = [
+            { key: 'pseudo', label: 'Pseudocódigo', file: 'En castellano', text: algo.pseudo.trim(), copied: 'Pseudocódigo copiado' },
+            { key: 'js', label: 'JavaScript', file: `${algo.slug}.js`, text: codeOf(algo), copied: 'Código copiado' },
+        ];
+        const tabButtons = parts.map((part, k) => {
+            const tab = button(part.label, 'e-tab');
+            tab.id = `code-${algo.slug}-${part.key}-tab`;
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('aria-selected', String(k === 0));
+            tab.tabIndex = k === 0 ? 0 : -1;
+            tabs.appendChild(tab);
+
+            const pane = el('section', `code-view__pane is-${part.key}`);
+            const head = el('h3', 'code-view__head', part.label);
+            const bar = el('div', 'code__bar');
+            const copyIt = button(part.key === 'js' ? 'Copiar código' : 'Copiar pseudocódigo');
+            copyIt.addEventListener('click', () => copyText(part.text, part.copied));
+            bar.append(el('span', '', part.file), copyIt);
+            const pre = el('pre');
+            pre.tabIndex = 0;
+            pre.setAttribute('aria-label', part.key === 'js' ? `Código JavaScript de ${algo.title}` : `Pseudocódigo de ${algo.title}`);
+            const code = el('code');
+            if (part.key === 'js') code.appendChild(highlight(part.text, JS_TOKENS, ['tok-c', 'tok-s', 'tok-n', 'tok-k']));
+            // Pseudocode wraps on narrow screens: a wrapped line keeps its indentation,
+            // and after a label («Círculos: », «paleta ← ») it lines up with the text
+            else part.text.split('\n').forEach(line => {
+                const words = line.trimStart();
+                const hang = (words.match(/^(\S+ ← |[^\s:]+:\s+(?=\S))/) || [''])[0].length;
+                const row = el('span', words.startsWith('//') ? 'pseudo-line tok-c' : 'pseudo-line', words || ' ');
+                row.style.paddingLeft = `${line.length - words.length + hang}ch`;
+                row.style.textIndent = `-${hang}ch`;
+                code.appendChild(row);
+            });
+            pre.appendChild(code);
+            const box = el('div', 'code');
+            box.append(bar, pre);
+            pane.append(head, box);
+            panes.appendChild(pane);
+            return tab;
+        });
+        const select = (k, focus) => {
+            tabButtons.forEach((tab, j) => {
+                tab.setAttribute('aria-selected', String(j === k));
+                tab.tabIndex = j === k ? 0 : -1;
+            });
+            layoutCode(view);
+            if (focus) tabButtons[k].focus();
+        };
+        tabButtons.forEach((tab, k) => {
+            tab.addEventListener('click', () => select(k, false));
+            tab.addEventListener('keydown', e => {
+                const to = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: tabButtons.length - 1 }[e.key];
+                if (to === undefined) return;
+                e.preventDefault();
+                select((to + tabButtons.length) % tabButtons.length, true);
+            });
+        });
+        view.append(tabs, panes);
+        layoutCode(view);
+        return view;
+    }
+
+    // An image of the series, or the first screen's, opened in its algorithm
+    const seriesCard = algoCards[ALGORITHMS.findIndex(algo => algo.draw === repeticion)];
+    function openInLab(piece) {
+        if (!seriesCard) return;
+        seriesCard.show({ seed: piece.seed, kind: piece.kind });
+        seriesCard.card.scrollIntoView({ block: 'start' });
+        seriesCard.primary.focus({ preventScroll: true });
+        EchorathUI.loadFor(seriesCard.card, 500, { variant: 'scan', reveal: true });
+    }
+
+    // ---- First screen: a live piece of the series; each press draws another ----
+    // The first piece of the series: part of the page's look, shown whatever the gallery holds
+    const heroPiece = { title: 'Repetición 01', seed: 11, kind: 'Círculos' };
+    const heroRegen = document.getElementById('hero-regen');
+    const heroCap = document.getElementById('hero-cap');
+    const heroCanvas = sharpCanvas(paintPiece(heroPiece));
+    heroCanvas.setAttribute('aria-hidden', 'true');   // the caption describes it
+    heroRegen.prepend(heroCanvas);
+    const heroDesc = el('span', 'sr-only');
+    const captionHero = () => {
+        heroCap.textContent = `${heroPiece.title} · semilla ${heroPiece.seed} · ${heroPiece.kind}`;
+        heroDesc.textContent = `. ${describe(heroPiece)}`;
+        heroCap.appendChild(heroDesc);
+    };
+    heroRegen.addEventListener('click', () => {
+        heroPiece.title = 'Variación';
+        heroPiece.seed = 1 + Math.floor(Math.random() * 9999);
+        heroPiece.kind = KINDS[Math.floor(Math.random() * KINDS.length)];
+        repaint(heroCanvas);
+        captionHero();
+        EchorathUI.loadFor(heroRegen, 350, { variant: 'static', reveal: true });
+    });
+    const heroLab = document.getElementById('hero-lab');
+    if (heroLab) heroLab.addEventListener('click', e => {
+        e.preventDefault();
+        openInLab(heroPiece);
+    });
+    captionHero();
+
+    // ---- Where to start: one door per kind of work, each with a picture ----
+    const thumbOf = piece => {
+        const canvas = sharpCanvas(paintPiece(piece));
+        canvas.setAttribute('aria-hidden', 'true');
+        return canvas;
+    };
+    const hidden = node => { node.setAttribute('aria-hidden', 'true'); return node; };
+    const firstText = TEXTS[0];
+    const DOORS = [
+        TRACKS.length && { kicker: `Música · ${plural(TRACKS.length, 'muestra', 'muestras')}`, name: TRACKS[0].release, meta: `Último lanzamiento · ${TRACKS[0].album.split(' · ')[1]}`,
+          href: `#musica/${TRACKS[0].slug}`, thumb: () => {
+              // A cover reads as a cover when it carries the release's name
+              const cover = el('div', 'start__cover');
+              cover.append(thumbOf(coverOf(TRACKS[0].release)), hidden(el('span', 'start__label', TRACKS[0].release)));
+              return cover;
+          } },
+        TEXTS.length && { kicker: `Escritura · ${plural(TEXTS.length, 'texto', 'textos')}`, name: firstText.title, meta: `${firstText.kind} · ${firstText.year}`,
+          href: `#escritura/${firstText.slug}`, thumb: () => hidden(el('p', 'start__page', firstText.body[0])) },
+        PIECES.length && { kicker: `Imágenes · ${plural(PIECES.length, 'pieza', 'piezas')}`, name: 'Serie «Repetición»', meta: String(PIECES[0].year),
+          href: `#imagenes/${PIECES[0].slug}`, thumb: () => {
+              // Four pieces of the series, so the door is not the same image as the first
+              // screen; while the gallery holds fewer, four variations by the same algorithm
+              const mosaic = el('div', 'start__mosaic');
+              const four = PIECES.length >= 5 ? PIECES.slice(1, 5) : [27, 43, 58, 71].map((seed, k) => ({ seed, kind: KINDS[k + 1] }));
+              four.forEach(piece => mosaic.appendChild(thumbOf(piece)));
+              return mosaic;
+          } },
+        EFFECTS.length && { kicker: `Efectos · ${EFFECTS.length} distorsiones`, name: 'La sala de efectos', meta: 'Para verlos en marcha',
+          href: '#efectos', thumb: () => hidden(el('span', 'start__fx', 'Echorath')) },
+        ALGORITHMS.length && { kicker: `Algoritmos · ${plural(ALGORITHMS.length, 'algoritmo', 'algoritmos')}`, name: 'Cómo está hecha la obra', meta: 'Con su pseudocódigo y su código',
+          href: '#algoritmos', thumb: () => hidden(el('code', 'start__code', "repeticion(ctx, w, h, {\n  seed: 11,\n  kind: 'Círculos'\n})")) },
+    ].filter(Boolean);
+    const startList = document.getElementById('start-list');
+    if (startList) startList.replaceChildren();   // the placeholders kept the space
+    if (startList) DOORS.forEach(door => {
+        const li = el('li');
+        const card = el('a', 'start__card');
+        card.href = door.href;
+        const thumb = el('div', 'start__thumb');
+        thumb.appendChild(door.thumb());
+        const body = el('div', 'start__body');
+        body.append(el('span', 'start__kicker', door.kicker), el('span', 'start__name', door.name), el('span', 'start__meta', door.meta));
+        card.append(thumb, body);
+        // Pressing a door to the address already in the bar fires no hashchange
+        card.addEventListener('click', e => {
+            if (location.hash === door.href && door.href.includes('/')) {
+                e.preventDefault();
+                route();
+            }
+        });
+        li.appendChild(card);
+        startList.appendChild(li);
+    });
+
+    // ---- One address, written once: every "write to me" link takes it from here ----
+    const EMAIL = '{{EMAIL}}';
+    document.querySelectorAll('[data-mail]').forEach(link => {
+        const subject = link.dataset.mail;
+        link.href = `mailto:${EMAIL}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+    });
+    // A long address breaks after the @ or before a dot, never inside a word
+    const addr = document.getElementById('addr');
+    if (addr) addr.replaceChildren(...EMAIL.split(/(?<=@)|(?=\.)/).flatMap((part, i) => i ? [document.createElement('wbr'), part] : [part]));
+
+    // ---- Contact ----
+    const copy = document.getElementById('copy');
+    if (copy) copy.addEventListener('click', async () => {
+        const address = document.getElementById('addr').textContent;
+        try {
+            await navigator.clipboard.writeText(address);
+            EchorathUI.toast('Copiado', address, 'ok');
+        } catch (e) {
+            const range = document.createRange();
+            range.selectNodeContents(document.getElementById('addr'));
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            EchorathUI.toast('Selecciónalo', 'Tu navegador no permite copiar desde aquí', 'warn');
+        }
+    });
+
+    // ---- Effect pickers for the remaining components (each next to its target) ----
+    const heroName = document.querySelector('.hero__name');
+    heroName.parentNode.appendChild(EchorathUI.fxPicker(heroName, { name: heroName.textContent }));
+
+    document.querySelectorAll('.section__head .e-h2').forEach(h => {
+        h.parentNode.appendChild(EchorathUI.fxPicker(h, { name: 'el título ' + h.textContent }));
+    });
+
+    const table = document.querySelector('#sobre table');
+    if (table) table.after(EchorathUI.fxPicker(table, { name: 'la trayectoria' }));
+
+    const contactPanel = document.querySelector('#contacto .e-panel');
+    if (contactPanel) contactPanel.after(EchorathUI.fxPicker(contactPanel, { name: 'el contacto' }));
+
+    // ---- Effects mode: off by default; remembered per viewer ----
+    const fxMode = document.getElementById('fx-mode');
+    const applyFx = on => document.documentElement.classList.toggle('fx-on', on);
+    if (fxMode) try { fxMode.checked = localStorage.getItem('echorath-fx') === '1'; } catch (e) { /* storage unavailable */ }
+    if (fxMode) applyFx(fxMode.checked);
+    if (fxMode) fxMode.addEventListener('change', () => {
+        applyFx(fxMode.checked);
+        EchorathUI.toast(
+            fxMode.checked ? 'Modo efectos activado' : 'Modo efectos desactivado',
+            fxMode.checked ? 'Cada componente muestra un botón "Efectos" para probar sus distorsiones.' : 'Los botones de efectos se han ocultado.',
+            fxMode.checked ? 'ok' : 'info'
+        );
+        try { localStorage.setItem('echorath-fx', fxMode.checked ? '1' : '0'); } catch (e) { /* storage unavailable */ }
+    });
+
+    // ---- Current section in the bar ----
+    // The current section is the last one whose top has passed 45% of the
+    // viewport. At the end of the page the last section wins: Contacto is
+    // short and would never reach that line. A section the visitor asked for
+    // (the bar, a door, a link) keeps the mark while it is on screen, even
+    // where the page cannot scroll it to the top, until they scroll by hand.
+    const navLinks = [...document.querySelectorAll('[data-section]')];
+    const spySections = ['inicio', 'musica', 'escritura', 'imagenes', 'efectos', 'algoritmos', 'sobre', 'contacto'].map(id => document.getElementById(id)).filter(Boolean);
+    const markCurrent = id => navLinks.forEach(link => {
+        if (link.dataset.section === id) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+    });
+    let spyQueued = false;
+    let asked = null, arrived = false;
+    document.addEventListener('click', e => {
+        const link = e.target.closest && e.target.closest('a[href^="#"]');
+        const id = link && link.getAttribute('href').slice(1);
+        if (spySections.some(section => section.id === id)) { asked = id; arrived = false; }
+    });
+    const byHand = () => { asked = null; };
+    addEventListener('wheel', byHand, { passive: true });
+    addEventListener('touchstart', byHand, { passive: true });
+    addEventListener('keydown', e => { if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key) && !e.target.closest('input, textarea, select, [role="dialog"]')) byHand(); });
+    const updateCurrent = () => {
+        spyQueued = false;
+        const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+        let current = spySections[0];
+        for (const section of spySections) if (section.getBoundingClientRect().top <= innerHeight * 0.45) current = section;
+        if (asked) {
+            // once the section has been on screen, leaving it lets the usual rule back
+            const box = document.getElementById(asked).getBoundingClientRect();
+            const onScreen = box.top < innerHeight && box.bottom > 80;
+            if (onScreen) arrived = true;
+            else if (arrived) asked = null;
+        }
+        markCurrent(asked || (atEnd ? spySections[spySections.length - 1].id : current.id));
+    };
+    addEventListener('scroll', () => {
+        if (!spyQueued) { spyQueued = true; requestAnimationFrame(updateCurrent); }
+    }, { passive: true });
+    addEventListener('resize', updateCurrent);
+    updateCurrent();
+
+    // ---- Section changes distort the target section briefly ----
+    document.querySelectorAll('[data-section]').forEach(link => {
+        link.addEventListener('click', () => {
+            const target = document.getElementById(link.dataset.section);
+            if (target) EchorathUI.loadFor(target, 500, { reveal: true });
+        });
+    });
+
+    // ---- Long lists show their first works; one press shows the rest ----
+    // With today's content nothing is hidden; it matters once the catalogue grows.
+    function showFirst(container, count, label) {
+        if (!container) return () => {};
+        const items = [...container.children];
+        if (items.length <= count) return () => {};
+        items.slice(count).forEach(item => item.setAttribute('hidden', 'until-found'));
+        const more = button(label(items.length), 'e-btn more-btn');
+        container.after(more);
+        const reveal = () => {
+            items.forEach(item => { item.hidden = false; });
+            more.remove();
+        };
+        // Find in page, or a link to a passage, found a folded work: open the whole list
+        container.addEventListener('beforematch', reveal, { once: true });
+        more.addEventListener('click', () => {
+            reveal();
+            // Focus the first work that was hidden, so keyboard users carry on from there
+            const first = items[count].querySelector('button, a');
+            if (first) first.focus();
+        });
+        return reveal;
+    }
+    const revealTracks = showFirst(list, 4, n => `Ver las ${n} pistas`);
+    TEXT_SET.reveal = showFirst(texts, 3, n => `Ver los ${n} textos`);
+    IMAGE_SET.reveal = showFirst(gallery, 6, n => `Ver las ${n} imágenes`);
+    // Printing, or saving as PDF, takes every work: the folded lists open and
+    // their pictures are drawn before the page goes to paper
+    addEventListener('beforeprint', () => {
+        revealTracks();
+        TEXT_SET.reveal();
+        IMAGE_SET.reveal();
+        document.querySelectorAll('main canvas').forEach(canvas => {
+            if (!painters.has(canvas)) return;
+            const px = Math.min(2400, Math.round(canvas.getBoundingClientRect().width * (window.devicePixelRatio || 1)));
+            if (px > 0 && px !== canvas.width) {
+                canvas.width = canvas.height = px;
+                repaint(canvas);
+            }
+        });
+    });
+
+    // ---- Addresses of works: #escritura/<texto>, #imagenes/<imagen>, #musica/<pista>, #algoritmos/<algoritmo> ----
+    function route(how = 'hash') {
+        const [section, id] = decodeURIComponent(location.hash.slice(1)).split('/');
+        if (!['escritura', 'imagenes', 'musica', 'algoritmos'].includes(section) || location.hash.indexOf('/') < 0 || document.querySelector('.e-modal-overlay') || !document.getElementById(section)) return;
+        const jump = () => document.getElementById(section).scrollIntoView({ block: 'start', behavior: 'instant' });
+        // The work is not there (renamed, or gone): its section, and a word about it
+        const missing = () => {
+            history.replaceState(null, '', `#${section}`);
+            jump();
+            EchorathUI.toast('No encuentro esa obra', 'Puede que haya cambiado de nombre. Aquí están las demás.', 'warn');
+        };
+        if (!id) { missing(); return; }
+        if (section === 'escritura' || section === 'imagenes' || section === 'algoritmos') {
+            const set = { escritura: TEXT_SET, imagenes: IMAGE_SET, algoritmos: ALGO_SET }[section];
+            const i = set.items.findIndex(isWork(id));
+            if (i < 0) { missing(); return; }
+            if (set.openers[i].closest('[hidden]') && set.reveal) set.reveal();
+            jump();
+            openWork(set, i, how);
+        } else if (section === 'musica') {
+            const i = TRACKS.findIndex(isWork(id));
+            if (i < 0) { missing(); return; }
+            if (trackButtons[i].closest('[hidden]')) revealTracks();
+            const row = trackButtons[i].closest('.track-row');
+            row.scrollIntoView({ block: 'center', behavior: 'instant' });
+            trackButtons[i].focus({ preventScroll: true });
+            row.classList.add('is-linked');
+            setTimeout(() => row.classList.remove('is-linked'), 3000);
+        }
+    }
+    addEventListener('hashchange', () => route('hash'));
+    route('load');
+});
+</script>

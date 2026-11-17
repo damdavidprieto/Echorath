@@ -1,0 +1,131 @@
+/*
+ * Component · Button
+ * Block:     .e-btn             outlined control, fill sweeps in on hover
+ * Modifiers: .e-btn--ghost      outlined (same as the default, explicit)
+ *            .e-btn--solid      filled
+ *            .e-btn--danger | --warn | --info   tone shortcuts
+ *            .e-btn--block      full width
+ *            .e-btn--sm         compact size
+ * States:    :hover, :focus-visible, :disabled, [aria-disabled="true"]
+ * Touch:     44px tall on coarse pointers, --sm included
+ * Tone:      data-tone overrides the modifier tone
+ */
+@layer e.components {
+    .e-btn {
+        --e-tone: var(--e-color-green);
+        position: relative;
+        isolation: isolate;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--e-space-2);
+        min-height: var(--e-control-height);
+        padding: 10px var(--e-space-5);
+        overflow: hidden;
+        background: transparent;
+        color: var(--e-tone);
+        border: var(--e-border-width) solid var(--e-tone);
+        font: inherit;
+        font-size: var(--e-font-size-sm);
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            color var(--e-duration-fast) var(--e-ease),
+            box-shadow var(--e-duration-fast) var(--e-ease);
+    }
+
+    /* Fill that sweeps in on hover and focus */
+    .e-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--e-tone);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s var(--e-ease);
+    }
+
+    .e-btn:focus-visible::before {
+        transform: scaleX(1);
+    }
+
+    .e-btn:focus-visible {
+        color: var(--e-color-on-signal);
+        box-shadow: 0 0 15px var(--e-tone);
+    }
+
+    /* Hover only where there is a pointer that hovers: on touch screens a tapped
+       control would otherwise keep its hover look until the next tap elsewhere */
+    @media (hover: hover) {
+        .e-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .e-btn:hover {
+            color: var(--e-color-on-signal);
+            box-shadow: 0 0 15px var(--e-tone);
+        }
+
+        .e-btn--solid:hover {
+            color: var(--e-tone);
+        }
+    }
+
+    /* 2px: a button that already looks active (the current section in a bar,
+       a pressed toggle) changes only by this ring when it takes focus */
+    .e-btn:focus-visible {
+        outline: calc(2 * var(--e-border-width)) solid var(--e-tone);
+        outline-offset: 3px;
+    }
+
+    .e-btn--solid {
+        background: var(--e-tone);
+        color: var(--e-color-on-signal);
+    }
+
+    .e-btn--solid::before {
+        background: var(--e-color-on-signal);
+    }
+
+    .e-btn--solid:focus-visible {
+        color: var(--e-tone);
+    }
+
+    .e-btn--danger { --e-tone: var(--e-color-red); }
+    .e-btn--warn   { --e-tone: var(--e-color-amber); }
+    .e-btn--info   { --e-tone: var(--e-color-blue); }
+
+    .e-btn--block {
+        width: 100%;
+    }
+
+    .e-btn--sm {
+        min-height: 30px;
+        padding: var(--e-space-1) 10px;
+        font-size: var(--e-font-size-xs);
+    }
+
+    @media (pointer: coarse) {
+        .e-btn,
+        .e-btn--sm {
+            min-height: 44px;
+        }
+    }
+
+    .e-btn:disabled,
+    .e-btn[aria-disabled="true"] {
+        color: var(--e-color-text-faint);
+        border-color: var(--e-color-line);
+        background: repeating-linear-gradient(45deg, transparent 0 10px, rgba(255, 255, 255, 0.02) 10px 20px);
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+    .e-btn:disabled::before,
+    .e-btn[aria-disabled="true"]::before {
+        display: none;
+    }
+}

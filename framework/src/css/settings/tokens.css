@@ -1,0 +1,115 @@
+/*
+ * Settings · Design tokens
+ * Every value the framework uses comes from here. Override any token on
+ * :root (or on a container) to retheme without touching component CSS.
+ *
+ * Naming: --e-{category}-{name}
+ */
+@layer e.settings {
+    :root {
+        /* Color · surfaces */
+        --e-color-bg: #050505;
+        --e-color-surface: #0a0a0a;
+        --e-color-sunken: #000;
+        --e-color-line: #2a2a2a;
+        --e-color-line-soft: #1d1d1d;
+        --e-color-line-strong: #6e6e6e;            /* 3.9:1 on surface: borders that mark a control (WCAG 1.4.11) */
+
+        /* Color · text */
+        --e-color-text: #e0e0e0;
+        --e-color-text-dim: #a0a0a0;
+        --e-color-text-faint: #7d7d7d;             /* 4.8:1 on surface (WCAG AA) */
+        --e-color-on-signal: #000;
+
+        /* Color · signal (neon) */
+        --e-color-green: #00ff9d;
+        --e-color-blue: #00b8ff;
+        --e-color-red: #ff0055;
+        --e-color-amber: #ffaa00;
+        --e-color-cyan: #00ffff;
+
+        /* Color · highlight: the least present colour, only to pick something
+           out (selected text, a passage a link points to, <mark>, the caret,
+           the corners of a panel under the pointer). Follows the red. */
+        --e-color-highlight: var(--e-color-red);
+
+        /* Color · atmosphere */
+        --e-color-grid: rgba(0, 255, 157, 0.05);
+        --e-color-overlay: rgba(0, 0, 0, 0.8);
+        --e-color-glass: rgba(10, 10, 10, 0.95);
+
+        /* Typography */
+        --e-font-display: 'Orbitron', sans-serif;
+        --e-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+        --e-font-text: 'Literata', Georgia, 'Times New Roman', serif;   /* reading face for .e-prose */
+
+        --e-font-size-2xs: 0.7rem;
+        --e-font-size-xs: 0.75rem;                 /* 11.25px: the smallest size iOS and Android use for labels */
+        --e-font-size-sm: 0.8rem;
+        --e-font-size-md: 0.9rem;
+        --e-font-size-base: 1rem;
+        --e-font-size-lg: 1.1rem;
+        --e-font-size-xl: 1.6rem;
+        --e-font-size-2xl: 2.6rem;
+
+        --e-tracking-tight: 1px;
+        --e-tracking-wide: 2px;
+        --e-tracking-wider: 3px;
+
+        /* Spacing (4px scale) */
+        --e-space-1: 4px;
+        --e-space-2: 8px;
+        --e-space-3: 12px;
+        --e-space-4: 16px;
+        --e-space-5: 20px;
+        --e-space-6: 24px;
+        --e-space-8: 32px;
+        --e-space-10: 40px;
+
+        /* Layout */
+        --e-container-max: 1200px;
+        --e-gutter: clamp(16px, 4vw, 32px);
+        --e-header-offset: 0px;                    /* set by the runtime to the header height */
+
+        /* Shape */
+        --e-border-width: 1px;
+        --e-corner-size: 10px;
+        --e-corner-size-active: 18px;
+        --e-control-height: 40px;
+
+        /* Glow */
+        --e-glow-sm: 6px;
+        --e-glow-md: 14px;
+        --e-glow-lg: 20px;
+
+        /* Motion */
+        --e-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --e-ease-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        --e-duration-fast: 0.2s;
+        --e-duration-base: 0.3s;
+        --e-duration-slow: 0.6s;
+
+        /* Distortion tuning */
+        --e-distort-split: 2px;                    /* RGB split distance */
+        --e-distort-a: var(--e-color-red);         /* first split channel */
+        --e-distort-b: var(--e-color-cyan);        /* second split channel */
+
+        /* Stacking */
+        --e-z-sticky: 100;
+        --e-z-header: 1000;
+        --e-z-crt: 9990;
+        --e-z-toast: 10000;
+        --e-z-modal: 10001;
+    }
+
+    /* The system asks for more contrast: every text reaches at least 7:1
+       (WCAG AAA) and the lines stand out more */
+    @media (prefers-contrast: more) {
+        :root {
+            --e-color-line: #4d4d4d;
+            --e-color-line-strong: #909090;
+            --e-color-text-dim: #c4c4c4;
+            --e-color-text-faint: #a0a0a0;             /* 7.6:1 on surface */
+        }
+    }
+}

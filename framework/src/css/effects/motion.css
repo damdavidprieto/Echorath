@@ -1,0 +1,32 @@
+/*
+ * Effects · Reduced motion
+ * When the system asks for less motion, distortions, reveals and ambient
+ * animation stop. Loading elements stay recognizable as dimmed content.
+ */
+@layer e.effects {
+    @media (prefers-reduced-motion: reduce) {
+        [data-loading],
+        [data-reveal],
+        [data-focus]:focus-visible,
+        .e-radar::before,
+        .e-tabpanel.is-entering,
+        .e-fx__option::after {
+            animation: none !important;
+            filter: none !important;
+            clip-path: none !important;
+            transform: none !important;
+            text-shadow: none !important;
+        }
+
+        [data-loading] {
+            opacity: 0.55;
+        }
+
+        .e-toast,
+        .e-modal,
+        .e-modal-overlay,
+        .e-switch__track::before {
+            transition: none !important;
+        }
+    }
+}

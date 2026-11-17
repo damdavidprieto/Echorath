@@ -1,0 +1,13 @@
+# Built site
+/dist/
+
+# Dependencies and test output
+node_modules/
+test-results/
+
+# Editors and systems
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

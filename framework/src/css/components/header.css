@@ -1,0 +1,140 @@
+/*
+ * Component · Header
+ * Block:    .e-header           fixed top bar, full width
+ * Modifiers: .e-header--sticky  stays in the page flow and sticks to the top
+ *                               (put it directly in <body> so it spans the width)
+ * Elements: .e-header__sub      caption under the brand
+ *           .e-header__toggle   menu button, only shown on phones (use with .e-btn)
+ *           .e-header__nav      navigation; drops down under the bar on phones
+ * States:   .e-header__nav.is-open   menu expanded (set by the runtime)
+ *           .e-header.is-compact      folded into the menu because the nav
+ *                                     does not fit in one row (set by the runtime)
+ * Breakpoint: 640px. Below it the bar becomes one compact row
+ *             (brand + toggle) and the caption is hidden, with or without
+ *             JavaScript. Above it the runtime folds the bar the same way
+ *             (.is-compact) whenever brand and nav no longer fit in one row;
+ *             the open menu then lays its items out in a grid.
+ * Alignment:  the bar spans the viewport while its content lines up with
+ *             .e-container (--e-container-max, --e-gutter).
+ * Runtime:    keeps --e-header-offset equal to the bar's height, so anchor
+ *             links scroll their target clear of it.
+ *
+ * Markup:
+ *   <header class="e-header">
+ *     <div><h1 class="e-h1">Echorath</h1><div class="e-header__sub">…</div></div>
+ *     <button class="e-btn e-btn--sm e-header__toggle" type="button"
+ *             aria-expanded="false" aria-controls="main-nav">Menú</button>
+ *     <nav class="e-header__nav" id="main-nav">…</nav>
+ *   </header>
+ */
+@layer e.components {
+    .e-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: var(--e-z-header);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--e-space-4);
+        min-height: 72px;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: 0;
+        padding-left: max(var(--e-gutter), env(safe-area-inset-left, 0px), calc((100% - var(--e-container-max)) / 2 + var(--e-gutter)));
+        padding-right: max(var(--e-gutter), env(safe-area-inset-right, 0px), calc((100% - var(--e-container-max)) / 2 + var(--e-gutter)));
+        background: var(--e-color-glass);
+        border-bottom: 2px solid var(--e-color-green);
+        box-shadow: 0 0 var(--e-glow-lg) color-mix(in srgb, var(--e-color-green) 20%, transparent);
+        backdrop-filter: blur(10px);
+    }
+
+    .e-header--sticky {
+        position: sticky;
+    }
+
+    .e-header__sub {
+        font-size: var(--e-font-size-xs);
+        letter-spacing: var(--e-tracking-wider);
+        color: var(--e-color-text-dim);
+    }
+
+    .e-header__nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--e-space-3);
+    }
+
+    /* Scoped to .e-header so it beats .e-btn's display regardless of file order */
+    .e-header .e-header__toggle {
+        display: none;
+    }
+
+    @media (max-width: 640px) {
+        .e-header {
+            min-height: 0;
+            gap: 10px var(--e-space-3);
+            padding-top: calc(10px + env(safe-area-inset-top, 0px));
+            padding-bottom: 10px;
+        }
+
+        .e-header .e-h1 {
+            font-size: 1.2rem;
+        }
+
+        .e-header__sub {
+            display: none;
+        }
+
+        .e-header .e-header__toggle {
+            display: inline-flex;
+        }
+
+        .e-header__nav {
+            display: none;
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--e-space-2);
+            width: 100%;
+            padding-bottom: var(--e-space-1);
+        }
+
+        .e-header__nav.is-open {
+            display: flex;
+        }
+    }
+
+    /* Same compact row as on phones, chosen by the runtime from the space the nav needs */
+    .e-header.is-compact {
+        min-height: 0;
+        gap: 10px var(--e-space-3);
+        padding-top: calc(10px + env(safe-area-inset-top, 0px));
+        padding-bottom: 10px;
+    }
+
+    .e-header.is-compact .e-h1 {
+        font-size: 1.2rem;
+    }
+
+    .e-header.is-compact .e-header__sub {
+        display: none;
+    }
+
+    .e-header.is-compact .e-header__toggle {
+        display: inline-flex;
+    }
+
+    .e-header.is-compact .e-header__nav {
+        display: none;
+        width: 100%;
+        padding-bottom: var(--e-space-1);
+    }
+
+    .e-header.is-compact .e-header__nav.is-open {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+        gap: var(--e-space-2);
+    }
+}

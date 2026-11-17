@@ -1,0 +1,50 @@
+/*
+ * Component · Toast
+ * Block:    .e-toasts         fixed stack, created by the runtime
+ *           .e-toast          one notification
+ * Elements: .e-toast__title, .e-toast__msg
+ * States:   .e-toast.is-visible   slid into view (set by the runtime)
+ * Tone:     data-tone on .e-toast
+ */
+@layer e.components {
+    .e-toasts {
+        position: fixed;
+        right: calc(var(--e-space-6) + env(safe-area-inset-right, 0px));
+        bottom: calc(var(--e-space-6) + env(safe-area-inset-bottom, 0px));
+        z-index: var(--e-z-toast);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .e-toast {
+        display: flex;
+        min-width: min(280px, calc(100vw - 48px));
+        max-width: 360px;
+        padding: 14px 18px;
+        background: var(--e-color-glass);
+        border: var(--e-border-width) solid var(--e-color-line);
+        border-left: 4px solid var(--e-tone, var(--e-color-blue));
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        transform: translateX(120%);
+        transition: transform var(--e-duration-base) var(--e-ease-spring);
+    }
+
+    .e-toast.is-visible {
+        transform: translateX(0);
+    }
+
+    .e-toast__title {
+        display: block;
+        margin-bottom: var(--e-space-1);
+        font-weight: 700;
+        color: var(--e-tone, var(--e-color-blue));
+    }
+
+    .e-toast__msg {
+        display: block;
+        font-size: var(--e-font-size-sm);
+        color: var(--e-color-text-dim);
+    }
+}

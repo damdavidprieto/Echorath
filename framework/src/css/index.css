@@ -1,0 +1,55 @@
+/*
+ * Echorath UI · CSS entry point
+ *
+ * Cascade layers, lowest to highest priority:
+ *   e.settings    design tokens
+ *   e.base        document defaults, typography, atmosphere
+ *   e.layout      grid and flow helpers
+ *   e.components  one file per component
+ *   e.effects     focus, distortions, reduced motion
+ *   e.tones       data-tone presets (must win over component defaults)
+ *
+ * Styles you write outside any layer override all of these, regardless of
+ * selector specificity. The one exception inside Echorath UI is
+ * base/document.css (page font, colors, color-scheme), which is unlayered so
+ * host resets cannot override it.
+ */
+/* The fonts ship with Echorath UI (dist/fonts). Literata is the reading face
+   of .e-prose; browsers only download a font when some text uses it */
+@import "./base/fonts.css";
+
+@import "./settings/layers.css";
+@import "./settings/tokens.css";
+
+@import "./base/document.css";
+@import "./base/base.css";
+@import "./base/typography.css";
+@import "./base/atmosphere.css";
+@import "./base/print.css";
+
+@import "./layout/container.css";
+@import "./layout/grid.css";
+@import "./layout/flow.css";
+
+@import "./components/header.css";
+@import "./components/panel.css";
+@import "./components/button.css";
+@import "./components/badge.css";
+@import "./components/field.css";
+@import "./components/switch.css";
+@import "./components/metric.css";
+@import "./components/table.css";
+@import "./components/tabs.css";
+@import "./components/log.css";
+@import "./components/radar.css";
+@import "./components/toast.css";
+@import "./components/modal.css";
+@import "./components/fxpicker.css";
+@import "./components/prose.css";
+
+@import "./effects/keyframes.css";
+@import "./effects/focus.css";
+@import "./effects/distortions.css";
+@import "./effects/motion.css";
+
+@import "./themes/tones.css";

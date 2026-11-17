@@ -1,0 +1,214 @@
+/*
+ * Effects · Loading distortions
+ *
+ * Any element with [data-loading] plays a distortion. Pick it with
+ * data-distort; without it the element uses "standard".
+ *
+ *   standard  chromatic split (red/cyan) with a light tremor  ← default
+ *   flicker   opacity flicker and a faint tone pulse
+ *   glitch    heavy split, jitter and torn slices
+ *   scan      horizontal slices slide out of place
+ *   wave      the block sways like a signal
+ *   shatter   polygon clip that breaks and re-assembles
+ *   warp      liquid displacement      (SVG filter #e-warp, runtime-driven)
+ *   static    high-frequency grain     (SVG filter #e-static, runtime-driven)
+ *   decode    text scramble            (runtime-driven, text-only elements)
+ *
+ * Tune the split with --e-distort-split, --e-distort-a, --e-distort-b.
+ */
+@layer e.effects {
+    [data-loading] {
+        pointer-events: none;
+        cursor: progress;
+    }
+
+    /* Inline targets ignore transform; the runtime boxes them while distorting */
+    [data-loading][data-boxed] {
+        display: inline-block;
+    }
+
+    /* Controls marked data-e-interactive stay usable inside a loading container */
+    [data-loading] [data-e-interactive] {
+        pointer-events: auto;
+    }
+
+    /*
+     * data-e-pause-on-hover: for content that stays distorted on purpose.
+     * The element keeps receiving the pointer, and its distortion stops
+     * entirely while the pointer is over it or keyboard focus is on or inside
+     * it, so it can be read. Focus left behind by a mouse click does not
+     * count (:focus-visible). :is() is forgiving: browsers without :has()
+     * drop that part and keep pausing on hover. Higher specificity than every
+     * variant rule below.
+     */
+    [data-loading][data-e-pause-on-hover] {
+        pointer-events: auto;
+        cursor: auto;
+    }
+
+    [data-loading][data-e-pause-on-hover]:is(:hover, :focus-visible, :has(:focus-visible)) {
+        animation: none;
+        filter: none;
+        text-shadow: none;
+        clip-path: none;
+        transform: none;
+    }
+
+    /* standard (default): chromatic split with a light tremor */
+    @keyframes e-distort-standard {
+        0%, 100% {
+            transform: translate(0);
+            text-shadow:
+                var(--e-distort-split) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * -1) 0 var(--e-distort-b);
+        }
+        25% {
+            transform: translate(-1px, 0);
+            text-shadow:
+                calc(var(--e-distort-split) * -1) 0 var(--e-distort-a),
+                var(--e-distort-split) 0 var(--e-distort-b);
+        }
+        50% {
+            transform: translate(1px, 1px);
+            text-shadow:
+                calc(var(--e-distort-split) * 1.5) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * -0.5) 0 var(--e-distort-b);
+        }
+        75% {
+            transform: translate(0, -1px);
+            text-shadow:
+                calc(var(--e-distort-split) * -0.5) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * 1.5) 0 var(--e-distort-b);
+        }
+    }
+
+    [data-loading]:not([data-distort]),
+    [data-loading][data-distort="standard"] {
+        animation: e-distort-standard 0.4s steps(2, end) infinite;
+    }
+
+    /* flicker: opacity flicker and a faint tone pulse */
+    @keyframes e-distort-flicker {
+        0%, 100% { opacity: 1; box-shadow: none; }
+        18%      { opacity: 0.55; }
+        24%      { opacity: 1; }
+        55%      { opacity: 0.8; box-shadow: 0 0 12px -4px var(--e-tone, var(--e-color-green)); }
+        70%      { opacity: 1; box-shadow: none; }
+    }
+
+    [data-loading][data-distort="flicker"] {
+        animation: e-distort-flicker 1.6s linear infinite;
+    }
+
+    /* glitch: heavy split, jitter and torn slices */
+    @keyframes e-distort-glitch {
+        0%, 100% {
+            transform: translate(0);
+            clip-path: inset(0);
+            text-shadow:
+                var(--e-distort-split) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * -1) 0 var(--e-distort-b);
+        }
+        15% {
+            transform: translate(-4px, 1px);
+            clip-path: inset(10% 0 55% 0);
+        }
+        30% {
+            transform: translate(4px, -1px);
+            clip-path: inset(0);
+            text-shadow:
+                calc(var(--e-distort-split) * -2) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * 2) 0 var(--e-distort-b);
+        }
+        50% {
+            transform: translate(-2px, 2px);
+            clip-path: inset(60% 0 5% 0);
+        }
+        70% {
+            transform: translate(2px, 0);
+            clip-path: inset(0);
+            text-shadow:
+                calc(var(--e-distort-split) * 3) 0 var(--e-distort-a),
+                calc(var(--e-distort-split) * -1) 0 var(--e-distort-b);
+        }
+    }
+
+    [data-loading][data-distort="glitch"] {
+        animation: e-distort-glitch 0.5s steps(1, end) infinite;
+    }
+
+    /* scan: horizontal slices slide out of place */
+    @keyframes e-distort-scan {
+        0%   { clip-path: inset(0 0 0 0);     transform: translateX(0); }
+        15%  { clip-path: inset(12% 0 70% 0); transform: translateX(-6px); }
+        30%  { clip-path: inset(60% 0 8% 0);  transform: translateX(5px); }
+        45%  { clip-path: inset(30% 0 40% 0); transform: translateX(-3px); }
+        60%  { clip-path: inset(0 0 0 0);     transform: translateX(0); }
+        75%  { clip-path: inset(80% 0 2% 0);  transform: translateX(7px); }
+        100% { clip-path: inset(0 0 0 0);     transform: translateX(0); }
+    }
+
+    [data-loading][data-distort="scan"] {
+        animation: e-distort-scan 0.9s steps(1, end) infinite;
+    }
+
+    /* wave: the block sways like a signal */
+    @keyframes e-distort-wave {
+        0%, 100% { transform: skewX(0deg); }
+        25%      { transform: skewX(-3deg); }
+        50%      { transform: skewX(0deg); }
+        75%      { transform: skewX(3deg); }
+    }
+
+    [data-loading][data-distort="wave"] {
+        animation: e-distort-wave 1.2s ease-in-out infinite;
+    }
+
+    /* shatter: polygon clip that breaks and re-assembles */
+    @keyframes e-distort-shatter {
+        0%   { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);  transform: none; }
+        20%  { clip-path: polygon(0 0, 100% 0, 100% 40%, 0 52%);    transform: translate(3px, 0); }
+        40%  { clip-path: polygon(0 8%, 100% 0, 96% 100%, 4% 90%);  transform: translate(-4px, 2px); }
+        60%  { clip-path: polygon(2% 0, 100% 6%, 100% 60%, 0 100%); transform: translate(2px, -2px); }
+        80%  { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);  transform: translate(-2px, 0); }
+        100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);  transform: none; }
+    }
+
+    [data-loading][data-distort="shatter"] {
+        animation: e-distort-shatter 0.7s steps(1, end) infinite;
+    }
+
+    /* warp: liquid displacement (SVG filter; the runtime animates its seed) */
+    [data-loading][data-distort="warp"] {
+        filter: url(#e-warp);
+        animation: e-anim-flicker 0.5s steps(2, end) infinite;
+    }
+
+    /* static: high-frequency grain (SVG filter; the runtime animates its seed).
+       The grain stays fast; the brightness dips stay at 2.5 a second, under the
+       3 flashes a second WCAG 2.3.1 allows over a large area (at 0.18s, a bright
+       image flashed 5.5 times a second) */
+    [data-loading][data-distort="static"] {
+        filter: url(#e-static);
+        animation: e-anim-flicker 0.4s steps(2, end) infinite;
+    }
+
+    /* decode: the runtime scrambles the text; keep glyph widths steady */
+    [data-decoding] {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /*
+     * Out of view (data-e-offscreen, set by the runtime) the distortion holds
+     * still: an animation nobody sees still costs style and layout work on
+     * every frame. It resumes 100px before the element scrolls back in.
+     */
+    [data-loading][data-e-offscreen] {
+        animation-play-state: paused !important;
+    }
+
+    /* Reveal after loading ends */
+    [data-reveal] {
+        animation: e-anim-reveal var(--e-duration-slow) var(--e-ease) both;
+    }
+}

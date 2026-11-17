@@ -1,0 +1,5 @@
+/*
+ * Settings · Cascade layer order
+ * Declared once, before any layer is used. Lowest to highest priority.
+ */
+@layer e.settings, e.base, e.layout, e.components, e.effects, e.tones;

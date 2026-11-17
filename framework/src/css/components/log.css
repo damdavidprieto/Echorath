@@ -1,0 +1,22 @@
+/*
+ * Component · Log (console)
+ * Block:    .e-log          scrolling monospace console (role="log")
+ * Elements: .e-log__line    one entry
+ * Tone:     data-tone on a line colors it
+ */
+@layer e.components {
+    .e-log {
+        height: 160px;
+        overflow-y: auto;
+        padding: var(--e-space-3);
+        background: var(--e-color-sunken);
+        border: var(--e-border-width) solid #222;
+        font-size: 0.72rem;
+        line-height: 1.6;
+    }
+
+    .e-log__line {
+        display: block;
+        color: var(--e-tone, var(--e-color-green));
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "urls": {
+    "dev": "https://damdavidprieto.github.io/Echorath/dev/",
+    "prod": "https://damdavidprieto.github.io/Echorath/"
+  },
+  "email": { "status": "sample", "address": "correo@echorath.example" },
+  "links": [
+    { "status": "sample", "name": "Instagram", "url": "https://www.instagram.com" },
+    { "status": "sample", "name": "Wattpad", "url": "https://www.wattpad.com" },
+    { "status": "sample", "name": "GitHub", "url": "https://github.com" }
+  ]
+}

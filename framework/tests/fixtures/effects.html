@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echorath UI · banco de pruebas de efectos</title>
+    <link rel="stylesheet" href="../../dist/echorath-ui.css">
+    <script src="../../dist/echorath-ui.js" defer></script>
+    <style>
+        /* Fixture layout only. Each target sits next to a probe: if the probe
+           moves while the target distorts, the effect caused a layout shift. */
+        body { padding-block: 24px; }
+        .slot { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .probe { display: inline-block; flex: none; width: 16px; height: 16px; background: #333; }
+        .inline-host { margin: 0 0 20px; }
+    </style>
+</head>
+<body>
+    <main class="e-container">
+        <div class="slot">
+            <article class="e-panel" id="c-panel" style="width: 320px">
+                <div class="e-panel__head"><h3 class="e-panel__title">Panel</h3></div>
+                <p style="margin: 0">Texto de prueba dentro del panel.</p>
+            </article>
+            <span class="probe" id="p-panel"></span>
+        </div>
+
+        <div class="slot">
+            <button class="e-btn" id="c-button" type="button">Reproducir</button>
+            <span class="probe" id="p-button"></span>
+        </div>
+
+        <div class="slot">
+            <span class="e-badge" id="c-badge">Activo</span>
+            <span class="probe" id="p-badge"></span>
+        </div>
+
+        <div class="slot">
+            <div class="e-metric"><span class="e-metric__value" id="c-metric">128</span></div>
+            <span class="probe" id="p-metric"></span>
+        </div>
+
+        <div class="slot">
+            <h2 class="e-h2" id="c-heading">Escritura</h2>
+            <span class="probe" id="p-heading"></span>
+        </div>
+
+        <p class="inline-host">Antes <span id="c-inline">texto en línea</span> <span class="probe" id="p-inline"></span> después.</p>
+
+        <div class="slot">
+            <table class="e-table" id="c-table" style="width: 320px">
+                <thead><tr><th>Hora</th><th>Origen</th></tr></thead>
+                <tbody><tr><td>08:22</td><td>10.0.0.8</td></tr></tbody>
+            </table>
+            <span class="probe" id="p-table"></span>
+        </div>
+
+        <div class="slot">
+            <div class="e-panel" id="c-canvas" style="width: 160px; padding: 12px">
+                <canvas width="134" height="80" style="display: block"></canvas>
+            </div>
+            <span class="probe" id="p-canvas"></span>
+        </div>
+
+        <article class="e-panel" id="c-wide">
+            <p style="margin: 0">Panel a todo el ancho: no debe provocar desplazamiento horizontal.</p>
+        </article>
+        <span class="probe" id="p-wide"></span>
+    </main>
+
+    <script>
+        const ctx = document.querySelector('#c-canvas canvas').getContext('2d');
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, 134, 80);
+        ctx.fillStyle = '#00ff9d';
+        for (let i = 0; i < 6; i++) ctx.fillRect(10 + i * 20, 20 + (i % 3) * 12, 12, 30);
+    </script>
+</body>
+</html>

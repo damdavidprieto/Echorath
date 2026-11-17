@@ -1,0 +1,51 @@
+/*
+ * Base · Box model, scrollbars and highlights
+ * Page colors and fonts live in document.css, outside the layers.
+ */
+@layer e.base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    /* The thumb stands out 4:1 from the track (6.5:1 when the system asks
+       for more contrast) and the bar is 10px wide to grab it; the transparent
+       border keeps the thumb as slim as it looks */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #020202;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--e-color-line-strong);
+        background-clip: padding-box;
+        border: 2px solid transparent;
+        border-radius: 5px;
+    }
+
+    /* Selected text, a passage a link points to (#:~:text=) and <mark> are
+       picked out in the highlight colour, dark enough for white text to read
+       10:1 on it */
+    ::selection,
+    ::target-text {
+        background: color-mix(in srgb, var(--e-color-highlight) 50%, var(--e-color-surface));
+        color: #fff;
+    }
+
+    mark {
+        background: color-mix(in srgb, var(--e-color-highlight) 35%, var(--e-color-surface));
+        color: #fff;
+        padding-inline: 0.1em;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--e-color-blue);
+        background-clip: padding-box;
+        box-shadow: 0 0 10px var(--e-color-blue);
+    }
+}

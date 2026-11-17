@@ -1,0 +1,25 @@
+/*
+ * Base · Atmosphere (opt-in page backdrops)
+ * <body class="e-grid-bg">  faint neon grid
+ * <body class="e-crt">      CRT scanlines, under toasts and modals
+ */
+@layer e.base {
+    body.e-grid-bg {
+        background-image:
+            linear-gradient(var(--e-color-grid) 1px, transparent 1px),
+            linear-gradient(90deg, var(--e-color-grid) 1px, transparent 1px);
+        background-size: 30px 30px;
+    }
+
+    body.e-crt::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: var(--e-z-crt);
+        pointer-events: none;
+        background:
+            linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+            linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 2px, 3px 100%;
+    }
+}

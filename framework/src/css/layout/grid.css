@@ -1,0 +1,25 @@
+/*
+ * Layout · 12-column grid
+ * <div class="e-grid"> with children .e-span-{3|4|6|12}.
+ * Below 900px every span stacks to full width.
+ */
+@layer e.layout {
+    .e-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: var(--e-space-5);
+    }
+
+    .e-span-3  { grid-column: span 3; }
+    .e-span-4  { grid-column: span 4; }
+    .e-span-6  { grid-column: span 6; }
+    .e-span-12 { grid-column: span 12; }
+
+    @media (max-width: 900px) {
+        .e-span-3,
+        .e-span-4,
+        .e-span-6 {
+            grid-column: span 12;
+        }
+    }
+}

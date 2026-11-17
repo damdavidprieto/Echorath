@@ -1,0 +1,45 @@
+/*
+ * Component · Table
+ * Block:    .e-table
+ * Elements: .e-empty   row shown when there is no data (on <tr>)
+ * Tone:     data-tone on <tr> colors that row's cells
+ */
+@layer e.components {
+    .e-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+
+    .e-table th {
+        padding: var(--e-space-3);
+        text-align: left;
+        font-size: var(--e-font-size-xs);
+        letter-spacing: var(--e-tracking-tight);
+        text-transform: uppercase;
+        color: var(--e-color-blue);
+        border-bottom: var(--e-border-width) solid var(--e-color-line);
+    }
+
+    .e-table td {
+        padding: var(--e-space-3);
+        color: var(--e-tone, var(--e-color-text));
+        border-bottom: var(--e-border-width) solid var(--e-color-line-soft);
+    }
+
+    .e-table tbody tr {
+        transition: background-color var(--e-duration-fast);
+    }
+
+    @media (hover: hover) {
+        .e-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    }
+
+    .e-table .e-empty td {
+        padding: var(--e-space-6);
+        text-align: center;
+        color: var(--e-color-text-faint);
+    }
+}

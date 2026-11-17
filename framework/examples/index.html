@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echorath UI | Framework</title>
+    <link rel="stylesheet" href="../dist/echorath-ui.css">
+    <script src="../dist/echorath-ui.js" defer></script>
+    <style>
+        /* Demo layout only. Components do not depend on this. */
+        .demo-page { padding: 100px 32px 60px; max-width: 1280px; margin: 0 auto; }
+        .demo-section { margin-top: 48px; }
+        .demo-section > .e-h2 { margin-bottom: 18px; }
+        .demo-note { font-size: 0.8rem; color: var(--e-color-text-dim); margin: -8px 0 18px; }
+        .e-sample { min-height: 120px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+        .e-sample__text { font-family: var(--e-font-display); font-size: 1.6rem; letter-spacing: 2px; color: var(--e-color-green); }
+        .e-card-foot { margin-top: 14px; }
+        .e-card-foot p { margin: 0 0 10px; font-size: 0.75rem; color: var(--e-color-text-dim); }
+    </style>
+</head>
+<body class="e-grid-bg e-crt">
+
+    <header class="e-header">
+        <div>
+            <h1 class="e-h1">Echorath UI</h1>
+            <div class="e-header__sub">FRAMEWORK DE ECHORATH</div>
+        </div>
+        <button class="e-btn e-btn--sm e-header__toggle" type="button" aria-expanded="false" aria-controls="demo-nav">Menú</button>
+        <nav class="e-header__nav" id="demo-nav" aria-label="Acciones">
+            <span class="e-badge" data-tone="ok"><span class="e-dot"></span>En línea</span>
+            <button class="e-btn" id="demo-toast" type="button">Toast</button>
+            <button class="e-btn e-btn--info" id="demo-modal" type="button">Modal</button>
+        </nav>
+    </header>
+
+    <main class="demo-page">
+
+        <!-- ================= COMPONENTES ================= -->
+        <section class="demo-section">
+            <h2 class="e-h2">Componentes</h2>
+            <p class="demo-note">Pasa el cursor o usa Tab para ver el foco. Cada componente acepta data-tone y data-loading.</p>
+
+            <div class="e-grid">
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head">
+                        <h3 class="e-panel__title">Escuchas</h3>
+                        <span class="e-badge" data-tone="warn">Nueva</span>
+                    </div>
+                    <div class="e-metric" data-tone="warn">
+                        <span class="e-metric__value">74</span>
+                        <span class="e-metric__foot">Marea baja · 24h</span>
+                    </div>
+                </article>
+
+                <article class="e-panel e-span-4" data-tone="danger">
+                    <div class="e-panel__head">
+                        <h3 class="e-panel__title">Borradores</h3>
+                        <span class="e-badge"><span class="e-dot"></span>En curso</span>
+                    </div>
+                    <div class="e-metric">
+                        <span class="e-metric__value">12</span>
+                        <span class="e-metric__foot">Textos sin publicar</span>
+                    </div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head">
+                        <h3 class="e-panel__title">Estado</h3>
+                    </div>
+                    <div class="e-stack">
+                        <label class="e-row"><span class="e-switch"><input type="checkbox" checked><span class="e-switch__track"></span></span><span class="e-label">Sonido</span></label>
+                        <div class="e-field">
+                            <label class="e-label" for="demo-input">Título</label>
+                            <input class="e-input" id="demo-input" placeholder="Marea baja">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="e-panel e-span-12">
+                    <div class="e-tabs" data-tabs role="tablist">
+                        <button class="e-tab" role="tab" data-tab-target="#tab-events">Obras</button>
+                        <button class="e-tab" role="tab" data-tab-target="#tab-log">Consola</button>
+                        <button class="e-tab" role="tab" data-tab-target="#tab-map">Mapa</button>
+                    </div>
+                    <div class="e-tabpanel" id="tab-events" role="tabpanel" style="padding-top:16px">
+                        <table class="e-table">
+                            <thead><tr><th>Hora</th><th>Obra</th><th>Sección</th><th>Estado</th></tr></thead>
+                            <tbody>
+                                <tr data-tone="danger"><td>08:22:19</td><td>Ciudades que se repiten</td><td>Escritura</td><td>Sin revisar</td></tr>
+                                <tr data-tone="warn"><td>08:22:31</td><td>Repetición 01</td><td>Imágenes</td><td>En revisión</td></tr>
+                                <tr data-tone="ok"><td>08:23:02</td><td>Marea baja</td><td>Música</td><td>Publicada</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="e-tabpanel" id="tab-log" role="tabpanel" hidden style="padding-top:16px">
+                        <div class="e-log" role="log">
+                            <span class="e-log__line">[ 08:22:19 ] Construcción iniciada</span>
+                            <span class="e-log__line" data-tone="warn">[ 08:22:31 ] Imagen pesada</span>
+                            <span class="e-log__line" data-tone="danger">[ 08:22:40 ] Enlace roto</span>
+                        </div>
+                    </div>
+                    <div class="e-tabpanel" id="tab-map" role="tabpanel" hidden style="padding-top:16px">
+                        <div class="e-radar" data-tone="ok">
+                            <div style="position:relative;padding:60px 20px;text-align:center" class="e-label">Radar activo</div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="e-panel e-span-6">
+                    <div class="e-panel__head"><h3 class="e-panel__title">Botones</h3></div>
+                    <div class="e-row">
+                        <button class="e-btn" type="button">Principal</button>
+                        <button class="e-btn e-btn--solid" type="button">Sólido</button>
+                        <button class="e-btn e-btn--warn" type="button">Aviso</button>
+                        <button class="e-btn e-btn--danger" type="button">Peligro</button>
+                        <button class="e-btn" type="button" disabled>Bloqueado</button>
+                    </div>
+                </article>
+
+                <article class="e-panel e-span-6">
+                    <div class="e-panel__head"><h3 class="e-panel__title">Badges</h3></div>
+                    <div class="e-row">
+                        <span class="e-badge">Integridad</span>
+                        <span class="e-badge" data-tone="info">Información</span>
+                        <span class="e-badge" data-tone="warn">Advertencia</span>
+                        <span class="e-badge" data-tone="danger">Crítico</span>
+                        <span class="e-badge" data-tone="off">Desconectado</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ================= DISTORSIONES ================= -->
+        <section class="demo-section">
+            <h2 class="e-h2">Distorsiones de carga</h2>
+            <p class="demo-note">Cada tarjeta carga 2 segundos con su variante. Sin data-distort se usa "standard"; las demás se eligen con data-distort.</p>
+
+            <div class="e-grid" id="distort-grid">
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">standard</h3></div>
+                    <div class="e-sample" id="s-standard" data-distort="standard">
+                        <span class="e-sample__text">ESTÁNDAR</span>
+                    </div>
+                    <div class="e-card-foot"><p>Desdoblamiento rojo/cian con temblor leve. Variante por defecto.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-standard">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">flicker</h3></div>
+                    <div class="e-sample" id="s-flicker" data-distort="flicker">
+                        <span class="e-sample__text">PARPADEO</span>
+                    </div>
+                    <div class="e-card-foot"><p>Parpadeo suave y pulso del tono.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-flicker">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">glitch</h3></div>
+                    <div class="e-sample" id="s-glitch" data-distort="glitch">
+                        <span class="e-sample__text">GLITCH</span>
+                    </div>
+                    <div class="e-card-foot"><p>Separación fuerte, temblor y cortes.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-glitch">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">scan</h3></div>
+                    <div class="e-sample" id="s-scan" data-distort="scan">
+                        <span class="e-sample__text">ESCANEO</span>
+                    </div>
+                    <div class="e-card-foot"><p>Cortes horizontales que se desplazan.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-scan">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">wave</h3></div>
+                    <div class="e-sample" id="s-wave" data-distort="wave">
+                        <span class="e-sample__text">SEÑAL</span>
+                    </div>
+                    <div class="e-card-foot"><p>Oscilación de inclinación tipo señal.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-wave">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">shatter</h3></div>
+                    <div class="e-sample" id="s-shatter" data-distort="shatter">
+                        <span class="e-sample__text">FRAGMENTO</span>
+                    </div>
+                    <div class="e-card-foot"><p>Recorte poligonal que se rompe.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-shatter">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">warp</h3></div>
+                    <div class="e-sample" id="s-warp" data-distort="warp">
+                        <span class="e-sample__text">ONDA</span>
+                    </div>
+                    <div class="e-card-foot"><p>Distorsión líquida con filtro SVG.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-warp">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">static</h3></div>
+                    <div class="e-sample" id="s-static" data-distort="static">
+                        <span class="e-sample__text">RUIDO</span>
+                    </div>
+                    <div class="e-card-foot"><p>Grano de alta frecuencia en la imagen.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-static">Cargar</button></div>
+                </article>
+
+                <article class="e-panel e-span-4">
+                    <div class="e-panel__head"><h3 class="e-panel__title">decode</h3></div>
+                    <div class="e-sample">
+                        <span class="e-sample__text" id="s-decode" data-distort="decode">DESCIFRANDO</span>
+                    </div>
+                    <div class="e-card-foot"><p>El texto se revela desde glifos aleatorios.</p>
+                        <button class="e-btn e-btn--block" type="button" data-demo-trigger="s-decode">Cargar</button></div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ================= LABORATORIO ================= -->
+        <section class="demo-section">
+            <h2 class="e-h2">Laboratorio de efectos</h2>
+            <p class="demo-note">Un botón por efecto. Púlsalo otra vez para detenerlo; la barra bajo el botón marca el tiempo que queda.</p>
+
+            <div class="e-grid">
+                <div class="e-span-6 e-stack" id="lab-a">
+                    <article class="e-panel" id="lab-panel" data-tone="info">
+                        <div class="e-panel__head"><h3 class="e-panel__title">Borradores</h3><span class="e-badge" data-tone="danger">En curso</span></div>
+                        <div class="e-metric"><span class="e-metric__value">12</span><span class="e-metric__foot">Textos sin publicar</span></div>
+                    </article>
+                </div>
+                <div class="e-span-6 e-stack" id="lab-b">
+                    <div class="e-panel">
+                        <span class="e-sample__text" id="lab-text">DESCIFRANDO</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= LECTURA ================= -->
+        <section class="demo-section">
+            <h2 class="e-h2">Lectura</h2>
+            <p class="demo-note">.e-prose compone textos largos en Literata. En el lector, "Siguiente" cambia el título y el texto sin cerrar la ventana (el control que devuelve modal()).</p>
+
+            <div class="e-panel" data-tone="info">
+                <article class="e-prose" id="demo-prose">
+                    <p class="e-prose__meta">Ensayo · 2025 · 1 min de lectura</p>
+                    <p>Hay barrios que parecen copias de otros barrios. La misma esquina con farmacia, el mismo muro con un afiche de conciertos viejo, la misma pendiente hacia el mercado.</p>
+                    <blockquote>La repetición no vacía un lugar. Lo vuelve legible.</blockquote>
+                    <p>Caminé durante un mes por una ciudad que no era la mía, anotando cada cosa que me resultaba familiar.</p>
+                </article>
+                <div class="e-row" style="margin-top:18px">
+                    <button class="e-btn e-btn--info" id="demo-reader" type="button">Abrir en el lector</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FOCO ================= -->
+        <section class="demo-section">
+            <h2 class="e-h2">Efectos de foco</h2>
+            <p class="demo-note">Usa Tab para recorrer los elementos. El foco por defecto es "glow"; data-focus cambia el efecto.</p>
+
+            <div class="e-grid">
+                <div class="e-panel e-span-4" tabindex="0">
+                    <div class="e-panel__head"><h3 class="e-panel__title">Glow (defecto)</h3></div>
+                    <div class="e-stack">
+                        <input class="e-input" placeholder="Campo con glow">
+                        <button class="e-btn" type="button">Botón glow</button>
+                    </div>
+                </div>
+
+                <div class="e-panel e-span-4" tabindex="0">
+                    <div class="e-panel__head"><h3 class="e-panel__title">Glitch</h3></div>
+                    <div class="e-stack">
+                        <input class="e-input" data-focus="glitch" placeholder="Campo con glitch">
+                        <button class="e-btn" data-focus="glitch" type="button">Botón glitch</button>
+                    </div>
+                </div>
+
+                <div class="e-panel e-span-4" tabindex="0">
+                    <div class="e-panel__head"><h3 class="e-panel__title">Sweep</h3></div>
+                    <div class="e-stack">
+                        <input class="e-input" data-focus="sweep" placeholder="Campo con sweep">
+                        <button class="e-btn" data-focus="sweep" type="button">Botón sweep</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // echorath-ui.js loads with defer; it is ready by DOMContentLoaded.
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('lab-a').appendChild(EchorathUI.fxPicker('#lab-panel', { name: 'el panel', open: true }));
+            document.getElementById('lab-b').appendChild(EchorathUI.fxPicker('#lab-text', { name: 'el texto', open: true }));
+        });
+
+        // Demo wiring: each card runs its loading distortion for 2 seconds.
+        document.querySelectorAll('[data-demo-trigger]').forEach(button => {
+            button.addEventListener('click', () => {
+                const target = document.getElementById(button.dataset.demoTrigger);
+                EchorathUI.loadFor(target, 2000, { reveal: true });
+            });
+        });
+
+        document.getElementById('demo-toast').addEventListener('click', () => {
+            EchorathUI.toast('Guardado', 'Los cambios ya están en la web de desarrollo', 'ok');
+        });
+
+        // A reader whose title and text change in place
+        const PAGES = [
+            { title: 'Ciudades que se repiten', text: 'Hay barrios que parecen copias de otros barrios.' },
+            { title: 'El cuarto de grabación', text: 'Cada vez que cantaba una frase, la pared devolvía una versión un poco más lenta.' },
+        ];
+        const readerPage = page => {
+            const article = document.createElement('article');
+            article.className = 'e-prose';
+            const text = document.createElement('p');
+            text.textContent = page.text;
+            article.appendChild(text);
+            return article;
+        };
+        document.getElementById('demo-reader').addEventListener('click', () => {
+            let index = 0;
+            const body = document.createElement('div');
+            const page = document.createElement('div');
+            const next = document.createElement('button');
+            next.className = 'e-btn e-btn--sm';
+            next.type = 'button';
+            next.textContent = 'Siguiente →';
+            next.style.marginTop = '20px';
+            page.appendChild(readerPage(PAGES[0]));
+            body.append(page, next);
+            const reader = EchorathUI.modal({ title: PAGES[0].title, body, tone: 'info', size: 'lg', actions: [{ label: 'Cerrar', value: true, variant: 'solid' }] });
+            next.addEventListener('click', () => {
+                index = (index + 1) % PAGES.length;
+                reader.setTitle(PAGES[index].title);
+                page.replaceChildren(readerPage(PAGES[index]));
+            });
+        });
+
+        document.getElementById('demo-modal').addEventListener('click', async () => {
+            const choice = await EchorathUI.modal({
+                title: 'Confirmar acción',
+                body: '¿Publicar «Marea baja»? Pasará a la web pública.',
+                tone: 'warn',
+                actions: [
+                    { label: 'Cancelar', value: false, variant: 'ghost' },
+                    { label: 'Publicar', value: true, variant: 'solid' },
+                ],
+            });
+            if (choice) EchorathUI.toast('Publicada', '«Marea baja» ya está en la web', 'ok');
+        });
+    </script>
+</body>
+</html>

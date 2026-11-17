@@ -1,0 +1,67 @@
+/*
+ * Component · Tabs
+ * Markup:  <div class="e-tabs" data-tabs role="tablist">
+ *            <button class="e-tab" role="tab" data-tab-target="#panel">…</button>
+ *          </div>
+ *          <div class="e-tabpanel" id="panel" role="tabpanel">…</div>
+ * States:  .e-tab[aria-selected="true"], .e-tabpanel[hidden], .e-tabpanel.is-entering
+ * Behavior: runtime (initTabs) wires clicks and arrow keys.
+ */
+@layer e.components {
+    .e-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--e-space-1);
+        border-bottom: var(--e-border-width) solid var(--e-color-line);
+    }
+
+    .e-tab {
+        --e-tone: var(--e-color-green);
+        margin-bottom: -1px;
+        padding: 10px var(--e-space-4);
+        background: none;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        color: var(--e-color-text-dim);
+        font: inherit;
+        font-size: 0.75rem;
+        letter-spacing: var(--e-tracking-wide);
+        text-transform: uppercase;
+        cursor: pointer;
+        transition:
+            color var(--e-duration-fast),
+            border-color var(--e-duration-fast),
+            text-shadow var(--e-duration-fast);
+    }
+
+    @media (pointer: coarse) {
+        .e-tab {
+            min-height: 44px;
+        }
+    }
+
+    @media (hover: hover) {
+        .e-tab:hover {
+            color: var(--e-color-text);
+        }
+    }
+
+    .e-tab[aria-selected="true"] {
+        color: var(--e-tone);
+        border-bottom-color: var(--e-tone);
+        text-shadow: 0 0 10px var(--e-tone);
+    }
+
+    .e-tab:focus-visible {
+        outline: var(--e-border-width) solid var(--e-tone);
+        outline-offset: -1px;
+    }
+
+    .e-tabpanel[hidden] {
+        display: none;
+    }
+
+    .e-tabpanel.is-entering {
+        animation: e-anim-enter 0.4s var(--e-ease);
+    }
+}

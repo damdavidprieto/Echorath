@@ -1,0 +1,42 @@
+/*
+ * Component · Field and input
+ * Block:    .e-field    label + control column
+ *           .e-input    text input
+ * States:   :focus-visible, [aria-invalid="true"]
+ * Tone:     data-tone on .e-input recolors the focus ring
+ */
+@layer e.components {
+    .e-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .e-input {
+        --e-tone: var(--e-color-blue);
+        width: 100%;
+        padding: 10px var(--e-space-3);
+        background: var(--e-color-sunken);
+        color: var(--e-color-text);
+        caret-color: var(--e-color-highlight);
+        border: var(--e-border-width) solid var(--e-color-line-strong);   /* the border is what shows it is a field */
+        font: inherit;
+        outline: none;
+        transition:
+            border-color var(--e-duration-fast) var(--e-ease),
+            box-shadow var(--e-duration-fast) var(--e-ease);
+    }
+
+    .e-input::placeholder {
+        color: var(--e-color-text-faint);
+    }
+
+    .e-input:focus-visible {
+        border-color: var(--e-tone);
+        box-shadow: 0 0 0 1px var(--e-tone), 0 0 var(--e-glow-md) -2px var(--e-tone);
+    }
+
+    .e-input[aria-invalid="true"] {
+        border-color: var(--e-color-red);
+    }
+}

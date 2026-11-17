@@ -1,0 +1,40 @@
+/*
+ * Base · Document defaults (unlayered on purpose)
+ *
+ * Hosts and resets often set the body font or color-scheme without a layer,
+ * and an unlayered rule always beats a layered one. These few page-level
+ * rules stay outside the layers so Echorath UI wins by source order instead.
+ * Load your own stylesheet after Echorath UI to override them.
+ */
+:root {
+    color-scheme: dark;
+    scrollbar-gutter: stable;          /* no layout jump when a modal locks scroll */
+    scroll-padding-top: calc(var(--e-header-offset) + var(--e-space-4));
+}
+
+html,
+body {
+    margin: 0;
+    background: var(--e-color-bg);
+    color: var(--e-color-text);
+    font-family: var(--e-font-mono);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 15px with the usual 16px browser default, and larger when the visitor
+   chooses larger text in the browser settings. The type scale is in rem,
+   so every text size follows. */
+html {
+    font-size: 93.75%;
+}
+
+body {
+    font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    :root {
+        scroll-behavior: smooth;
+    }
+}

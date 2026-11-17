@@ -1,0 +1,10 @@
+{
+  "status": "sample",
+  "lead": "Trabajo con sonido, palabra, imagen y código desde una misma mesa.",
+  "paragraphs": [
+    "Esta sección está en desarrollo. Pronto contaré aquí mi trayectoria y lo que me interesa."
+  ],
+  "trayectoria": [
+    { "status": "sample", "year": "2025", "text": "EP «Ceniza», autoedición" }
+  ]
+}
