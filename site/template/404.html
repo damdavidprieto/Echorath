@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="es">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#050505">
 <title>Página no encontrada · Echorath</title>
 <link rel="icon" href="{{BASE}}favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{{BASE}}echorath-ui.css">
+<link rel="stylesheet" href="{{BASE}}{{ASSET:echorath-ui.min.css}}">
 <style>
 :root { --e-color-green: #00ff41; --e-color-red: #ff0033; }
 main { min-height: 100dvh; display: grid; align-content: center; gap: 18px; padding-block: 48px; }
@@ -14,9 +15,13 @@ h1 { margin: 0; font-family: var(--e-font-display); font-size: clamp(1.8rem, 6vw
 p { margin: 0; max-width: 52ch; color: var(--e-color-text-dim); }
 .e-btn { justify-self: start; }
 </style>
+</head>
+<body>
 <main class="e-container">
     <p class="e-label">Error 404</p>
     <h1>Esta página no existe</h1>
     <p>Puede que la dirección esté mal escrita o que la página haya cambiado de sitio.</p>
     <a class="e-btn e-btn--solid" href="{{BASE}}">Ir a la portada de Echorath</a>
 </main>
+</body>
+</html>

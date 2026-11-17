@@ -1,5 +1,6 @@
-// Builds the Echorath site into dist/ from site/template, site/content and
-// site/static, plus the framework's built files.
+// Builds the Echorath site into dist/ from site/template (the page, its
+// stylesheet and its script), site/content and site/static, plus the
+// framework's built files.
 //
 //   node site/build.mjs [--mode=dev|prod] [--out=dist]
 //
@@ -13,6 +14,7 @@
 //      missing setting never puts a draft on the public site.
 // The mode can also come from the ECHORATH_MODE environment variable.
 
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -20,6 +22,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const SITE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(SITE, '..');
 const FRAMEWORK_DIST = path.join(ROOT, 'framework', 'dist');
+const TEMPLATE = path.join(SITE, 'template');
+
+// What the site takes from the framework: the minified files, their maps and the fonts
+const FRAMEWORK_FILES = ['echorath-ui.min.css', 'echorath-ui.min.css.map', 'echorath-ui.min.js', 'echorath-ui.min.js.map', 'fonts'];
 
 export const STATUSES = ['sample', 'draft', 'review', 'published'];
 const STATUS_LABEL = { sample: 'Muestra', draft: 'Borrador', review: 'En revisión' };
@@ -135,8 +141,8 @@ export function select(content, mode) {
 // ---------------------------------------------------------------- writing
 
 const escapeHtml = text => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-// Data written into the page's script: JSON, with nothing that could close the <script>
-const toScript = value => JSON.stringify(value, null, 4).replace(/</g, '\\u003c').replace(/\n/g, '\n    ');
+// Data written into the page's script, as JSON
+const toScript = value => JSON.stringify(value, null, 4).replace(/\n/g, '\n    ');
 const templateLiteral = text => '`' + text.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${') + '`';
 const statusBadgeHtml = item => item.status in STATUS_LABEL
     ? ` <span class="e-badge sample-badge" data-tone="warn">${STATUS_LABEL[item.status]}</span>` : '';
@@ -156,7 +162,8 @@ function scriptContent(view) {
         ...declarations.map(d => '    ' + d.replace(/\n/g, '\n    ')),
         `    const ALGORITHMS = [${algorithms.length ? '\n    ' + algorithms.join(',\n    ') + ',\n    ' : ''}];`,
         `    const EFFECTS = ${toScript(view.effects)};`,
-    ].join('\n').replace(/<\/script/gi, '<\\/script');
+        `    const EMAIL = ${JSON.stringify(view.email ? view.email.address : '')};`,
+    ].join('\n');
 }
 
 // <!--@if a|b--> … <!--@end--> keeps its content when any condition holds;
@@ -205,10 +212,26 @@ export function render(template, view) {
         `                        <tr><td>${escapeHtml(row.year)}</td><td>${escapeHtml(row.text)}${statusBadgeHtml(row)}</td></tr>`).join('\n') : '');
     replace('<!--@links:contact-->', view.links.map(l => linkHtml(l, '                ')).join('\n'));
     replace('<!--@links:footer-->', view.links.map(l => linkHtml(l, '        ')).join('\n'));
-    replace('/*@content*/', scriptContent(view));
-    const left = html.match(/\{\{[A-Z_]+\}\}|<!--@[a-z:]+-->|\/\*@content\*\//);
+    const left = html.match(/\{\{[A-Z_]+\}\}|<!--@[a-z:]+-->/);
     if (left) throw new Error(`plantilla: queda sin rellenar ${left[0]}`);
     return html;
+}
+
+// The page's script: the template's code with this site's works in it
+export function renderScript(source, view) {
+    if (source.split('/*@content*/').length !== 2) throw new Error('site.js: tiene que llevar /*@content*/ una sola vez');
+    return source.replace('/*@content*/', () => scriptContent(view));
+}
+
+// {{ASSET:name}} becomes name?v=<hash of its content>: a changed file gets a
+// new address, so no browser keeps an old copy
+function stampAssets(html, outDir) {
+    return html.replace(/\{\{ASSET:([^}]+)\}\}/g, (_, name) => {
+        const file = path.join(outDir, name);
+        if (!fs.existsSync(file)) throw new Error(`plantilla: el recurso ${name} no existe`);
+        const hash = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0, 10);
+        return `${name}?v=${hash}`;
+    });
 }
 
 function copyInto(from, to) {
@@ -219,21 +242,22 @@ function copyInto(from, to) {
 export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), outDir = path.join(ROOT, 'dist') } = {}) {
     if (mode !== 'dev' && mode !== 'prod') throw new Error(`modo "${mode}" desconocido: usa dev o prod`);
     const view = select(readContent(contentDir), mode);
-    const html = render(readText(path.join(SITE, 'template', 'index.html')), view);
+    const html = render(readText(path.join(TEMPLATE, 'index.html')), view);
+    const script = renderScript(readText(path.join(TEMPLATE, 'site.js')), view);
 
     // GitHub Pages answers any missing address with the same 404 page, at that
     // address: its links start from the site's base path, not from where it is
     const base = new URL(view.url).pathname;
-    const notFound = readText(path.join(SITE, 'template', '404.html')).split('{{BASE}}').join(escapeHtml(base));
+    const notFound = readText(path.join(TEMPLATE, '404.html')).split('{{BASE}}').join(escapeHtml(base));
 
     fs.rmSync(outDir, { recursive: true, force: true });
     fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(path.join(outDir, 'index.html'), html);
-    fs.writeFileSync(path.join(outDir, '404.html'), notFound);
     for (const name of fs.readdirSync(path.join(SITE, 'static'))) copyInto(path.join(SITE, 'static', name), path.join(outDir, name));
-    for (const name of ['echorath-ui.css', 'echorath-ui.css.map', 'echorath-ui.js', 'echorath-ui.js.map', 'fonts']) {
-        copyInto(path.join(FRAMEWORK_DIST, name), path.join(outDir, name));
-    }
+    for (const name of FRAMEWORK_FILES) copyInto(path.join(FRAMEWORK_DIST, name), path.join(outDir, name));
+    fs.copyFileSync(path.join(TEMPLATE, 'site.css'), path.join(outDir, 'site.css'));
+    fs.writeFileSync(path.join(outDir, 'site.js'), script);
+    fs.writeFileSync(path.join(outDir, 'index.html'), stampAssets(html, outDir));
+    fs.writeFileSync(path.join(outDir, '404.html'), stampAssets(notFound, outDir));
     return view;
 }
 

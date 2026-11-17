@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -16,7 +17,10 @@ const tmp = name => fs.mkdtempSync(path.join(os.tmpdir(), `echorath-${name}-`));
 function run(mode, contentDir = CONTENT) {
     const out = tmp(mode);
     build({ mode, contentDir, outDir: out });
-    return { out, html: fs.readFileSync(path.join(out, 'index.html'), 'utf8') };
+    const page = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
+    const js = fs.readFileSync(path.join(out, 'site.js'), 'utf8');
+    // html: the page and its script together, for what may be in either
+    return { out, page, js, html: `${page}\n${js}` };
 }
 
 // A copy of the content to change in a test, never the real one
@@ -37,17 +41,17 @@ const navIn = html => [...html.matchAll(/data-section="([a-z]+)"/g)].map(m => m[
 
 test('every page script parses, in both modes', () => {
     for (const mode of ['dev', 'prod']) {
-        const { html } = run(mode);
-        const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
-        assert.ok(scripts.length >= 2);
-        scripts.forEach(code => new vm.Script(code));
+        const { page, js } = run(mode);
+        const inline = [...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+        assert.equal(inline.length, 1);
+        [...inline, js].forEach(code => new vm.Script(code));
     }
 });
 
 test('no marker or placeholder of the template reaches a page', () => {
     for (const mode of ['dev', 'prod']) {
         const { html } = run(mode);
-        assert.doesNotMatch(html, /<!--@|<!--#|\{\{[A-Z_]+\}\}|\/\*@content\*\//);
+        assert.doesNotMatch(html, /<!--@|<!--#|\{\{[A-Z_:a-z.-]+\}\}|\/\*@content\*\//);
     }
 });
 
@@ -71,6 +75,7 @@ test('production with nothing published shows only the first screen', () => {
     assert.doesNotMatch(html, /dev-note"|En desarrollo:|echorath\.example|"status": "sample"|id="start-list"|e-header__toggle/);
     assert.match(html, /const TRACKS = \[\];/);
     assert.match(html, /const ALGORITHMS = \[\];/);
+    assert.match(html, /const EMAIL = "";/);
     assert.match(html, /<link rel="canonical" href="https:\/\/damdavidprieto\.github\.io\/Echorath\/">/);
     assert.match(html, /<h1 class="hero__name">Echorath<\/h1>/);
 });
@@ -79,7 +84,7 @@ test('the 404 page reaches its files from the site base, wherever GitHub shows i
     for (const [mode, base] of [['prod', '/Echorath/'], ['dev', '/Echorath/dev/']]) {
         const { out } = run(mode);
         const page = fs.readFileSync(path.join(out, '404.html'), 'utf8');
-        assert.match(page, new RegExp(`href="${base}echorath-ui\\.css"`));
+        assert.match(page, new RegExp(`href="${base}echorath-ui\\.min\\.css\\?v=[0-9a-f]{10}"`));
         assert.match(page, new RegExp(`href="${base}">Ir a la portada`));
         assert.doesNotMatch(page, /\{\{BASE\}\}|href="\/(?!Echorath\/)/);
     }
@@ -104,7 +109,7 @@ test('contact and links reach production only once they are real', () => {
     const { html } = run('prod', dir);
     assert.deepEqual(sectionsIn(html), ['contacto']);
     assert.match(html, /href="mailto:hola@echorath\.es"/);
-    assert.match(html, /const EMAIL = 'hola@echorath\.es';/);
+    assert.match(html, /const EMAIL = "hola@echorath\.es";/);
     assert.match(html, /href="https:\/\/www\.instagram\.com"/);
     assert.doesNotMatch(html, /wattpad|github\.com"/);
 });
@@ -126,7 +131,17 @@ test('an unknown state stops the build and names the file', () => {
 
 test('the site carries the framework, its fonts and the static files', () => {
     const { out } = run('prod');
-    for (const file of ['echorath-ui.css', 'echorath-ui.js', 'fonts/literata-latin.woff2', '404.html', 'favicon.svg', 'og.png']) {
+    for (const file of ['echorath-ui.min.css', 'echorath-ui.min.js', 'site.css', 'site.js', 'fonts/literata-latin.woff2', '404.html', 'favicon.svg', 'og.png']) {
         assert.ok(fs.existsSync(path.join(out, file)), file);
+    }
+});
+
+test('each own file is linked with the hash of its content', () => {
+    const { out, page } = run('dev');
+    const linked = [...page.matchAll(/(?:href|src)="([a-z.-]+)\?v=([0-9a-f]{10})"/g)];
+    assert.deepEqual(linked.map(m => m[1]).sort(), ['echorath-ui.min.css', 'echorath-ui.min.js', 'site.css', 'site.js']);
+    for (const [, file, hash] of linked) {
+        const actual = crypto.createHash('sha256').update(fs.readFileSync(path.join(out, file))).digest('hex').slice(0, 10);
+        assert.equal(hash, actual, file);
     }
 });
