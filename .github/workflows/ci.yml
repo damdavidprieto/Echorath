@@ -1,12 +1,9 @@
-# Tests the site and the framework. Runs on every pull request and on pushes
-# to branches other than main; on main, "Publicar la web" runs it before
-# publishing.
+# Tests the site and the framework. Runs on every pull request; on main,
+# "Publicar la web" runs it before publishing.
 name: Pruebas
 
 on:
   pull_request:
-  push:
-    branches-ignore: [main]
   workflow_call:
 
 permissions:
@@ -45,7 +42,7 @@ jobs:
           cache-dependency-path: framework/package-lock.json
       - run: npm ci
       - name: Instalar Chromium
-        run: npx playwright-core install --with-deps chromium
+        run: npx playwright-core install --with-deps --no-shell chromium
       - name: Pruebas en el navegador
         run: npm test
       - name: dist/ está al día con src/

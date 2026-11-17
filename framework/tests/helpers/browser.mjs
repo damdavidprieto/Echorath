@@ -1,8 +1,10 @@
 // Starts the Chromium the tests run in:
 //   1. CHROMIUM_PATH, when set;
 //   2. otherwise /opt/pw-browsers/chromium, if that browser is installed;
-//   3. otherwise the one playwright-core installed
-//      (npx playwright-core install chromium).
+//   3. otherwise the full Chromium that playwright-core installs
+//      (npx playwright-core install --no-shell chromium). Not the reduced
+//      headless shell: it handles touch differently (a tapped button is not
+//      left hovered), and the tests check what real browsers do.
 import { existsSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
@@ -13,4 +15,7 @@ export function chromiumPath() {
     return existsSync(PREINSTALLED) ? PREINSTALLED : undefined;
 }
 
-export const launchChromium = (options = {}) => chromium.launch({ executablePath: chromiumPath(), ...options });
+export function launchChromium(options = {}) {
+    const executablePath = chromiumPath();
+    return chromium.launch({ ...(executablePath ? { executablePath } : { channel: 'chromium' }), ...options });
+}

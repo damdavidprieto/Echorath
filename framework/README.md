@@ -60,7 +60,7 @@ panel.after(EchorathUI.fxPicker(panel, { name: 'el panel' }));
 
 ```bash
 npm ci           # esbuild y playwright-core, versiones fijas
-npx playwright-core install chromium   # una vez: el navegador de las pruebas
+npx playwright-core install --no-shell chromium   # una vez: el navegador de las pruebas
 npm run build    # genera dist/ con source maps
 npm run watch    # recompila al guardar cualquier archivo de src/
 npm test         # build + pruebas en Chromium

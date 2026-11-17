@@ -10,7 +10,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 
 ### Cambiado
 
-- Las pruebas encuentran Chromium por sí mismas (`CHROMIUM_PATH`, el navegador preinstalado o el que instala `npx playwright-core install chromium`), así que también se ejecutan en una máquina limpia o en GitHub Actions.
+- Las pruebas encuentran Chromium por sí mismas (`CHROMIUM_PATH`, el navegador preinstalado o el Chromium completo que instala `npx playwright-core install --no-shell chromium`), así que también se ejecutan en una máquina limpia o en GitHub Actions.
 
 ## [2.0.0] · 2026-11-17
 

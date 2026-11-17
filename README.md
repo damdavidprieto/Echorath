@@ -129,7 +129,7 @@ npm run build:pages     # las dos, como en GitHub Pages: dist/ y dist/dev/
 npm test                # pruebas del generador
 
 npm --prefix framework ci                          # una vez: dependencias del framework
-npx --prefix framework playwright-core install chromium   # una vez: navegador para sus pruebas
+npx --prefix framework playwright-core install --no-shell chromium   # una vez: navegador para sus pruebas
 npm run test:framework  # pruebas de Echorath UI (construye dist/ antes)
 npm run test:all        # todas
 ```
