@@ -1,6 +1,6 @@
 /*
  * Effects · Shared keyframes
- * Naming: e-anim-*    general motion (enter, sweep, reveal)
+ * Naming: e-anim-*    general motion (enter, reveal)
  *         e-focus-*   focus effects        (see focus.css)
  *         e-distort-* loading distortions  (see distortions.css)
  */
@@ -8,11 +8,6 @@
     @keyframes e-anim-enter {
         from { opacity: 0; transform: translateY(10px); }
         to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes e-anim-sweep {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
     }
 
     /* Played once when a component leaves its loading state */

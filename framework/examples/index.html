@@ -12,6 +12,7 @@
         .demo-section { margin-top: 48px; }
         .demo-section > .e-h2 { margin-bottom: 18px; }
         .demo-note { font-size: 0.8rem; color: var(--e-color-text-dim); margin: -8px 0 18px; }
+        .demo-text { margin: 0; color: var(--e-color-text-dim); }
         .e-sample { min-height: 120px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
         .e-sample__text { font-family: var(--e-font-display); font-size: 1.6rem; letter-spacing: 2px; color: var(--e-color-green); }
         .e-card-foot { margin-top: 14px; }
@@ -46,10 +47,7 @@
                         <h3 class="e-panel__title">Escuchas</h3>
                         <span class="e-badge" data-tone="warn">Nueva</span>
                     </div>
-                    <div class="e-metric" data-tone="warn">
-                        <span class="e-metric__value">74</span>
-                        <span class="e-metric__foot">Marea baja · 24h</span>
-                    </div>
+                    <p class="demo-text">«Marea baja» · EP Ceniza · 3:42</p>
                 </article>
 
                 <article class="e-panel e-span-4" data-tone="danger">
@@ -57,10 +55,7 @@
                         <h3 class="e-panel__title">Borradores</h3>
                         <span class="e-badge"><span class="e-dot"></span>En curso</span>
                     </div>
-                    <div class="e-metric">
-                        <span class="e-metric__value">12</span>
-                        <span class="e-metric__foot">Textos sin publicar</span>
-                    </div>
+                    <p class="demo-text">Doce textos esperan su revisión.</p>
                 </article>
 
                 <article class="e-panel e-span-4">
@@ -79,8 +74,7 @@
                 <article class="e-panel e-span-12">
                     <div class="e-tabs" data-tabs role="tablist">
                         <button class="e-tab" role="tab" data-tab-target="#tab-events">Obras</button>
-                        <button class="e-tab" role="tab" data-tab-target="#tab-log">Consola</button>
-                        <button class="e-tab" role="tab" data-tab-target="#tab-map">Mapa</button>
+                        <button class="e-tab" role="tab" data-tab-target="#tab-notes">Notas</button>
                     </div>
                     <div class="e-tabpanel" id="tab-events" role="tabpanel" style="padding-top:16px">
                         <table class="e-table">
@@ -92,17 +86,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="e-tabpanel" id="tab-log" role="tabpanel" hidden style="padding-top:16px">
-                        <div class="e-log" role="log">
-                            <span class="e-log__line">[ 08:22:19 ] Construcción iniciada</span>
-                            <span class="e-log__line" data-tone="warn">[ 08:22:31 ] Imagen pesada</span>
-                            <span class="e-log__line" data-tone="danger">[ 08:22:40 ] Enlace roto</span>
-                        </div>
-                    </div>
-                    <div class="e-tabpanel" id="tab-map" role="tabpanel" hidden style="padding-top:16px">
-                        <div class="e-radar" data-tone="ok">
-                            <div style="position:relative;padding:60px 20px;text-align:center" class="e-label">Radar activo</div>
-                        </div>
+                    <div class="e-tabpanel" id="tab-notes" role="tabpanel" hidden style="padding-top:16px">
+                        <p class="demo-text">«Ciudades que se repiten» espera una última lectura antes de publicarse.</p>
                     </div>
                 </article>
 
@@ -228,7 +213,7 @@
                 <div class="e-span-6 e-stack" id="lab-a">
                     <article class="e-panel" id="lab-panel" data-tone="info">
                         <div class="e-panel__head"><h3 class="e-panel__title">Borradores</h3><span class="e-badge" data-tone="danger">En curso</span></div>
-                        <div class="e-metric"><span class="e-metric__value">12</span><span class="e-metric__foot">Textos sin publicar</span></div>
+                        <p class="demo-text">Doce textos esperan su revisión.</p>
                     </article>
                 </div>
                 <div class="e-span-6 e-stack" id="lab-b">

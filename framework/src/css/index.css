@@ -37,11 +37,8 @@
 @import "./components/badge.css";
 @import "./components/field.css";
 @import "./components/switch.css";
-@import "./components/metric.css";
 @import "./components/table.css";
 @import "./components/tabs.css";
-@import "./components/log.css";
-@import "./components/radar.css";
 @import "./components/toast.css";
 @import "./components/modal.css";
 @import "./components/fxpicker.css";

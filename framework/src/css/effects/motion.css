@@ -8,7 +8,6 @@
         [data-loading],
         [data-reveal],
         [data-focus]:focus-visible,
-        .e-radar::before,
         .e-tabpanel.is-entering,
         .e-fx__option::after {
             animation: none !important;

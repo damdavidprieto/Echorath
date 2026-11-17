@@ -1,4 +1,4 @@
-/*! Echorath UI v2.0.0 */
+/*! Echorath UI v3.0.0 */
 var EchorathUI = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -38,7 +38,7 @@ var EchorathUI = (() => {
   });
 
   // src/js/core/constants.js
-  var VERSION = true ? "2.0.0" : "dev";
+  var VERSION = true ? "3.0.0" : "dev";
   var VARIANTS = Object.freeze([
     "standard",
     "flicker",

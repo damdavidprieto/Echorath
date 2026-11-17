@@ -1,7 +1,7 @@
-/*! Echorath UI v2.0.0 */
+/*! Echorath UI v3.0.0 */
 
 // src/js/core/constants.js
-var VERSION = true ? "2.0.0" : "dev";
+var VERSION = true ? "3.0.0" : "dev";
 var VARIANTS = Object.freeze([
   "standard",
   "flicker",

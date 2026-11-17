@@ -109,15 +109,6 @@ Con el foco del teclado, la pista del interruptor lleva un anillo ámbar de 2px.
 
 En los temas de contraste (forced colors), el círculo usa los colores del sistema para que encendido y apagado se distingan.
 
-### Métrica
-
-```html
-<div class="e-metric" data-tone="warn">
-  <span class="e-metric__value">74</span>
-  <span class="e-metric__foot">Marea baja · 24h</span>
-</div>
-```
-
 ### Tabla
 
 ```html
@@ -134,30 +125,14 @@ En los temas de contraste (forced colors), el círculo usa los colores del siste
 
 ```html
 <div class="e-tabs" data-tabs role="tablist">
-  <button class="e-tab" role="tab" data-tab-target="#p-events">Eventos</button>
-  <button class="e-tab" role="tab" data-tab-target="#p-log">Consola</button>
+  <button class="e-tab" role="tab" data-tab-target="#p-works">Obras</button>
+  <button class="e-tab" role="tab" data-tab-target="#p-notes">Notas</button>
 </div>
-<div class="e-tabpanel" id="p-events" role="tabpanel">…</div>
-<div class="e-tabpanel" id="p-log" role="tabpanel" hidden>…</div>
+<div class="e-tabpanel" id="p-works" role="tabpanel">…</div>
+<div class="e-tabpanel" id="p-notes" role="tabpanel" hidden>…</div>
 ```
 
 El runtime gestiona el clic y las flechas izquierda/derecha. Si añades pestañas después de cargar la página, llama a `EchorathUI.initTabs(contenedor)`.
-
-### Consola
-
-```html
-<div class="e-log" role="log">
-  <span class="e-log__line">[ 08:22:19 ] Construcción iniciada</span>
-  <span class="e-log__line" data-tone="danger">[ 08:22:40 ] Enlace roto</span>
-</div>
-```
-
-### Radar
-
-```html
-<div class="e-radar" data-tone="ok"></div>
-<div class="e-radar" data-state="offline"></div>
-```
 
 ### Cabecera
 

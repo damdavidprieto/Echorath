@@ -386,10 +386,10 @@ describe('runtime', () => {
         await page.click('.e-tab:nth-child(2)');
         const hidden = await page.evaluate(() => ({
             events: document.getElementById('tab-events').hidden,
-            log: document.getElementById('tab-log').hidden,
+            notes: document.getElementById('tab-notes').hidden,
             selected: document.querySelector('.e-tab:nth-child(2)').getAttribute('aria-selected'),
         }));
-        assert.deepEqual(hidden, { events: true, log: false, selected: 'true' });
+        assert.deepEqual(hidden, { events: true, notes: false, selected: 'true' });
     });
 
     it('modal resolves with the chosen value and with undefined on Escape', async () => {

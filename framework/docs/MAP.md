@@ -101,7 +101,7 @@ flowchart BT
     S["e.settings<br/>tokens.css"]
     B["e.base<br/>base · typography · atmosphere"]
     L["e.layout<br/>container · grid · flow"]
-    C["e.components<br/>header · panel · button · badge · field · switch<br/>metric · table · tabs · log · radar · toast · modal · fxpicker · prose"]
+    C["e.components<br/>header · panel · button · badge · field · switch<br/>table · tabs · toast · modal · fxpicker · prose"]
     E["e.effects<br/>keyframes · focus · distortions · motion"]
     T["e.tones<br/>tones.css"]
     D["document.css · sin capa<br/>fuente · colores · color-scheme"]
@@ -205,7 +205,6 @@ stateDiagram-v2
 | `data-focus` | Autor | `glitch` `sweep` | Cambia el efecto de foco (por defecto, brillo) |
 | `data-tabs` | Autor | presencia | Marca un grupo de pestañas |
 | `data-tab-target` | Autor | selector | Panel que muestra la pestaña |
-| `data-state` | Autor | `offline` | Estado del componente (radar) |
 | `data-e-manual` | Autor, en `<html>` | presencia | Desactiva el auto-init |
 | `data-close-label` | Autor, en `.e-header__toggle` | texto | Texto del botón con el menú abierto (por defecto "Cerrar") |
 | `data-e-interactive` | Autor | presencia | El control sigue aceptando clics dentro de un elemento en carga |
@@ -262,11 +261,8 @@ Todos en `src/css/settings/tokens.css`, dentro de `:root`. Se pueden redefinir e
 | Badge | `badge.css` | `.e-badge` `.e-dot` | | | | verde |
 | Field | `field.css` | `.e-field` `.e-input` | | | `:focus-visible` `[aria-invalid]` | azul |
 | Switch | `switch.css` | `.e-switch` | `__track` | | `:checked` `:focus-visible` | ámbar (fijo) |
-| Metric | `metric.css` | `.e-metric` | `__value` `__foot` | | | texto |
 | Table | `table.css` | `.e-table` | `.e-empty` (fila) | | `tr:hover` | texto |
 | Tabs | `tabs.css` | `.e-tabs` `.e-tab` `.e-tabpanel` | | | `[aria-selected]` `[hidden]` `.is-entering` | verde |
-| Log | `log.css` | `.e-log` | `__line` | | | verde |
-| Radar | `radar.css` | `.e-radar` | | | `[data-state="offline"]` | verde |
 | Toast | `toast.css` | `.e-toasts` `.e-toast` | `__title` `__msg` | | `.is-visible` | azul |
 | Effect picker | `fxpicker.css` + `fxpicker.js` | `.e-fx` | `__toggle` `__list` `__option` | | `__toggle[aria-expanded]` · `__option[aria-pressed]` con barra de tiempo | verde |
 | Modal | `modal.css` + `modal.js` | `.e-modal-overlay` `.e-modal` | `__head` `__close` `__body` `__foot` | `--lg` | `.is-open` · `html.is-scroll-locked` · `modal()` devuelve un control: `setTitle` `setBody` `close` | verde |

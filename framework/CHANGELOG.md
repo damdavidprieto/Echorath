@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Versiones según [SemVer](https://semver.org/lang/es/).
 
+## [3.0.0] · 2026-11-17
+
+### Eliminado (incompatible)
+
+- **Radar (`.e-radar`), métrica (`.e-metric`) y consola (`.e-log`).** Eran componentes de panel de control que la web de Echorath no usa. Con ellos se van la animación `e-anim-sweep` y el atributo `data-state`. La hoja de estilos minificada pesa 1,2 KB menos.
+
+### Cambiado
+
+- Las pruebas encuentran Chromium por sí mismas (`CHROMIUM_PATH`, el navegador preinstalado o el que instala `npx playwright-core install chromium`), así que también se ejecutan en una máquina limpia o en GitHub Actions.
+
 ## [2.0.0] · 2026-11-17
 
 ### Cambiado (incompatible)

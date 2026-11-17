@@ -22,8 +22,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const fixtureUrl = pathToFileURL(resolve(root, 'tests/fixtures/effects.html')).href;
 
 const VARIANTS = ['standard', 'flicker', 'glitch', 'scan', 'wave', 'shatter', 'warp', 'static', 'decode'];
-const COMPONENTS = ['panel', 'button', 'badge', 'metric', 'heading', 'inline', 'table', 'canvas', 'wide'];
-const TEXT_ONLY = new Set(['button', 'badge', 'metric', 'heading', 'inline']);
+const COMPONENTS = ['panel', 'button', 'badge', 'label', 'heading', 'inline', 'table', 'canvas', 'wide'];
+const TEXT_ONLY = new Set(['button', 'badge', 'label', 'heading', 'inline']);
 const REVEAL_MS = 700;
 const DECODE_STEP_MS = 28;
 

@@ -14,7 +14,7 @@ No tiene dependencias en tiempo de ejecución y no requiere build para usarlo: b
 <main class="e-container">
   <article class="e-panel" data-loading>
     <div class="e-panel__head"><h3 class="e-panel__title">Borradores</h3></div>
-    <div class="e-metric"><span class="e-metric__value">12</span></div>
+    <p>Doce textos esperan su revisión.</p>
   </article>
 </main>
 

@@ -1,4 +1,4 @@
-/*! Echorath UI v2.0.0 */
+/*! Echorath UI v3.0.0 */
 /* src/css/base/fonts.css */
 @font-face {
   font-family: "Orbitron";
@@ -922,27 +922,6 @@ body {
   }
 }
 
-/* src/css/components/metric.css */
-@layer e.components {
-  .e-metric {
-    display: flex;
-    flex-direction: column;
-    gap: var(--e-space-2);
-  }
-  .e-metric__value {
-    font-family: var(--e-font-display);
-    font-weight: 700;
-    font-size: var(--e-font-size-2xl);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    color: var(--e-tone, var(--e-color-text));
-  }
-  .e-metric__foot {
-    font-size: 0.75rem;
-    color: var(--e-color-text-faint);
-  }
-}
-
 /* src/css/components/table.css */
 @layer e.components {
   .e-table {
@@ -1029,54 +1008,6 @@ body {
   }
   .e-tabpanel.is-entering {
     animation: e-anim-enter 0.4s var(--e-ease);
-  }
-}
-
-/* src/css/components/log.css */
-@layer e.components {
-  .e-log {
-    height: 160px;
-    overflow-y: auto;
-    padding: var(--e-space-3);
-    background: var(--e-color-sunken);
-    border: var(--e-border-width) solid #222;
-    font-size: 0.72rem;
-    line-height: 1.6;
-  }
-  .e-log__line {
-    display: block;
-    color: var(--e-tone, var(--e-color-green));
-  }
-}
-
-/* src/css/components/radar.css */
-@layer e.components {
-  .e-radar {
-    position: relative;
-    min-height: 200px;
-    overflow: hidden;
-    background: var(--e-color-bg);
-    border: var(--e-border-width) solid var(--e-color-line);
-  }
-  .e-radar::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 140%;
-    aspect-ratio: 1;
-    translate: -50% -50%;
-    border-radius: 50%;
-    background:
-      conic-gradient(
-        transparent 0deg,
-        transparent 270deg,
-        var(--e-tone, var(--e-color-green)) 360deg);
-    opacity: 0.12;
-    animation: e-anim-sweep 4s linear infinite;
-  }
-  .e-radar[data-state=offline]::before {
-    display: none;
   }
 }
 
@@ -1314,14 +1245,6 @@ body {
     to {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-  @keyframes e-anim-sweep {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
     }
   }
   @keyframes e-anim-reveal {
@@ -1602,7 +1525,6 @@ body {
     [data-loading],
     [data-reveal],
     [data-focus]:focus-visible,
-    .e-radar::before,
     .e-tabpanel.is-entering,
     .e-fx__option::after {
       animation: none !important;
