@@ -7,7 +7,7 @@ import { after, before, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/browser.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const fixtureUrl = pathToFileURL(resolve(root, 'tests/fixtures/effects.html')).href;
@@ -20,7 +20,7 @@ describe('fxPicker', () => {
     const errors = [];
 
     before(async () => {
-        browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium' });
+        browser = await launchChromium();
     });
 
     after(async () => {

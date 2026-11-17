@@ -16,11 +16,10 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/browser.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const fixtureUrl = pathToFileURL(resolve(root, 'tests/fixtures/effects.html')).href;
-const executablePath = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 
 const VARIANTS = ['standard', 'flicker', 'glitch', 'scan', 'wave', 'shatter', 'warp', 'static', 'decode'];
 const COMPONENTS = ['panel', 'button', 'badge', 'metric', 'heading', 'inline', 'table', 'canvas', 'wide'];
@@ -94,7 +93,7 @@ describe('effects on every component', () => {
     let errors;
 
     before(async () => {
-        browser = await chromium.launch({ executablePath });
+        browser = await launchChromium();
         ({ page, errors } = await openFixture(browser));
     });
 
@@ -147,7 +146,7 @@ describe('effect behavior', () => {
     let browser;
 
     before(async () => {
-        browser = await chromium.launch({ executablePath });
+        browser = await launchChromium();
     });
 
     after(async () => {

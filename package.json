@@ -2,14 +2,18 @@
   "name": "echorath",
   "private": true,
   "description": "La web de Echorath: música, escritura, imagen y código.",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "node site/build.mjs",
     "build:dev": "node site/build.mjs --mode=dev",
     "build:prod": "node site/build.mjs --mode=prod",
     "build:pages": "node site/build.mjs --mode=prod --out=dist && node site/build.mjs --mode=dev --out=dist/dev",
     "test": "node --test \"site/tests/*.test.mjs\"",
-    "test:framework": "npm --prefix framework test"
+    "test:framework": "npm --prefix framework test",
+    "test:all": "npm test && npm run test:framework"
   }
 }

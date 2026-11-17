@@ -2,6 +2,7 @@
   "name": "echorath-ui",
   "version": "2.0.0",
   "description": "Framework HTML/CSS/JS de Echorath: neón sobre negro y distorsiones de carga.",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "main": "dist/echorath-ui.js",

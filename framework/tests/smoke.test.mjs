@@ -3,14 +3,14 @@
  *
  *   npm test
  *
- * Chromium path: CHROMIUM_PATH, or /opt/pw-browsers/chromium by default.
+ * Chromium: see tests/helpers/browser.mjs.
  */
 import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { chromium } from 'playwright-core';
+import { launchChromium } from './helpers/browser.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const exampleUrl = pathToFileURL(resolve(root, 'examples/index.html')).href;
@@ -84,9 +84,7 @@ describe('runtime', () => {
     const warnings = [];
 
     before(async () => {
-        browser = await chromium.launch({
-            executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium',
-        });
+        browser = await launchChromium();
         page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
         page.on('pageerror', err => errors.push(err.message));
         page.on('console', msg => {
@@ -1169,7 +1167,7 @@ describe('runtime', () => {
 
     it('the scrollbar thumb stands out 3:1 from its track and the bar is 10px wide', async () => {
         // Chromium hides scrollbars when it runs for tests; this browser shows them
-        const shown = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium', ignoreDefaultArgs: ['--hide-scrollbars'] });
+        const shown = await launchChromium({ ignoreDefaultArgs: ['--hide-scrollbars'] });
         try {
             const other = await shown.newPage({ viewport: { width: 1280, height: 600 } });
             await other.goto(exampleUrl, { waitUntil: 'load' });

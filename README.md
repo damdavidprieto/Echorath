@@ -2,6 +2,8 @@
 
 La web de Echorath: música, escritura, imagen y código. Está hecha con Echorath UI, el framework de la carpeta `framework/`.
 
+[![Pruebas](https://github.com/damdavidprieto/Echorath/actions/workflows/ci.yml/badge.svg)](https://github.com/damdavidprieto/Echorath/actions/workflows/ci.yml)
+
 Hay dos webs, construidas desde el mismo código:
 
 | Web | Dirección | Qué muestra |
@@ -114,27 +116,34 @@ Los tres modos:
 
 ## Trabajar en local
 
-Hace falta [Node.js](https://nodejs.org) 20 o posterior.
+Hace falta [Node.js](https://nodejs.org) 20 o posterior (`.nvmrc` indica la 22, la que usa GitHub). La web no tiene dependencias; el framework solo las necesita para construirse y probarse.
 
 ```sh
-npm run build:dev     # la web de desarrollo, en dist/
-npm run build:prod    # la de producción, en dist/
-npm run build:pages   # las dos, como en GitHub Pages: dist/ y dist/dev/
-npm test              # pruebas del generador
-npm run test:framework  # pruebas de Echorath UI
+npm run build:dev       # la web de desarrollo, en dist/
+npm run build:prod      # la de producción, en dist/
+npm run build:pages     # las dos, como en GitHub Pages: dist/ y dist/dev/
+npm test                # pruebas del generador
+
+npm --prefix framework ci                          # una vez: dependencias del framework
+npx --prefix framework playwright-core install chromium   # una vez: navegador para sus pruebas
+npm run test:framework  # pruebas de Echorath UI (construye dist/ antes)
+npm run test:all        # todas
 ```
 
 Para verla, abre `dist/index.html` en el navegador o sirve la carpeta con `npx serve dist`.
 
 ## Publicar en GitHub Pages
 
-El repositorio es privado, así que GitHub Pages necesita GitHub Pro. Se activa una vez:
+Se activa una vez, en GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
-1. En GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-2. Desde entonces, cada cambio que llega a `main` pasa las pruebas, construye las dos webs y las publica. El progreso se ve en la pestaña **Actions**.
+Desde entonces, cada cambio que llega a `main` pasa las pruebas, construye las dos webs y las publica. El progreso se ve en la pestaña **Actions**. Los cambios que llegan por pull request solo se prueban.
 
-Las direcciones dan por hecho que el repositorio se llama `Echorath`. Si cambias el nombre del repositorio o usas un dominio propio, cambia las dos direcciones de `site/content/site.json`.
+Las dos direcciones de `site/content/site.json` dan por hecho que el repositorio se llama `Echorath`. Si usas un dominio propio, cámbialas allí.
 
 ## El framework
 
 Echorath UI vive en `framework/`. Después de cambiarlo, constrúyelo con `npm --prefix framework run build`: el generador de la web copia siempre su versión construida (`framework/dist/`).
+
+## Licencia
+
+El código (framework, generador, plantilla, pruebas y flujos) tiene licencia [MIT](LICENSE). La obra (la música, los textos, las imágenes y los algoritmos de `site/content/`, y `site/static/`) es © Echorath, con todos los derechos reservados: consulta [site/content/LICENSE.md](site/content/LICENSE.md).
