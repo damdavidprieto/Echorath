@@ -1,0 +1,57 @@
+# Tests the site and the framework. Runs on every pull request and on pushes
+# to branches other than main; on main, "Publicar la web" runs it before
+# publishing.
+name: Pruebas
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  site:
+    name: Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: Pruebas del generador
+        run: npm test
+      - name: Construir producción y desarrollo
+        run: npm run build:pages
+
+  framework:
+    name: Echorath UI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: framework
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: framework/package-lock.json
+      - run: npm ci
+      - name: Instalar Chromium
+        run: npx playwright-core install --with-deps chromium
+      - name: Pruebas en el navegador
+        run: npm test
+      - name: dist/ está al día con src/
+        # npm test builds dist/ first: any difference means it was not rebuilt
+        run: |
+          if ! git diff --exit-code --stat -- dist; then
+            echo "::error::framework/dist no coincide con src/. Ejecuta 'npm --prefix framework run build' y sube el resultado."
+            exit 1
+          fi

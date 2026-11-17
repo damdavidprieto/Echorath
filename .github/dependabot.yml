@@ -1,0 +1,12 @@
+# Weekly pull requests to update the workflows' actions and the framework's
+# build and test tools. Each one runs the tests before it can be merged.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /framework
+    schedule:
+      interval: weekly

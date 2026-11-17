@@ -2,7 +2,7 @@
 
 La web de Echorath: música, escritura, imagen y código. Está hecha con Echorath UI, el framework de la carpeta `framework/`.
 
-[![Pruebas](https://github.com/damdavidprieto/Echorath/actions/workflows/ci.yml/badge.svg)](https://github.com/damdavidprieto/Echorath/actions/workflows/ci.yml)
+[![Publicar la web](https://github.com/damdavidprieto/Echorath/actions/workflows/pages.yml/badge.svg)](https://github.com/damdavidprieto/Echorath/actions/workflows/pages.yml)
 
 Hay dos webs, construidas desde el mismo código:
 
@@ -140,7 +140,7 @@ Para verla, abre `dist/index.html` en el navegador o sirve la carpeta con `npx s
 
 Se activa una vez, en GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
-Desde entonces, cada cambio que llega a `main` pasa las pruebas, construye las dos webs y las publica. El progreso se ve en la pestaña **Actions**. Los cambios que llegan por pull request solo se prueban.
+Desde entonces, cada cambio que llega a `main` pasa las pruebas (las del generador y las del framework en un navegador), construye las dos webs y las publica. El progreso se ve en la pestaña **Actions**. Los cambios que llegan por pull request solo se prueban.
 
 Las dos direcciones de `site/content/site.json` dan por hecho que el repositorio se llama `Echorath`. Si usas un dominio propio, cámbialas allí.
 

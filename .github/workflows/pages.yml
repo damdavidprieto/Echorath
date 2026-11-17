@@ -1,5 +1,5 @@
-# Publishes the site on GitHub Pages on every push to main: production at the
-# root of the site and the development site under dev/.
+# Publishes the site on GitHub Pages on every push to main, once the tests
+# pass: production at the root of the site and the development site under dev/.
 name: Publicar la web
 
 on:
@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One publication at a time; a newer push waits for the running one
 concurrency:
@@ -18,25 +16,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test:
+    name: Pruebas
+    uses: ./.github/workflows/ci.yml
+
   build:
+    name: Construir
+    needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - name: Pruebas del generador
-        run: npm test
+          node-version-file: .nvmrc
       - name: Construir producción y desarrollo
         run: npm run build:pages
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
   deploy:
+    name: Publicar
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
