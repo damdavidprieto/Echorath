@@ -2,10 +2,6 @@
   <a href="https://damdavidprieto.github.io/Echorath/"><img src="site/static/og.png" alt="Echorath, en letras verdes, junto a una retícula de círculos de colores." width="720"></a>
 </p>
 
-<h1 align="center">Echorath</h1>
-
-<p align="center"><b>Músico · escritor · artista visual · programador</b></p>
-
 <p align="center">
   Me interesa lo que ocurre cuando un patrón se repite con pequeños cambios hasta volverse otra cosa.<br>
   Lo busco en el sonido, en la palabra, en la imagen y en el código.
@@ -19,13 +15,11 @@
 
 ## La obra
 
-| | |
-|---|---|
-| **Música** | Pistas para escuchar en la propia web. |
-| **Escritura** | Ensayos, cuentos y notas. |
-| **Imágenes** | Serie generativa «Repetición» · 2024. |
-| **Algoritmos** | El código detrás de la obra: cada algoritmo se dibuja en directo, junto a su pseudocódigo y su código. |
-| **Efectos** | Nueve distorsiones para una misma imagen. |
+- **Música.** Pistas para escuchar en la propia web.
+- **Escritura.** Ensayos, cuentos y notas.
+- **Imágenes.** Serie generativa «Repetición» · 2024.
+- **Algoritmos.** El código detrás de la obra: cada algoritmo se dibuja en directo, junto a su pseudocódigo y su código.
+- **Efectos.** Nueve distorsiones para una misma imagen.
 
 La obra se publica poco a poco, a medida que cada pieza está lista. Lo que aún no aparece en el portafolio está en preparación.
 
