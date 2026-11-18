@@ -299,7 +299,27 @@ export function render(template, view) {
     return html;
 }
 
-// The page's script: the template's code with this site's works in it
+// The page's script: the files in js/, in the order of their numbers, inside
+// one DOMContentLoaded handler, so they share one scope as a single file
+// would. Both scripts load with defer: Echorath UI runs first
+export function bundleJs(dir) {
+    const files = fs.readdirSync(dir).filter(name => name.endsWith('.js')).sort(byName);
+    const wrong = files.filter(name => !/^\d{2}-[a-z0-9-]+\.js$/.test(name));
+    if (wrong.length) throw new Error(`js/: ${wrong.join(', ')} no empieza por dos cifras y un guion (01-arte.js)`);
+    const indent = text => text.replace(/^(?=.)/gm, '    ');
+    const parts = files.map(name => `    // ==== js/${name} ====\n${indent(readText(path.join(dir, name)).trimEnd())}`);
+    return [
+        '// Echorath · the page\'s script, joined from site/template/js by site/build.mjs',
+        "document.addEventListener('DOMContentLoaded', () => {",
+        "    'use strict';",
+        '',
+        parts.join('\n\n'),
+        '});',
+        '',
+    ].join('\n');
+}
+
+// The page's script with this site's works in it
 export function renderScript(source, view) {
     if (source.split('/*@content*/').length !== 2) throw new Error('site.js: tiene que llevar /*@content*/ una sola vez');
     return source.replace('/*@content*/', () => scriptContent(view));
@@ -368,7 +388,7 @@ export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), 
     if (mode !== 'dev' && mode !== 'prod') throw new Error(`modo "${mode}" desconocido: usa dev o prod`);
     const view = select(readContent(contentDir), mode);
     const html = render(readText(path.join(TEMPLATE, 'index.html')), view);
-    const script = renderScript(readText(path.join(TEMPLATE, 'site.js')), view);
+    const script = renderScript(bundleJs(path.join(TEMPLATE, 'js')), view);
 
     // GitHub Pages answers any missing address with the same 404 page, at that
     // address: its links start from the site's base path, not from where it is

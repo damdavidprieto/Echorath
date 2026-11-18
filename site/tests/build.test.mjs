@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { build, bundleCss, minifyCss } from '../build.mjs';
+import { build, bundleCss, bundleJs, minifyCss } from '../build.mjs';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = path.resolve(SITE, '..');
@@ -242,4 +242,16 @@ test('a css file left out of index.css, or imported twice, stops the build', () 
 test('minifying keeps what CSS needs: spaces in values, media queries and strings', () => {
     assert.equal(minifyCss('/* x */\n.a > .b ,\n.c {\n  width: calc(100% - 2px);\n  grid-template-areas: "a b" "c d";\n}\n@media (max-height: 500px) and (min-width: 561px) { .d { content: " " attr(href); } }\n'),
         '.a>.b,.c{width:calc(100% - 2px);grid-template-areas:"a b" "c d"}@media (max-height:500px) and (min-width:561px){.d{content:" " attr(href)}}\n');
+});
+
+test('the script is every file in js/, in the order of its number, in one scope', () => {
+    const dir = tmp('js');
+    fs.writeFileSync(path.join(dir, '10-b.js'), 'const B = A + 1;\n');
+    fs.writeFileSync(path.join(dir, '02-a.js'), 'const A = 1;\n');
+    const js = bundleJs(dir);
+    assert.ok(js.indexOf('const A = 1;') < js.indexOf('const B = A + 1;'));
+    assert.match(js, /^\/\/ .*\ndocument\.addEventListener\('DOMContentLoaded', \(\) => \{\n {4}'use strict';/);
+    assert.doesNotThrow(() => new vm.Script(js));
+    fs.writeFileSync(path.join(dir, 'helpers.js'), '');
+    assert.throws(() => bundleJs(dir), /js\/: helpers\.js no empieza por dos cifras/);
 });

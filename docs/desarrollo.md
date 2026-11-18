@@ -16,7 +16,7 @@ Hay dos webs, construidas desde el mismo código:
 ```
 site/
   content/      el contenido: una obra por archivo
-  template/     la página (index.html), sus estilos (css/), su código (site.js) y la de error (404.html)
+  template/     la página (index.html), sus estilos (css/), su código (js/) y la de error (404.html)
   static/       iconos e imagen para compartir el enlace
   build.mjs     el generador: junta plantilla y contenido en dist/
   tests/        pruebas del generador
