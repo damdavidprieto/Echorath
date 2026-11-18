@@ -1,0 +1,5 @@
+/* Contrast themes (forced colors) drop background colours: the progress
+   bars use a system colour instead of disappearing */
+@media (forced-colors: active) {
+    .track-row__progress, .now-bar__progress, .read-progress span, .fx-tile__timer { forced-color-adjust: none; background: Highlight; }
+}

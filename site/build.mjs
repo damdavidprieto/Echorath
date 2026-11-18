@@ -305,6 +305,34 @@ export function renderScript(source, view) {
     return source.replace('/*@content*/', () => scriptContent(view));
 }
 
+// The page's stylesheet: css/index.css and the files it imports, in its
+// order, as one minified file. Every file in css/ has to be imported, so a
+// new part cannot be forgotten
+export function bundleCss(dir) {
+    const used = new Set();
+    const inline = name => {
+        if (used.has(name)) throw new Error(`css/${name}: se importa dos veces`);
+        used.add(name);
+        const file = path.join(dir, name);
+        if (!fs.existsSync(file)) throw new Error(`css/${name}: no existe`);
+        return readText(file).replace(/@import\s+"([^"]+)";/g, (_, inner) => inline(inner));
+    };
+    const css = inline('index.css');
+    const missing = fs.readdirSync(dir).filter(name => name.endsWith('.css') && !used.has(name));
+    if (missing.length) throw new Error(`css/index.css: falta importar ${missing.join(', ')}`);
+    return minifyCss(css);
+}
+
+// Comments out, and no space where CSS does not need it. Conservative: spaces
+// inside values (calc(), grid areas, strings) are kept
+export const minifyCss = css => css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([{};,>])\s*/g, '$1')
+    .replace(/: /g, ':')
+    .replace(/;}/g, '}')
+    .trim() + '\n';
+
 // {{ASSET:name}} becomes name?v=<hash of its content>: a changed file gets a
 // new address, so no browser keeps an old copy
 function stampAssets(html, outDir) {
@@ -352,7 +380,7 @@ export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), 
     fs.mkdirSync(outDir, { recursive: true });
     for (const name of fs.readdirSync(path.join(SITE, 'static'))) copyInto(path.join(SITE, 'static', name), path.join(outDir, name));
     for (const name of FRAMEWORK_FILES) copyInto(path.join(FRAMEWORK_DIST, name), path.join(outDir, name));
-    fs.copyFileSync(path.join(TEMPLATE, 'site.css'), path.join(outDir, 'site.css'));
+    fs.writeFileSync(path.join(outDir, 'site.css'), bundleCss(path.join(TEMPLATE, 'css')));
     fs.writeFileSync(path.join(outDir, 'site.js'), script);
     fs.writeFileSync(path.join(outDir, 'index.html'), stampAssets(html, outDir));
     fs.writeFileSync(path.join(outDir, '404.html'), stampAssets(notFound, outDir));

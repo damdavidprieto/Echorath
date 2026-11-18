@@ -1,0 +1,16 @@
+/* Header · the bar: the brand leads home, and the current section is lit */
+
+.e-header a.brand { text-decoration: none; }
+@media (pointer: coarse) { .e-header a.brand { display: inline-flex; align-items: center; min-height: 44px; } }
+.e-header a.brand:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 4px; }
+
+/* Seven sections fit the bar at 1280px with a slightly tighter button */
+.e-header__nav .e-btn { padding-inline: 14px; }
+.e-header__nav .e-btn[aria-current="true"] { color: var(--e-color-on-signal); box-shadow: 0 0 15px var(--e-tone); }
+.e-header__nav .e-btn[aria-current="true"]::before { transform: scaleX(1); }
+
+/* Short screens (a phone on its side): a slimmer bar */
+@media (max-height: 500px) and (min-width: 561px) {
+    .e-header { padding-block: 4px; }
+    .e-header .e-header__sub { display: none; }
+}

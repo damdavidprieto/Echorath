@@ -1,0 +1,39 @@
+/* Images · the gallery: each piece is a canvas, and the image itself opens
+   the enlarged view */
+
+.plate canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    border: 1px solid var(--e-color-line);
+}
+
+.plate__zoom { position: relative; display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.plate__zoom::after {
+    content: "Ampliar";
+    position: absolute; right: 8px; bottom: 8px;
+    padding: 4px 8px;
+    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--e-color-green);
+    background: var(--e-color-glass);
+    border: 1px solid var(--e-color-green);
+    opacity: 0; transition: opacity 0.2s;
+}
+.plate__zoom:focus-visible::after { opacity: 1; }
+@media (hover: hover) { .plate__zoom:hover::after { opacity: 1; } }
+.plate__zoom:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 3px; }
+/* Touch screens have no hover: the label is always shown */
+@media (hover: none) { .plate__zoom::after { opacity: 1; } }
+
+/* Tablets and phones: two columns */
+@media (max-width: 900px) {
+    #gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #gallery > .e-span-4 { grid-column: auto; }
+}
+@media (max-width: 560px) {
+    #gallery { gap: 10px; }
+    #gallery .plate { padding: 8px; }
+    #gallery .card-foot { flex-direction: column; align-items: flex-start; gap: 2px; padding-top: 8px; }
+    .plate__zoom::after { right: 4px; bottom: 4px; padding: 2px 6px; letter-spacing: 1px; }
+}

@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { build } from '../build.mjs';
+import { build, bundleCss, minifyCss } from '../build.mjs';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = path.resolve(SITE, '..');
@@ -218,4 +218,28 @@ test('an algorithm without title, mode or draw stops the build', () => {
         fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace("mode: 'seed',", ''));
     });
     assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /01-repeticion\/algorithm\.js: a la ficha le falta "mode"/);
+});
+
+test('the stylesheet is every file in css/, in the order of index.css, minified', () => {
+    const { out } = run('dev');
+    const css = fs.readFileSync(path.join(out, 'site.css'), 'utf8');
+    assert.doesNotMatch(css, /@import|\/\*/);
+    // the first file's rule comes first, the last file's comes last
+    assert.ok(css.startsWith(':root{--e-color-green:#00ff41'));
+    assert.ok(css.indexOf('.skip-link{') < css.indexOf('.track-row{') && css.indexOf('.track-row{') < css.indexOf('@media print'));
+});
+
+test('a css file left out of index.css, or imported twice, stops the build', () => {
+    const dir = tmp('css');
+    fs.writeFileSync(path.join(dir, 'index.css'), '@import "a.css";\n@import "a.css";\n');
+    fs.writeFileSync(path.join(dir, 'a.css'), '.a { color: red; }\n');
+    assert.throws(() => bundleCss(dir), /css\/a\.css: se importa dos veces/);
+    fs.writeFileSync(path.join(dir, 'index.css'), '@import "a.css";\n');
+    fs.writeFileSync(path.join(dir, 'b.css'), '.b { color: blue; }\n');
+    assert.throws(() => bundleCss(dir), /css\/index\.css: falta importar b\.css/);
+});
+
+test('minifying keeps what CSS needs: spaces in values, media queries and strings', () => {
+    assert.equal(minifyCss('/* x */\n.a > .b ,\n.c {\n  width: calc(100% - 2px);\n  grid-template-areas: "a b" "c d";\n}\n@media (max-height: 500px) and (min-width: 561px) { .d { content: " " attr(href); } }\n'),
+        '.a>.b,.c{width:calc(100% - 2px);grid-template-areas:"a b" "c d"}@media (max-height:500px) and (min-width:561px){.d{content:" " attr(href)}}\n');
 });

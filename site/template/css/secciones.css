@@ -1,0 +1,25 @@
+/* Sections · the page's frame: spacing, headings, introductions and the
+   notes that say what is still in development */
+
+.page { padding-block: 32px 40px; }
+.section { padding-block: 40px; }
+
+.section__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 24px;
+    margin-bottom: 20px;
+}
+.section__head .e-h2 { font-size: 1.6rem; --e-tone: var(--e-color-green); }
+.section__intro { color: var(--e-color-text-dim); max-width: 70ch; margin: -4px 0 20px; }
+.section__tools { gap: 8px 16px; }
+
+/* Arriving at a section distorts it, but it keeps taking clicks */
+.section[data-loading] { pointer-events: auto; cursor: auto; }
+
+/* What is not finished says so in amber: a note under the section's title */
+.dev-note { margin: -4px 0 20px; max-width: 70ch; font-size: 0.85rem; color: var(--e-color-text-dim); }
+.dev-note b { font-weight: normal; color: var(--e-color-amber); }
+.section__intro + .dev-note { margin-top: -8px; }

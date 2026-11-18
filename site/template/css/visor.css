@@ -1,0 +1,65 @@
+/* Viewer · texts and images open in a dialog with previous / next, their
+   own address and, for long texts, how much is left to read */
+
+/* How much of a text is left */
+.read-progress {
+    position: sticky; top: calc(-1 * var(--e-space-5)); z-index: 1;
+    height: 3px; margin: calc(-1 * var(--e-space-5)) calc(-1 * var(--e-space-5)) var(--e-space-5);
+    background: var(--e-color-line);
+}
+.read-progress span { display: block; height: 100%; background: var(--e-color-blue); transform: scaleX(var(--read, 0)); transform-origin: left; }
+
+/* Previous / next */
+.work__nav {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px 16px;
+    margin-top: 20px; padding-top: 14px;
+    border-top: 1px solid var(--e-color-line);
+}
+.work__pos { font-variant-numeric: tabular-nums; min-width: 5ch; text-align: center; }
+
+/* Where a work comes from: shown only on paper (see impresion.css) */
+.work__source { display: none; }
+
+/* An image as large as the screen allows, and full screen on demand */
+.e-modal.is-viewer { width: min(1400px, 100%); }
+.viewer { margin: 0; }
+.dlg-canvas {
+    display: block;
+    width: min(100%, max(260px, calc(100dvh - 360px)));
+    height: auto; aspect-ratio: 1;
+    margin-inline: auto;
+}
+.viewer__cap { max-width: 64ch; margin: 14px auto 0; }
+.viewer__meta { margin: 0 0 6px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--e-color-text-dim); }
+.viewer__desc { margin: 0 0 12px; color: var(--e-color-text); }
+.viewer__full { margin-top: 8px; }
+
+/* Wide screens: the image keeps its size and the details sit beside it */
+@media (min-width: 901px) {
+    .viewer { display: grid; grid-template-columns: auto minmax(260px, 320px); gap: 28px; align-items: start; justify-content: center; }
+    .viewer .dlg-canvas { width: min(1000px, calc(100dvh - 250px)); margin: 0; }
+    .viewer .viewer__cap { margin: 0; }
+    .viewer .work__nav { flex-direction: column; align-items: stretch; }
+    .viewer .work__nav .e-row { justify-content: space-between; }
+}
+
+/* Short screens (a phone on its side): a work fits without scrolling, the
+   image beside its details and the text with more lines */
+@media (max-height: 500px) and (min-width: 561px) {
+    .e-modal-overlay { padding: 8px; }
+    .e-modal .e-modal__head { padding-block: 2px; }
+    .e-modal .e-modal__foot { display: none; }   /* the × in the title bar closes, and Escape */
+    .e-modal .e-modal__body { padding: 12px 20px; }
+    .viewer { display: grid; grid-template-columns: auto minmax(220px, 1fr); gap: 20px; align-items: start; }
+    .viewer .dlg-canvas { width: calc(100dvh - 96px); margin: 0; }
+    .viewer .viewer__cap { margin: 0; }
+    .viewer .work__nav { margin-top: 12px; }
+}
+.e-modal.is-viewer:fullscreen { border: 0; }
+.e-modal.is-viewer:fullscreen .e-modal__foot { display: none; }   /* the × and Escape close it */
+.e-modal.is-viewer:fullscreen .e-modal__body { flex: 1; display: grid; align-content: center; }
+.e-modal.is-viewer:fullscreen .dlg-canvas { width: min(calc(100vw - 420px), calc(100dvh - 120px)); }
+@media (max-width: 900px) {
+    .e-modal.is-viewer:fullscreen .dlg-canvas { width: min(100%, calc(100dvh - 120px)); }
+}

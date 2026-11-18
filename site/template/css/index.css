@@ -1,0 +1,28 @@
+/*
+ * The page's own layer, on top of Echorath UI: its layout and the look of each
+ * part. The framework brings the components, the sticky bar that folds into a
+ * menu, the content width (.e-container), the reading style (.e-prose) and the
+ * dialogs; this layer only arranges and tunes them.
+ *
+ * The generator (site/build.mjs) joins these files in this order into one
+ * minified site.css. The order matters only where two rules of the same
+ * weight set the same property: a later file wins.
+ */
+@import "tokens.css";
+@import "base.css";
+@import "secciones.css";
+@import "tarjetas.css";
+@import "cabecera.css";
+@import "portada.css";
+@import "musica.css";
+@import "escritura.css";
+@import "imagenes.css";
+@import "efectos.css";
+@import "algoritmos.css";
+@import "sobre.css";
+@import "contacto.css";
+@import "visor.css";
+@import "reproductor.css";
+@import "pie.css";
+@import "contraste.css";
+@import "impresion.css";

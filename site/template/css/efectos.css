@@ -1,0 +1,87 @@
+/* Effects · the effects room (nine tiles on the same specimen) and «Modo
+   efectos», which puts an effect picker next to each part of the page */
+
+/* Effects mode: the pickers are a tool for the artist, hidden for visitors */
+html:not(.fx-on) .e-fx { display: none; }
+.fx-mode { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+/* The label is the switch's real target: 44px on touch */
+@media (pointer: coarse) { .fx-mode { min-height: 44px; } }
+
+/* Each component sits in a cell with its picker below it, outside the
+   component, so no effect can clip or distort the controls that drive it */
+.fx-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+.fx-cell > .e-panel { flex: 1; }
+.e-panel + .e-fx,
+.e-table + .e-fx { margin-top: 10px; }
+.hero .e-fx { margin-top: 20px; }
+
+/* The room */
+.fx-lead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; margin: -4px 0 20px; }
+.fx-lead .section__intro { margin: 0; }
+.fx-rm-note { display: none; margin: 0 0 16px; color: var(--e-color-amber); }
+@media (prefers-reduced-motion: reduce) { .fx-rm-note { display: block; } }
+
+.fx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--e-space-4);
+}
+.fx-tile {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "specimen specimen" "name play" "what what" "how how";
+    align-content: start;
+    gap: 8px 12px;
+}
+.fx-tile .fx-specimen { grid-area: specimen; }
+.fx-specimen {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--e-color-line);
+    background: var(--e-color-bg);
+}
+.fx-specimen canvas { flex: none; width: 64px; height: 64px; }
+.fx-specimen__word { font-family: var(--e-font-display); font-weight: 900; font-size: 1.3rem; color: var(--e-color-green); }
+.fx-tile__name { grid-area: name; align-self: center; margin: 4px 0 0; font-family: var(--e-font-display); font-size: 1.1rem; color: var(--e-color-text); }
+.fx-tile__what { grid-area: what; margin: 0; color: var(--e-color-text-dim); font-size: 0.85rem; }
+
+/* The technique waits behind «Cómo está hecho» */
+.fx-tile__how { grid-area: how; margin: 0; color: var(--e-color-text-faint); font-size: 0.8rem; }
+.fx-tile__how summary { display: inline-flex; align-items: center; min-height: 32px; cursor: pointer; color: var(--e-color-blue); }
+.fx-tile__how summary:focus-visible { outline: 2px solid var(--e-color-blue); outline-offset: 2px; }
+.fx-tile__how p { margin: 2px 0 0; }
+@media (pointer: coarse) { .fx-tile__how summary { min-height: 44px; } }
+
+/* «Ver efecto», with a countdown of the demo along its bottom */
+.fx-tile__play { grid-area: play; align-self: center; margin-top: 4px; position: relative; overflow: hidden; }
+.fx-tile__timer {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: currentColor; transform: scaleX(0); transform-origin: left;
+}
+.fx-tile__play[aria-pressed="true"] .fx-tile__timer { animation: fx-count var(--fx-ms, 2400ms) linear forwards; }
+@keyframes fx-count { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) { .fx-tile__play[aria-pressed="true"] .fx-tile__timer { animation: none; transform: scaleX(1); opacity: 0.5; } }
+
+/* Phones: two columns of compact tiles */
+@media (max-width: 560px) {
+    .fx-specimen { padding: 8px 10px; }
+    .fx-specimen canvas { width: 44px; height: 44px; }
+    .fx-specimen__word { font-size: 1.1rem; }
+    .fx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .fx-tile { grid-template-columns: minmax(0, 1fr); grid-template-areas: "specimen" "name" "what" "play" "how"; padding: 10px; gap: 6px; }
+    .fx-tile .fx-specimen { padding: 6px 8px; gap: 8px; }
+    .fx-tile .fx-specimen canvas { width: 30px; height: 30px; }
+    .fx-tile .fx-specimen__word { font-size: 0.85rem; }
+    .fx-tile__name { font-size: 0.95rem; margin: 2px 0 0; }
+    .fx-tile__what { font-size: 0.8rem; }
+    .fx-tile__play { justify-self: start; }
+}
+/* 320px (a phone at 400% zoom): the specimen's word would touch its border */
+@media (max-width: 340px) { .fx-tile .fx-specimen { gap: 6px; padding-inline: 6px; } }

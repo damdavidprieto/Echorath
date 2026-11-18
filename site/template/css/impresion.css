@@ -1,0 +1,15 @@
+/* Print · Echorath UI prints only the open dialog, so printing a work prints
+   the work, with its address. The home page prints as a list of the works,
+   without controls, and with each link's address written out */
+@media print {
+    .now-bar, .skip-link, .section__tools, .read-progress, .work__nav { display: none !important; }
+    html.has-now-bar body { padding-bottom: 0 !important; }
+    .work__source { display: block; margin-top: 18pt; font-size: 9pt; word-break: break-all; }
+
+    .e-header__nav, .hero__cta, .hero__hint, #hero-lab, .start, #efectos, #algoritmos, .more-btn, .e-fx,
+    .track-row .e-btn, .card-foot .e-btn, .plate__zoom::after, #copy, .contact-intents, .page-foot > .e-btn { display: none !important; }
+    #musica .section__head .e-label { display: none !important; }
+    .contact-links a[href^="http"]::after, .foot__links a[href^="http"]::after { content: " " attr(href); text-transform: none; letter-spacing: 0; }
+    /* A work is not split between two pages */
+    .track-row, #texts .e-panel, #gallery > * { break-inside: avoid; }
+}

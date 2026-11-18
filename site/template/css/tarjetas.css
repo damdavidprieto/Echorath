@@ -1,0 +1,26 @@
+/* Cards · the parts every kind of work shares: a column of cards, their foot
+   with the details and the action, and «Ver más» for long lists */
+
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+.card-text { font-size: 0.95rem; color: var(--e-color-text-dim); margin: 0; }
+.card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.card-foot {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    font-size: 0.8rem;
+    color: var(--e-color-text-faint);
+}
+.card-foot__name { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.card-foot .e-btn { padding: 6px 14px; }
+/* Compact for mouse users; touch keeps the framework's 44px */
+@media (pointer: fine) {
+    .card-foot .e-btn { min-height: 34px; }
+}
+
+.more-btn { margin-top: 16px; }

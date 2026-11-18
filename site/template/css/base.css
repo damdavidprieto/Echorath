@@ -1,0 +1,36 @@
+/* Base · what every part of the page relies on */
+
+/* Components set their own display; [hidden] must still hide them */
+[hidden] { display: none !important; }
+
+/* Works folded away under «Ver las…» stay findable: hidden="until-found"
+   keeps them out of sight and out of the layout, but the browser's find
+   (Ctrl+F) and links to a passage can reach them, and the list then opens.
+   The [hidden] rule above would hide them completely, so this one follows it */
+[hidden="until-found"] { display: revert !important; position: absolute !important; }
+
+/* Without JavaScript, controls that need it are hidden and a note explains why */
+html:not(.js) .needs-js { display: none !important; }
+.noscript-note { margin: 16px 0 0; padding: 10px 14px; border-left: 3px solid var(--e-color-amber); color: var(--e-color-text); max-width: 52ch; }
+
+/* Skip link, visible on keyboard focus */
+.skip-link {
+    position: fixed;
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: max(16px, env(safe-area-inset-left, 0px));
+    z-index: 2000;
+    padding: 10px 16px;
+    background: var(--e-color-green);
+    color: var(--e-color-on-signal);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; outline: 2px solid var(--e-color-text); outline-offset: 2px; }
+#main:focus { outline: none; }
+
+/* Text for screen readers only */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

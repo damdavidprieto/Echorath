@@ -1,0 +1,48 @@
+/* Algorithms · each one drawn live, with one sentence and its actions; «Ver
+   código» opens its pseudocode beside the code that runs */
+
+.lab {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 20px 32px;
+    align-items: start;
+}
+.lab__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.lab__title { margin: 6px 0 10px; }
+.lab__hook { margin: 0 0 16px; max-width: 52ch; color: var(--e-color-text); }
+.lab__primary { margin-bottom: 14px; }
+.lab__out { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lab__out canvas { display: block; width: 100%; max-width: 420px; aspect-ratio: 1; height: auto; border: 1px solid var(--e-color-line); }
+.lab__out canvas[tabindex] { cursor: crosshair; touch-action: pan-y; }
+.lab__out canvas[tabindex]:focus-visible { outline: 2px solid var(--e-color-green); outline-offset: 3px; }
+.lab__cap { margin: 0; max-width: 420px; font-size: 0.8rem; color: var(--e-color-text-faint); text-align: center; }
+@media (max-width: 900px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+
+/* Code, with its bar (file name and copy) and syntax colours */
+.code__bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 6px 6px 14px; border: 1px solid var(--e-color-line); border-bottom: 0; font-size: 0.72rem; color: var(--e-color-text-faint); }
+.code pre {
+    margin: 0; padding: 14px 16px;
+    max-height: 440px; overflow: auto;
+    background: var(--e-color-sunken);
+    border: 1px solid var(--e-color-line);
+    font: 0.8rem/1.6 var(--e-font-mono);
+    tab-size: 4;
+}
+.code pre:focus-visible { outline: 2px solid var(--e-color-blue); outline-offset: -2px; }
+.tok-k { color: var(--e-color-cyan); }
+.tok-s { color: var(--e-color-green); }
+.tok-n { color: var(--e-color-amber); }
+.tok-c { color: var(--e-color-text-faint); font-style: italic; }
+
+/* The code window: pseudocode beside the code on wide screens, tabs otherwise */
+.e-modal.is-code { width: min(1240px, 100%); }
+.code-view__meta { margin: 0 0 14px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--e-color-text-dim); }
+.code-view__tabs { margin-bottom: 14px; }
+.code-view__panes { display: grid; gap: 16px; }
+.code-view.is-wide .code-view__panes { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; }
+.code-view__head { margin: 0 0 8px; font-family: var(--e-font-display); font-size: 0.95rem; color: var(--e-color-green); }
+.code-view:not(.is-wide) .code-view__head { display: none; }
+.code-view .code pre { max-height: none; }
+.code-view .is-pseudo pre { white-space: pre-wrap; color: var(--e-color-text); }
+.pseudo-line { display: block; }
+@media (max-height: 500px) and (min-width: 561px) { .code-view.is-wide .code-view__panes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }

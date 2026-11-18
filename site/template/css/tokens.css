@@ -1,0 +1,21 @@
+/*
+ * Tokens · the site's own values
+ *
+ * Colours: the phosphor green of a terminal instead of the framework's mint,
+ * and a neon red instead of its raspberry. Every other colour, size and
+ * duration comes from Echorath UI (--e-*).
+ *
+ * Variables the page's script sets on the fly:
+ *   --now-h     height of the «Sonando» bar, so the page leaves room for it
+ *   --now-ms    length of what is playing (the bar's progress line)
+ *   --track-ms  length of a track's sample (its row's progress line)
+ *   --fx-ms     length of an effect's demo (the countdown under «Ver efecto»)
+ *   --read      how much of a text has been read, 0 to 1
+ *
+ * Breakpoints (media queries cannot read variables, so they are written out):
+ *   narrow   max-width: 560px   phones
+ *   medium   max-width: 900px   tablets and small windows: one column
+ *   wide     min-width: 901px
+ *   short    max-height: 500px and min-width: 561px   a phone on its side
+ */
+:root { --e-color-green: #00ff41; --e-color-red: #ff0033; }

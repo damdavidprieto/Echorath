@@ -1,0 +1,18 @@
+/* Footer · the end of the page offers somewhere to go */
+
+footer.page-foot {
+    padding-block: 32px 40px;
+    border-top: 1px solid var(--e-color-line);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px 24px;
+    font-size: 0.8rem;
+    color: var(--e-color-text-faint);
+}
+.foot__name { margin: 0 0 4px; font-family: var(--e-font-display); font-size: 1.1rem; color: var(--e-color-green); }
+.foot__tag { margin: 0; color: var(--e-color-text-dim); }
+.foot__links { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
+.foot__legal { grid-column: 1 / -1; margin: 0; }
+
+@media (max-width: 560px) { footer.page-foot { grid-template-columns: minmax(0, 1fr); } }

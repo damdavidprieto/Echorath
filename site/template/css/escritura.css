@@ -1,0 +1,18 @@
+/* Writing · the text cards. Their distortion is on purpose and permanent:
+   it stays on the frame and the title, the summary stays sharp, and one
+   press stops it (remembered) */
+
+#texts article { display: flex; flex-direction: column; --e-distort-split: 1px; }
+#texts article .card-text,
+#texts article .card-foot { text-shadow: none; }
+
+/* Long titles stop at three lines (the reader shows them whole). They are
+   flex items, so a long word has to be allowed to break anywhere */
+#texts article .e-h2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; overflow-wrap: anywhere; }
+
+#texts.is-still [data-loading] { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+    /* Distorted on purpose, not loading: keep them at full opacity */
+    #texts [data-loading] { opacity: 1; }
+    #still-toggle { display: none; }
+}
