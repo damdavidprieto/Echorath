@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { build, bundleCss, bundleJs, minifyCss } from '../build.mjs';
+import { build, bundleCss, bundleJs, minifyCss, slugOf } from '../build.mjs';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = path.resolve(SITE, '..');
@@ -254,4 +254,83 @@ test('the script is every file in js/, in the order of its number, in one scope'
     assert.doesNotThrow(() => new vm.Script(js));
     fs.writeFileSync(path.join(dir, 'helpers.js'), '');
     assert.throws(() => bundleJs(dir), /js\/: helpers\.js no empieza por dos cifras/);
+});
+
+test('each work shown has its own page, with its address, title and data', () => {
+    const { out } = run('dev');
+    for (const page of ['musica/marea-baja', 'escritura/ciudades-que-se-repiten', 'imagenes/repeticion-01', 'algoritmos/repeticion']) {
+        const html = fs.readFileSync(path.join(out, page, 'index.html'), 'utf8');
+        const url = `https://damdavidprieto.github.io/Echorath/dev/${page}/`;
+        assert.match(html, new RegExp(`<html lang="es" data-root="\\.\\./\\.\\./" data-work="${page}">`), page);
+        assert.ok(html.includes(`<link rel="canonical" href="${url}">`), page);
+        assert.ok(html.includes(`<meta property="og:url" content="${url}">`), page);
+        assert.match(html, /<link rel="stylesheet" href="\.\.\/\.\.\/site\.css\?v=[0-9a-f]{10}">/);
+        assert.match(html, /<link rel="icon" href="\.\.\/\.\.\/favicon\.svg"/);
+        const data = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
+        assert.equal(data.url, url);
+        assert.equal(data.creator.name, 'Echorath');
+    }
+    const track = fs.readFileSync(path.join(out, 'musica/marea-baja/index.html'), 'utf8');
+    assert.match(track, /<title>Marea baja · Echorath<\/title>/);
+    assert.match(track, /<meta property="og:type" content="music\.song">/);
+    assert.match(track, /"@type":"MusicRecording","duration":"PT3M42S"/);
+    const text = fs.readFileSync(path.join(out, 'escritura/ciudades-que-se-repiten/index.html'), 'utf8');
+    assert.match(text, /<meta name="description" content="Sobre las calles que uno reconoce aunque nunca haya pisado el lugar\.">/);
+    const home = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
+    assert.match(home, /<html lang="es" data-root="">/);
+    assert.match(home, /"@type":"Person","name":"Echorath"/);
+    assert.ok(!fs.existsSync(path.join(out, 'sitemap.xml')), 'the development site has no sitemap');
+});
+
+test('production has pages and a sitemap only for what is published', () => {
+    let { out } = run('prod');
+    assert.deepEqual(fs.readdirSync(out).filter(f => ['musica', 'escritura', 'imagenes', 'algoritmos'].includes(f)), []);
+    assert.match(fs.readFileSync(path.join(out, 'sitemap.xml'), 'utf8'), /<loc>https:\/\/damdavidprieto\.github\.io\/Echorath\/<\/loc>/);
+    const dir = contentCopy(d => editJson(path.join(d, 'musica', '01-marea-baja.json'), t => { t.status = 'published'; }));
+    ({ out } = run('prod', dir));
+    assert.ok(fs.existsSync(path.join(out, 'musica/marea-baja/index.html')));
+    assert.ok(!fs.existsSync(path.join(out, 'escritura')));
+    const map = fs.readFileSync(path.join(out, 'sitemap.xml'), 'utf8');
+    assert.deepEqual([...map.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1]),
+        ['https://damdavidprieto.github.io/Echorath/', 'https://damdavidprieto.github.io/Echorath/musica/marea-baja/']);
+});
+
+test('the page and the generator give a work the same address name', () => {
+    const source = fs.readFileSync(path.join(SITE, 'template', 'js', '02-contenido.js'), 'utf8');
+    const pageSlug = vm.runInNewContext(`${source.match(/const slug = .*;/)[0]}; slug`);
+    for (const title of ['Ciudades que se repiten', 'Repetición 01', 'Año ¿nuevo?', '«Marea» — baja!', 'Über Ñandú', '  espacios  ', 'Ça va', 'A/B: 50%']) {
+        assert.equal(pageSlug(title), slugOf(title), title);
+    }
+});
+
+test('two works whose titles give the same address stop the build', () => {
+    const dir = contentCopy(d => {
+        const one = JSON.parse(fs.readFileSync(path.join(d, 'musica', '01-marea-baja.json'), 'utf8'));
+        fs.writeFileSync(path.join(d, 'musica', '02-otra.json'), JSON.stringify({ ...one, title: 'Marea ¡baja!' }));
+    });
+    assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /musica: «Marea baja» y «Marea ¡baja!» tendrían la misma dirección \(musica\/marea-baja\/\)/);
+});
+
+test('an algorithm whose title is not written as text stops the build', () => {
+    const dir = contentCopy(d => {
+        const file = path.join(d, 'algoritmos', '01-repeticion', 'algorithm.js');
+        fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace("title: 'Repetición'", 'title: NAME'));
+    });
+    assert.throws(() => build({ mode: 'dev', contentDir: dir, outDir: tmp('bad') }), /"title" tiene que ser un texto entre comillas/);
+});
+
+test('a former title (aka) keeps its address, leading to the work\'s page', () => {
+    const dir = contentCopy(d => editJson(path.join(d, 'musica', '01-marea-baja.json'), t => { t.aka = ['Marea alta']; }));
+    const { out, js } = run('dev', dir);
+    const old = fs.readFileSync(path.join(out, 'musica/marea-alta/index.html'), 'utf8');
+    assert.match(old, /<meta http-equiv="refresh" content="0; url=\.\.\/marea-baja\/">/);
+    assert.match(old, /<link rel="canonical" href="https:\/\/damdavidprieto\.github\.io\/Echorath\/dev\/musica\/marea-baja\/">/);
+    assert.match(old, /<meta name="robots" content="noindex">/);
+    assert.match(js, /"aka": \[\s*"Marea alta"\s*\]/);
+    const clash = contentCopy(d => {
+        editJson(path.join(d, 'musica', '01-marea-baja.json'), t => { t.aka = ['Otra']; });
+        const one = JSON.parse(fs.readFileSync(path.join(d, 'musica', '01-marea-baja.json'), 'utf8'));
+        fs.writeFileSync(path.join(d, 'musica', '02-otra.json'), JSON.stringify({ ...one, title: 'Otra', aka: [] }));
+    });
+    assert.throws(() => build({ mode: 'dev', contentDir: clash, outDir: tmp('bad') }), /musica\/otra\/: es la dirección de otra obra y también un título anterior \(aka\) de «Marea baja»/);
 });

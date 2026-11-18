@@ -31,7 +31,7 @@ function startPreview(index, row, btn) {
     const track = TRACKS[index];
     const steps = track.notes.length * SAMPLE_ROUNDS;
     const totalMs = steps * STEP_MS;
-    showNow({ title: track.title, sub: track.album, totalMs, link: '#musica/' + track.slug, stop: stopPreview });
+    showNow({ title: track.title, sub: track.album, totalMs, link: pageOf('musica', track), stop: stopPreview });
     const seq = sequence({ notes: track.notes, wave: 'triangle', stepMs: STEP_MS, steps, onEnd: stopPreview }, (i, step) => setNowTime(step * STEP_MS));
     trackPlaying = { index, seq, row, button: btn };
     row.style.setProperty('--track-ms', `${totalMs}ms`);

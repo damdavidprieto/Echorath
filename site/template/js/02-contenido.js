@@ -11,3 +11,20 @@ const slug = text => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
     work.aka = (work.aka || []).map(slug);
 });
 const isWork = id => work => work.slug === id || work.aka.includes(id);
+
+// ---- Each work has its own page (escritura/<obra>/): this same page, with the
+// work's address, title and description for search engines and shared links.
+// HOME is the portfolio's address, wherever the site is served ----
+const HOME = new URL(document.documentElement.dataset.root || '', location.href).href;
+const pageOf = (section, work) => `${HOME}${section}/${work.slug}/`;
+// On a work's page the address becomes the portfolio's, with the work in it
+// (…/Echorath/#escritura/<obra>), so the rest of the page works as on the
+// home page; «Compartir» still gives the work's own page
+if (document.documentElement.dataset.work) {
+    // The head's addresses (../../favicon.svg…) are relative to this page: fix
+    // them first, or the browser would look for the icon from the new address
+    document.querySelectorAll('head link[href]').forEach(link => link.setAttribute('href', link.href));
+    history.replaceState(null, '', `${HOME}${location.hash || `#${document.documentElement.dataset.work}`}`);
+    // From here on it is the portfolio: the viewer titles the tab while a work is open
+    document.title = document.querySelector('meta[property="og:site_name"]').content;
+}

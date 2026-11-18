@@ -3,6 +3,7 @@
     "dev": "https://damdavidprieto.github.io/Echorath/dev/",
     "prod": "https://damdavidprieto.github.io/Echorath/"
   },
+  "description": "Echorath: músico, escritor, artista visual y programador. Música, escritura, imagen y código.",
   "email": { "status": "sample", "address": "correo@echorath.example" },
   "links": [
     { "status": "sample", "name": "Instagram", "url": "https://www.instagram.com" },

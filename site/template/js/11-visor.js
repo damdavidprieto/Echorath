@@ -81,12 +81,12 @@ function openWork(set, start, how = 'push') {
         if (announce && n > 1) live.textContent = `${item.title}, ${index + 1} de ${n}`;
         history.replaceState(null, '', `#${set.section}/${item.slug}`);
         document.title = `${item.title} · ${BASE_TITLE}`;
-        source.textContent = shareable ? `${item.title} · Echorath · ${location.href}` : '';
+        source.textContent = shareable ? `${item.title} · Echorath · ${pageOf(set.section, item)}` : '';
         if (shareable) view.appendChild(source);
     };
     prev.addEventListener('click', () => show(index - 1, true));
     next.addEventListener('click', () => show(index + 1, true));
-    share.addEventListener('click', () => shareLink(location.href, document.title));
+    share.addEventListener('click', () => shareLink(pageOf(set.section, set.items[index]), document.title));
     const onKey = e => {
         if (e.altKey || e.ctrlKey || e.metaKey || e.defaultPrevented || n < 2) return;
         if (e.target.closest && e.target.closest('pre, input, select, textarea, [role="tablist"], canvas[tabindex]')) return;

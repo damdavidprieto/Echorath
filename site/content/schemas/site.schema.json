@@ -27,6 +27,12 @@
         }
       }
     },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Cómo se presenta la web en buscadores y al compartir la portada, en una o dos frases"
+    },
     "email": {
       "type": "object",
       "additionalProperties": false,
@@ -87,6 +93,7 @@
   },
   "required": [
     "urls",
+    "description",
     "email"
   ],
   "additionalProperties": false

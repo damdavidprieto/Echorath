@@ -141,8 +141,17 @@ function readAlgorithm(dir) {
             throw new Error(`${path.relative(ROOT, dir)}/algorithm.js: a la ficha le falta "${key}"`);
         }
     }
+    // The page of the algorithm needs its title, so it has to be written as text
+    const literal = key => {
+        const m = object.match(new RegExp(`(?:^|[{,\\s])${key}\\s*:\\s*(['"\`])((?:\\\\.|(?!\\1)[^\\\\])*)\\1`));
+        return m ? m[2].replace(/\\(.)/g, '$1') : undefined;
+    };
+    const title = literal('title');
+    if (!title) throw new Error(`${path.relative(ROOT, dir)}/algorithm.js: "title" tiene que ser un texto entre comillas, como title: 'Espiral'`);
+    const year = (object.match(/(?:^|[{,\s])year\s*:\s*(\d{4})\b/) || [])[1];
     const pseudoFile = path.join(dir, 'pseudo.txt');
     return {
+        title, summary: literal('summary'), year: year ? Number(year) : undefined,
         status: checkStatus(meta.status, path.join(dir, 'meta.json')),
         declarations: source.slice(0, at).trim(),
         object,
@@ -156,6 +165,7 @@ export function readContent(contentDir) {
     const siteFile = path.join(contentDir, 'site.json');
     const site = readJson(siteFile);
     checkFields(site.urls || {}, { dev: 'site', prod: 'site' }, siteFile, 'urls.');
+    checkFields(site, { description: 'text' }, siteFile);
     checkStatus(site.email && site.email.status, siteFile);
     checkFields(site.email, { address: 'email' }, siteFile, 'email.');
     (site.links || []).forEach((link, i) => {
@@ -211,7 +221,7 @@ export function select(content, mode) {
         sobre: sobre !== null,
         contacto: email !== null,
     };
-    return { mode, tracks, texts, pieces, algorithms, effects, sobre, email, links, sections, url: content.site.urls[mode] };
+    return { mode, tracks, texts, pieces, algorithms, effects, sobre, email, links, sections, url: content.site.urls[mode], description: content.site.description };
 }
 
 // ---------------------------------------------------------------- writing
@@ -252,6 +262,102 @@ function scriptContent(view) {
     ].join('\n');
 }
 
+// ---------------------------------------------------------------- pages
+
+// A work's name in addresses: «Ciudades que se repiten» → ciudades-que-se-repiten.
+// The page's script (js/02-contenido.js) computes the same one
+export const slugOf = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const ARTIST = view => ({ '@type': 'Person', name: 'Echorath', url: view.url });
+const isoDuration = dur => { const [m, s] = dur.split(':'); return `PT${Number(m)}M${Number(s)}S`; };
+
+export function homePage(view) {
+    return {
+        path: 'index.html', root: '', work: null, url: view.url, title: 'Echorath', description: view.description, ogType: 'website',
+        jsonLd: { '@context': 'https://schema.org', ...ARTIST(view), description: view.description, sameAs: view.links.map(l => l.url).filter(u => u.startsWith('https://')) },
+    };
+}
+
+// One page per work shown: musica/<obra>/, escritura/<obra>/, imagenes/<obra>/
+// and algoritmos/<obra>/. It is the same page with that work open, and its
+// own address, title and description for search engines and shared links
+export function workPages(view) {
+    const kinds = [
+        ['musica', view.tracks, t => ({
+            description: `${t.title}: ${t.album} · ${t.dur}`, ogType: 'music.song',
+            jsonLd: { '@type': 'MusicRecording', duration: isoDuration(t.dur), inAlbum: { '@type': 'MusicAlbum', name: t.release } },
+        })],
+        ['escritura', view.texts, t => ({
+            description: t.summary, ogType: 'article',
+            jsonLd: { '@type': 'CreativeWork', genre: t.kind, abstract: t.summary, datePublished: String(t.year), inLanguage: 'es' },
+        })],
+        ['imagenes', view.pieces, p => ({
+            description: `${p.title}: imagen de la serie generativa «Repetición» (${p.kind.toLowerCase()}, semilla ${p.seed}), ${p.year}.`, ogType: 'website',
+            jsonLd: { '@type': 'VisualArtwork', artform: 'Arte generativo', dateCreated: String(p.year) },
+        })],
+        ['algoritmos', view.algorithms, a => ({
+            description: a.summary || `${a.title}: un algoritmo de Echorath, dibujado en directo junto a su código.`, ogType: 'website',
+            jsonLd: { '@type': 'CreativeWork', genre: 'Arte generativo', ...(a.year ? { dateCreated: String(a.year) } : {}) },
+        })],
+    ];
+    const pages = [];
+    for (const [section, works, details] of kinds) {
+        const seen = new Map();
+        for (const work of works) {
+            if (work.aka !== undefined && !(Array.isArray(work.aka) && work.aka.every(old => typeof old === 'string'))) {
+                throw new Error(`${section}: en «${work.title}», "aka" tiene que ser una lista de títulos anteriores`);
+            }
+            const slug = slugOf(work.title);
+            if (!slug) throw new Error(`${section}: el título "${work.title}" no deja nombre para su dirección`);
+            if (seen.has(slug)) throw new Error(`${section}: «${seen.get(slug)}» y «${work.title}» tendrían la misma dirección (${section}/${slug}/); cambia uno de los dos títulos`);
+            seen.set(slug, work.title);
+            const url = `${view.url}${section}/${slug}/`;
+            const { description, ogType, jsonLd } = details(work);
+            pages.push({
+                path: `${section}/${slug}/index.html`, root: '../../', work: `${section}/${slug}`, url,
+                title: `${work.title} · Echorath`, description, ogType,
+                jsonLd: { '@context': 'https://schema.org', name: work.title, url, creator: ARTIST(view), ...jsonLd },
+                // Former titles (aka): their addresses lead here
+                formerly: (work.aka || []).map(slugOf).filter(old => old && old !== slug),
+            });
+        }
+    }
+    const taken = new Set(pages.map(p => p.work));
+    for (const page of pages) {
+        for (const old of page.formerly) {
+            const work = `${page.work.split('/')[0]}/${old}`;
+            if (taken.has(work)) throw new Error(`${work}/: es la dirección de otra obra y también un título anterior (aka) de «${page.title.replace(/ · Echorath$/, '')}»`);
+            taken.add(work);
+        }
+    }
+    return pages;
+}
+
+// The address a work had under a former title sends the visitor to its page
+export function redirectPage(page, old) {
+    const target = `../${page.work.split('/')[1]}/`;
+    return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${escapeHtml(page.url)}">
+<meta http-equiv="refresh" content="0; url=${target}">
+<title>${escapeHtml(page.title)}</title>
+</head>
+<body>
+<p>Esta obra ha cambiado de nombre: <a href="${target}">${escapeHtml(page.title.replace(/ · Echorath$/, ''))}</a>.</p>
+</body>
+</html>
+`;
+}
+
+// Production only: the pages for search engines (to give in Search Console)
+export function sitemap(pages) {
+    const urls = pages.map(p => `  <url><loc>${escapeHtml(p.url)}</loc></url>`).join('\n');
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 // <!--@if a|b--> … <!--@end--> keeps its content when any condition holds;
 // innermost blocks first, so they can nest. <!--# … --> is a note for whoever
 // edits the template and never reaches the page.
@@ -272,7 +378,7 @@ function applyConditions(html, holds) {
     return html.replace(new RegExp(`^[ \\t]*${GONE}+[ \\t]*\\n(?:[ \\t]*\\n)?`, 'gm'), '').replaceAll(GONE, '');
 }
 
-export function render(template, view) {
+export function render(template, view, page = homePage(view)) {
     const s = view.sections;
     const holds = {
         dev: view.mode === 'dev',
@@ -288,6 +394,13 @@ export function render(template, view) {
         html = html.split(marker).join(value);
     };
     replace('{{SITE_URL}}', escapeHtml(view.url));
+    replace('{{ROOT}}', page.root);
+    replace('{{WORK_ATTR}}', page.work ? ` data-work="${escapeHtml(page.work)}"` : '');
+    replace('{{PAGE_URL}}', escapeHtml(page.url));
+    replace('{{PAGE_TITLE}}', escapeHtml(page.title));
+    replace('{{DESCRIPTION}}', escapeHtml(page.description));
+    replace('{{OG_TYPE}}', page.ogType);
+    replace('{{JSON_LD}}', JSON.stringify(page.jsonLd).replace(/</g, '\\u003c'));
     replace('{{EMAIL}}', view.email ? escapeHtml(view.email.address) : '');
     replace('{{FEATURE_LABEL}}', view.tracks.length ? escapeHtml(`Escuchar «${view.tracks[0].title}»`) : '');
     replace('<!--@sobre:text-->', view.sobre ? [
@@ -391,7 +504,8 @@ function copyInto(from, to) {
 export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), outDir = path.join(ROOT, 'dist') } = {}) {
     if (mode !== 'dev' && mode !== 'prod') throw new Error(`modo "${mode}" desconocido: usa dev o prod`);
     const view = select(readContent(contentDir), mode);
-    const html = render(readText(path.join(TEMPLATE, 'index.html')), view);
+    const template = readText(path.join(TEMPLATE, 'index.html'));
+    const pages = [homePage(view), ...workPages(view)].map(page => ({ ...page, html: render(template, view, page) }));
     const script = renderScript(bundleJs(path.join(TEMPLATE, 'js')), view);
     const css = bundleCss(path.join(TEMPLATE, 'css'));
 
@@ -400,7 +514,7 @@ export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), 
     const base = new URL(view.url).pathname;
     const notFound = readText(path.join(TEMPLATE, '404.html')).split('{{BASE}}').join(escapeHtml(base));
     const own = new Set([...FRAMEWORK_FILES, 'site.css', 'site.js']);
-    for (const [, name] of `${html}${notFound}`.matchAll(/\{\{ASSET:([^}]+)\}\}/g)) {
+    for (const [, name] of `${pages[0].html}${notFound}`.matchAll(/\{\{ASSET:([^}]+)\}\}/g)) {
         if (!own.has(name)) throw new Error(`plantilla: el recurso ${name} no existe`);
     }
 
@@ -413,9 +527,18 @@ export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), 
     for (const name of FRAMEWORK_FILES) copyInto(path.join(FRAMEWORK_DIST, name), path.join(outDir, name));
     fs.writeFileSync(path.join(outDir, 'site.css'), css);
     fs.writeFileSync(path.join(outDir, 'site.js'), script);
-    fs.writeFileSync(path.join(outDir, 'index.html'), stampAssets(html, outDir));
+    for (const page of pages) {
+        fs.mkdirSync(path.dirname(path.join(outDir, page.path)), { recursive: true });
+        fs.writeFileSync(path.join(outDir, page.path), stampAssets(page.html, outDir));
+        for (const old of page.formerly || []) {
+            const file = path.join(outDir, page.work.split('/')[0], old, 'index.html');
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.writeFileSync(file, redirectPage(page, old));
+        }
+    }
+    if (mode === 'prod') fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap(pages));
     fs.writeFileSync(path.join(outDir, '404.html'), stampAssets(notFound, outDir));
-    return view;
+    return { ...view, pages: pages.map(p => p.path) };
 }
 
 // ---------------------------------------------------------------- command line
@@ -431,6 +554,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
         console.log(`Echorath · ${mode === 'dev' ? 'desarrollo' : 'producción'} → ${path.relative(process.cwd(), outDir) || '.'}`);
         console.log(`  obras: ${Object.entries(count).map(([k, n]) => `${k} ${n}`).join(', ')}`);
         console.log(`  secciones: ${on.length ? on.join(', ') : 'ninguna (solo la portada)'}`);
+        console.log(`  páginas: la portada y ${view.pages.length - 1} de obra${mode === 'prod' ? ', y sitemap.xml' : ''}`);
     } catch (e) {
         console.error(`No se ha podido construir la web: ${e.message}`);
         process.exit(1);

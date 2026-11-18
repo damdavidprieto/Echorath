@@ -15,16 +15,29 @@ Hay dos webs, construidas desde el mismo código:
 
 ```
 site/
-  content/      el contenido: una obra por archivo
-  template/     la página (index.html), sus estilos (css/), su código (js/) y la de error (404.html)
-  static/       iconos e imagen para compartir el enlace
-  build.mjs     el generador: junta plantilla y contenido en dist/
-  tests/        pruebas del generador
-framework/      Echorath UI (tiene su propio README)
-.github/        el flujo que publica la web en GitHub Pages
+  content/        el contenido: una obra por archivo
+    schemas/      qué campos lleva cada tipo de archivo (el editor los usa)
+  template/
+    index.html    la página, con las marcas de lo que se muestra en cada web
+    css/          sus estilos, un archivo por parte de la página (index.css fija el orden)
+    js/           su código, un archivo por parte, en el orden de su número
+    404.html      la página de error
+  static/         iconos e imagen para compartir el enlace
+  build.mjs       el generador: junta plantilla y contenido en dist/
+  dev.mjs         el servidor de trabajo (npm run dev)
+  tests/          pruebas del generador
+framework/        Echorath UI (tiene su propio README)
+.github/          las pruebas y la publicación en GitHub Pages
+.vscode/          une cada archivo de contenido con su esquema
 ```
 
 `dist/` es lo que se genera; no se guarda en el repositorio.
+
+### Los estilos y el código de la página
+
+- **Estilos** (`site/template/css/`): `tokens.css` tiene los colores propios, las variables y los puntos de corte (560 y 900 px de ancho, y 500 px de alto para un móvil tumbado). Cada parte de la página tiene su archivo, con sus versiones para móvil al lado. Un archivo nuevo se añade a `index.css`; si se olvida, la construcción se detiene y lo dice.
+- **Código** (`site/template/js/`): un archivo por parte, numerado (`10-musica.js`, `11-visor.js`…). El generador los une en ese orden en un solo ámbito, así que una parte puede usar lo que define otra anterior.
+- La web publicada recibe un solo `site.css` minificado y un solo `site.js`, cada uno con la huella de su contenido en la dirección.
 
 ## El estado de cada obra
 
@@ -116,13 +129,14 @@ Los tres modos:
 - `animation`: `draw` se llama en cada fotograma, con el tiempo en `time`.
 - `interactive`: `draw` se llama cuando se mueve el puntero, con su posición en `pointer` (de 0 a 1). También responde a las flechas del teclado.
 
-**Efectos, Sobre y contacto**: `site/content/efectos.json`, `site/content/sobre.json` y `site/content/site.json`. El correo y cada red llevan su propio `status`; en `site.json` están también las direcciones de las dos webs.
+**Efectos, Sobre y contacto**: `site/content/efectos.json`, `site/content/sobre.json` y `site/content/site.json`. El correo y cada red llevan su propio `status`; en `site.json` están también las direcciones de las dos webs y la descripción de la web (la que sale en buscadores y al compartir la portada).
 
 ## Trabajar en local
 
 Hace falta [Node.js](https://nodejs.org) 20 o posterior (`.nvmrc` indica la 22, la que usa GitHub). La web no tiene dependencias; el framework solo las necesita para construirse y probarse.
 
 ```sh
+npm run dev             # para trabajar: http://localhost:4000/Echorath/dev/, se recarga sola
 npm run build:dev       # la web de desarrollo, en dist/
 npm run build:prod      # la de producción, en dist/
 npm run build:pages     # las dos, como en GitHub Pages: dist/ y dist/dev/
@@ -134,7 +148,9 @@ npm run test:framework  # pruebas de Echorath UI (construye dist/ antes)
 npm run test:all        # todas
 ```
 
-Para verla, abre `dist/index.html` en el navegador o sirve la carpeta con `npx serve dist`.
+Con `npm run dev`, cada vez que guardas un archivo de `site/` la web se reconstruye y el navegador se recarga. Si el contenido tiene un error, aparece en la terminal y en una franja roja en la página, y sigue a la vista la última versión buena.
+
+**En VS Code**, los archivos de contenido se comprueban mientras escribes: al abrir una pista, una imagen o `site.json`, el editor propone los campos, explica cada uno y subraya lo que falta o está mal (una duración como `3.42`, un tipo de imagen que no existe…).
 
 ## Publicar en GitHub Pages
 
@@ -143,6 +159,14 @@ Se activa una vez, en GitHub: **Settings → Pages → Build and deployment → 
 Desde entonces, cada cambio que llega a `main` pasa las pruebas (las del generador y las del framework en un navegador), construye las dos webs y las publica. El progreso se ve en la pestaña **Actions**. Los cambios que llegan por pull request solo se prueban.
 
 Las dos direcciones de `site/content/site.json` dan por hecho que el repositorio se llama `Echorath`. Si usas un dominio propio, cámbialas allí.
+
+### Una página por obra, y los buscadores
+
+Cada obra que se muestra tiene su propia dirección: `…/Echorath/musica/marea-baja/`, `…/escritura/ciudades-que-se-repiten/`, `…/imagenes/repeticion-01/` y `…/algoritmos/repeticion/`. Es la misma web con esa obra abierta, pero con su título, su descripción y sus datos para buscadores, así que al compartirla en redes sale la obra y no la portada. El botón «Compartir / Copiar enlace» da siempre esa dirección.
+
+La dirección sale del título (sin tildes ni signos). Si cambias el título de una obra, añade el anterior en `aka` y los enlaces antiguos seguirán llegando a ella: `"aka": ["Título anterior"]` en un `.json`, o `aka: ["Título anterior"]` en la cabecera de un texto. Dos obras de la misma sección no pueden dar la misma dirección: la construcción se detiene y dice cuáles son.
+
+La web de producción lleva `sitemap.xml` con la portada y las obras publicadas. Para que Google las encuentre antes, da de alta la web en [Google Search Console](https://search.google.com/search-console) (tipo «Prefijo de la URL», `https://damdavidprieto.github.io/Echorath/`) y envía `https://damdavidprieto.github.io/Echorath/sitemap.xml`. La web de desarrollo no se indexa.
 
 ## El framework
 

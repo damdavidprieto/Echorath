@@ -32,7 +32,7 @@ function showNow(info) {
 }
 const stopSound = () => { if (nowPlaying) nowPlaying.stop(); };
 document.getElementById('now-stop').addEventListener('click', stopSound);
-nowLink.addEventListener('click', () => shareLink(new URL(nowPlaying.link, location.href).href, `${nowPlaying.title} · ${BASE_TITLE}`));
+nowLink.addEventListener('click', () => shareLink(nowPlaying.link, `${nowPlaying.title} · ${BASE_TITLE}`));
 if (canShare) {
     nowLink.setAttribute('aria-label', 'Compartir');
     nowLink.querySelectorAll('span').forEach(label => { label.textContent = 'Compartir'; });

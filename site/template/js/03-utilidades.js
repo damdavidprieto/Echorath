@@ -31,7 +31,8 @@ function shareLink(url, title) {
     else copyText(url, 'Enlace copiado');
 }
 const SHARE_LABEL = canShare ? 'Compartir' : 'Copiar enlace';
-const BASE_TITLE = document.title;
+// The site's name: the home page's title, also on a work's own page
+const BASE_TITLE = document.querySelector('meta[property="og:site_name"]').content;
 
 async function copyText(text, title) {
     try {

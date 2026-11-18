@@ -1,33 +1,35 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-root="{{ROOT}}"{{WORK_ATTR}}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Echorath: músico, escritor, artista visual y programador. Música, escritura, imagen y código.">
+<meta name="description" content="{{DESCRIPTION}}">
 <!--# The development site stays out of search engines; production is indexable. -->
 <!--@if dev--><meta name="robots" content="noindex"><!--@end-->
 <meta name="theme-color" content="#050505">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<!--# The site's address comes from site/content/site.json (urls.dev / urls.prod) -->
-<link rel="canonical" href="{{SITE_URL}}">
-<meta property="og:url" content="{{SITE_URL}}">
+<link rel="icon" href="{{ROOT}}favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ROOT}}apple-touch-icon.png">
+<!--# The site's address comes from site/content/site.json (urls.dev / urls.prod);
+      a work's own page has its own address, title and description -->
+<link rel="canonical" href="{{PAGE_URL}}">
+<meta property="og:url" content="{{PAGE_URL}}">
 <meta property="og:image" content="{{SITE_URL}}og.png">
 <meta name="twitter:image" content="{{SITE_URL}}og.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{{OG_TYPE}}">
 <meta property="og:locale" content="es_ES">
 <meta property="og:site_name" content="Echorath">
-<meta property="og:title" content="Echorath">
-<meta property="og:description" content="Echorath: músico, escritor, artista visual y programador. Música, escritura, imagen y código.">
+<meta property="og:title" content="{{PAGE_TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Echorath, en letras verdes, junto a una retícula de círculos de colores.">
 <meta name="twitter:card" content="summary_large_image">
-<title>Echorath</title>
-<link rel="stylesheet" href="{{ASSET:echorath-ui.min.css}}">
-<link rel="stylesheet" href="{{ASSET:site.css}}">
-<script src="{{ASSET:echorath-ui.min.js}}" defer></script>
-<script src="{{ASSET:site.js}}" defer></script>
+<script type="application/ld+json">{{JSON_LD}}</script>
+<title>{{PAGE_TITLE}}</title>
+<link rel="stylesheet" href="{{ROOT}}{{ASSET:echorath-ui.min.css}}">
+<link rel="stylesheet" href="{{ROOT}}{{ASSET:site.css}}">
+<script src="{{ROOT}}{{ASSET:echorath-ui.min.js}}" defer></script>
+<script src="{{ROOT}}{{ASSET:site.js}}" defer></script>
 <script>
 // Before anything paints: the page runs JavaScript (controls that only
 // work with it are hidden otherwise, see .needs-js)
