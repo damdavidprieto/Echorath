@@ -1,5 +1,6 @@
-# Built site
+# Built site, and the development server's build
 /dist/
+/.dev-build/
 
 # Dependencies and test output
 node_modules/
@@ -8,6 +9,7 @@ test-results/
 # Editors and systems
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.log

@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Web",
+  "description": "Las direcciones de las dos webs, el correo y las redes: site/content/site.json",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "urls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dev",
+        "prod"
+      ],
+      "properties": {
+        "dev": {
+          "type": "string",
+          "pattern": "^https://\\S+/$",
+          "description": "La web de desarrollo; acaba en /"
+        },
+        "prod": {
+          "type": "string",
+          "pattern": "^https://\\S+/$",
+          "description": "La web pública; acaba en /"
+        }
+      }
+    },
+    "email": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "address"
+      ],
+      "properties": {
+        "status": {
+          "description": "sample: muestra · draft: borrador · review: en revisión · published: revisada y en la web pública",
+          "enum": [
+            "sample",
+            "draft",
+            "review",
+            "published"
+          ]
+        },
+        "address": {
+          "type": "string",
+          "pattern": "^[^\\s@\"<>]+@[^\\s@\"<>]+\\.[^\\s@\"<>]+$"
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "name",
+          "url"
+        ],
+        "properties": {
+          "status": {
+            "description": "sample: muestra · draft: borrador · review: en revisión · published: revisada y en la web pública",
+            "enum": [
+              "sample",
+              "draft",
+              "review",
+              "published"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Cómo se llama la red, tal como se verá"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^(https://|mailto:)\\S+$",
+            "description": "https:// o mailto:"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "urls",
+    "email"
+  ],
+  "additionalProperties": false
+}

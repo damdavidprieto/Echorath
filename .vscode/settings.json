@@ -1,0 +1,10 @@
+{
+  "json.schemas": [
+    { "fileMatch": ["/site/content/musica/*.json"], "url": "./site/content/schemas/pista.schema.json" },
+    { "fileMatch": ["/site/content/imagenes/*.json"], "url": "./site/content/schemas/imagen.schema.json" },
+    { "fileMatch": ["/site/content/efectos.json"], "url": "./site/content/schemas/efectos.schema.json" },
+    { "fileMatch": ["/site/content/sobre.json"], "url": "./site/content/schemas/sobre.schema.json" },
+    { "fileMatch": ["/site/content/site.json"], "url": "./site/content/schemas/site.schema.json" },
+    { "fileMatch": ["/site/content/algoritmos/*/meta.json"], "url": "./site/content/schemas/algoritmo.schema.json" }
+  ]
+}

@@ -35,11 +35,15 @@ const STATUS_LABEL = { sample: 'Muestra', draft: 'Borrador', review: 'En revisi�
 const readText = file => fs.readFileSync(file, 'utf8').replace(/^﻿/, '').replace(/\r\n/g, '\n');
 
 function readJson(file) {
+    let data;
     try {
-        return JSON.parse(readText(file));
+        data = JSON.parse(readText(file));
     } catch (e) {
         throw new Error(`${path.relative(ROOT, file)}: no es un JSON válido (${e.message})`);
     }
+    // "$schema" only tells an editor which schema to check the file against
+    if (data && typeof data === 'object') delete data.$schema;
+    return data;
 }
 
 // Files and folders in a content folder, in name order: the name sets the order
@@ -59,8 +63,8 @@ function checkStatus(status, where) {
 
 // ---------------------------------------------------------------- checking
 
-const KINDS = ['Círculos', 'Arcos', 'Retícula', 'Líneas', 'Bloques', 'Ondas'];
-const VARIANTS = ['standard', 'flicker', 'glitch', 'scan', 'wave', 'shatter', 'warp', 'static', 'decode'];
+export const KINDS = ['Círculos', 'Arcos', 'Retícula', 'Líneas', 'Bloques', 'Ondas'];
+export const VARIANTS = ['standard', 'flicker', 'glitch', 'scan', 'wave', 'shatter', 'warp', 'static', 'decode'];
 const LINK = /^(https:\/\/[^\s"<>]+|mailto:[^\s"<>]+)$/;
 
 // What each field must hold, with the words the error uses for it
@@ -91,10 +95,10 @@ function checkFields(data, spec, where, what = '') {
     return data;
 }
 
-const TRACK = { title: 'text', release: 'text', album: 'text', dur: 'duration', notes: 'notes' };
-const TEXT = { kind: 'text', year: 'year', title: 'text', summary: 'text', body: 'texts' };
-const PIECE = { title: 'text', seed: 'seed', kind: 'kind', year: 'year' };
-const EFFECT = { variant: 'variant', feel: 'text', what: 'text', how: 'text' };
+export const TRACK = { title: 'text', release: 'text', album: 'text', dur: 'duration', notes: 'notes' };
+export const TEXT = { kind: 'text', year: 'year', title: 'text', summary: 'text', body: 'texts' };
+export const PIECE = { title: 'text', seed: 'seed', kind: 'kind', year: 'year' };
+export const EFFECT = { variant: 'variant', feel: 'text', what: 'text', how: 'text' };
 
 // A text: a header between --- lines (key: value, one per line) and paragraphs
 // separated by blank lines
@@ -389,18 +393,25 @@ export function build({ mode = 'prod', contentDir = path.join(SITE, 'content'), 
     const view = select(readContent(contentDir), mode);
     const html = render(readText(path.join(TEMPLATE, 'index.html')), view);
     const script = renderScript(bundleJs(path.join(TEMPLATE, 'js')), view);
+    const css = bundleCss(path.join(TEMPLATE, 'css'));
 
     // GitHub Pages answers any missing address with the same 404 page, at that
     // address: its links start from the site's base path, not from where it is
     const base = new URL(view.url).pathname;
     const notFound = readText(path.join(TEMPLATE, '404.html')).split('{{BASE}}').join(escapeHtml(base));
+    const own = new Set([...FRAMEWORK_FILES, 'site.css', 'site.js']);
+    for (const [, name] of `${html}${notFound}`.matchAll(/\{\{ASSET:([^}]+)\}\}/g)) {
+        if (!own.has(name)) throw new Error(`plantilla: el recurso ${name} no existe`);
+    }
 
+    // Everything that can fail is done above: a mistake never leaves the
+    // output folder half written
     guardOutDir(outDir);
     fs.rmSync(outDir, { recursive: true, force: true });
     fs.mkdirSync(outDir, { recursive: true });
     for (const name of fs.readdirSync(path.join(SITE, 'static'))) copyInto(path.join(SITE, 'static', name), path.join(outDir, name));
     for (const name of FRAMEWORK_FILES) copyInto(path.join(FRAMEWORK_DIST, name), path.join(outDir, name));
-    fs.writeFileSync(path.join(outDir, 'site.css'), bundleCss(path.join(TEMPLATE, 'css')));
+    fs.writeFileSync(path.join(outDir, 'site.css'), css);
     fs.writeFileSync(path.join(outDir, 'site.js'), script);
     fs.writeFileSync(path.join(outDir, 'index.html'), stampAssets(html, outDir));
     fs.writeFileSync(path.join(outDir, '404.html'), stampAssets(notFound, outDir));

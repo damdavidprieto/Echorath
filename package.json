@@ -8,6 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "dev": "node site/dev.mjs",
     "build": "node site/build.mjs",
     "build:dev": "node site/build.mjs --mode=dev",
     "build:prod": "node site/build.mjs --mode=prod",

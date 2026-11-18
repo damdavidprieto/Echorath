@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Imagen",
+  "description": "Una imagen de la serie: site/content/imagenes/NN-titulo.json",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "status": {
+      "description": "sample: muestra · draft: borrador · review: en revisión · published: revisada y en la web pública",
+      "enum": [
+        "sample",
+        "draft",
+        "review",
+        "published"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Título de la imagen"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "El número del que sale la imagen"
+    },
+    "kind": {
+      "enum": [
+        "Círculos",
+        "Arcos",
+        "Retícula",
+        "Líneas",
+        "Bloques",
+        "Ondas"
+      ],
+      "description": "Qué dibuja cada celda"
+    },
+    "year": {
+      "description": "Año de cuatro cifras",
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 9999
+        },
+        {
+          "type": "string",
+          "pattern": "^\\d{4}$"
+        }
+      ]
+    },
+    "aka": {
+      "description": "Títulos anteriores: los enlaces compartidos antes de un cambio de título siguen llegando a la obra",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  },
+  "required": [
+    "status",
+    "title",
+    "seed",
+    "kind",
+    "year"
+  ],
+  "additionalProperties": false
+}

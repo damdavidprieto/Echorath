@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Efectos",
+  "description": "Los nueve efectos: site/content/efectos.json",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "status": {
+      "description": "sample: muestra · draft: borrador · review: en revisión · published: revisada y en la web pública",
+      "enum": [
+        "sample",
+        "draft",
+        "review",
+        "published"
+      ]
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variant",
+          "feel",
+          "what",
+          "how"
+        ],
+        "properties": {
+          "variant": {
+            "enum": [
+              "standard",
+              "flicker",
+              "glitch",
+              "scan",
+              "wave",
+              "shatter",
+              "warp",
+              "static",
+              "decode"
+            ],
+            "description": "La distorsión de Echorath UI"
+          },
+          "feel": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Cómo se siente, en una frase"
+          },
+          "what": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Qué hace"
+          },
+          "how": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Cómo está hecho"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "status",
+    "effects"
+  ],
+  "additionalProperties": false
+}
